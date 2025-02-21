@@ -1,7 +1,10 @@
 import Boot from './scenes/Boot';
 import GameOver from './scenes/GameOver';
 import MainGame from './scenes/Game';
+
 import MainMenu from './scenes/MainMenu';
+import GM_Settings from './scenes/GM_Settings';
+
 import Preloader from './scenes/Preloader';
 import { AUTO, Game } from 'phaser';
 
@@ -18,6 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         MainGame,
+        GM_Settings,
         GameOver
     ]
 };

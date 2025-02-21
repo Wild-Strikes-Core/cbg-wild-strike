@@ -7,6 +7,14 @@ import { EventBus } from '../EventBus';
 /* END-USER-IMPORTS */
 
 export default class MainMenu extends Phaser.Scene {
+    // Add properties for the buttons we want to modify
+    private btnSETTINGS!: Phaser.GameObjects.Image;
+    private btnTEAM!: Phaser.GameObjects.Image;
+    private btnLEADERBOARDS!: Phaser.GameObjects.Image;
+    private btnARENA!: Phaser.GameObjects.Image;
+    private btnINVENTORY!: Phaser.GameObjects.Image;
+    private btnABOUT!: Phaser.GameObjects.Image;
+    private btnWARRIORS!: Phaser.GameObjects.Image;
 
 	constructor() {
 		super("MainMenu");
@@ -42,48 +50,57 @@ export default class MainMenu extends Phaser.Scene {
 		const image_2 = this.add.image(1531, 470, "2G_btnsBackground");
 		image_2.scaleX = 1.866553479953844;
 		image_2.scaleY = 1.866553479953844;
-		menuBTNS_1.add(image_2);
-
-		// image_1
-		const image_1 = this.add.image(1680, 656, "2G_btnSettings");
-		image_1.scaleX = 1.291935634726196;
-		image_1.scaleY = 1.291935634726196;
-		menuBTNS_1.add(image_1);
-
-		// image_3
-		const image_3 = this.add.image(1536, 656, "2G_btnTeam");
-		image_3.scaleX = 1.291935634726196;
-		image_3.scaleY = 1.291935634726196;
-		menuBTNS_1.add(image_3);
-
-		// image_4
-		const image_4 = this.add.image(1392, 656, "2G_btnLeaderboards");
-		image_4.scaleX = 1.291935634726196;
-		image_4.scaleY = 1.291935634726196;
-		menuBTNS_1.add(image_4);
-
-		// image_8
-		const image_8 = this.add.image(1536, 464, "2G_btnArena");
-		image_8.scaleX = 1.0624955964435157;
-		image_8.scaleY = 1.0624955964435157;
-		menuBTNS_1.add(image_8);
-
-		// image_5
+        
+		// btnSETTINGS
+		const btnSETTINGS = this.add.image(1680, 656, "2G_btnSettings");
+		btnSETTINGS.scaleX = 1.291935634726196;
+		btnSETTINGS.scaleY = 1.291935634726196;
+        
+		// btnTEAM
+		const btnTEAM = this.add.image(1536, 656, "2G_btnTeam");
+		btnTEAM.scaleX = 1.291935634726196;
+		btnTEAM.scaleY = 1.291935634726196;
+        
+		// btnLEADERBOARDS
+		const btnLEADERBOARDS = this.add.image(1392, 656, "2G_btnLeaderboards");
+		btnLEADERBOARDS.scaleX = 1.291935634726196;
+		btnLEADERBOARDS.scaleY = 1.291935634726196;
+        
+		// btnARENA
+		const btnARENA = this.add.image(1536, 464, "2G_btnArena");
+		btnARENA.scaleX = 1.0624955964435157;
+		btnARENA.scaleY = 1.0624955964435157;
+        
+		// btnINVENTORY
 		this.add.image(960, 944, "2G_btnInventory");
-
-		// image_6
+        
+		// btnABOUT
 		this.add.image(656, 944, "2G_btnAbout");
-
-		// image_7
+        
+		// btnWARRIORS
 		this.add.image(352, 944, "2G_btnWarriors");
-
+        
 		// image_9
 		const image_9 = this.add.image(464, 160, "2G_Player_Name_Card");
 		image_9.scaleX = 0.8582378709610599;
 		image_9.scaleY = 0.8582378709610599;
+		
+        menuBTNS_1.add(image_2);
+        
+		menuBTNS_1.add(btnSETTINGS);
+		menuBTNS_1.add(btnTEAM);
+		menuBTNS_1.add(btnLEADERBOARDS);
+		menuBTNS_1.add(btnARENA);
+
 
 		this.bgCloudsTWO = bgCloudsTWO;
 		this.bgCloudsONE = bgCloudsONE;
+
+        // Store references to buttons
+        this.btnSETTINGS = btnSETTINGS;
+        this.btnTEAM = btnTEAM;
+        this.btnLEADERBOARDS = btnLEADERBOARDS;
+        this.btnARENA = btnARENA;
 
 		this.events.emit("scene-awake");
 	}
@@ -98,6 +115,25 @@ export default class MainMenu extends Phaser.Scene {
     create ()
     {
         this.editorCreate();
+        
+        const addButtonInteraction = (button: Phaser.GameObjects.Image) => {
+            button.setInteractive({ cursor: 'pointer' })
+                .on('pointerover', () => button.setTint(0xffff66))
+                .on('pointerout', () => button.clearTint());
+        };
+
+        addButtonInteraction(this.btnSETTINGS);
+        addButtonInteraction(this.btnTEAM);
+        addButtonInteraction(this.btnLEADERBOARDS);
+        addButtonInteraction(this.btnARENA);
+
+        this.btnSETTINGS.on('pointerdown', () => {
+            this.cameras.main.fadeOut(180, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start("GM_Settings"); 
+            });
+        });
+
 
         EventBus.emit('current-scene-ready', this);
     }
@@ -118,7 +154,7 @@ export default class MainMenu extends Phaser.Scene {
 
     changeScene ()
     {
-        this.scene.start('Game');
+        this.scene.start('GM_Settings');
     }
     /* END-USER-CODE */
 }

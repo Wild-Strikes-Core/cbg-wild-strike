@@ -27,18 +27,6 @@ const moveSprite = () => {
 
     if (phaserRef.value !== undefined)
     {
-
-        const scene = toRaw(phaserRef.value.scene) as MainMenu;
-
-        if (scene)
-        {
-            // Get the update logo position
-            (scene as MainMenu).moveLogo(({ x, y }) => {
-
-                spritePosition.value = { x, y };
-
-            });
-        }
     }
 
 }
