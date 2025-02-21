@@ -37,6 +37,31 @@ export class Preloader extends Scene
 
         // Landing Page
         this.load.image('playButton', 'game/01 - Landing Page/1L_play-button.png');
+
+        // GameMenu
+        this.load.image('G_BG-Clouds1', 'game/02 - Game Menu/2G_bgClouds_1.png');
+        this.load.image('G_BG-Clouds2', 'game/02 - Game Menu/2G_bgClouds_2.png');
+
+        this.load.image('playerNameCard', 'game/02 - Game Menu/2G_Player_Name_Card.png');
+        this.load.image('G_btnArena', 'game/02 - Game Menu/2G_btnArena.png');
+        
+        this.load.image('G_btnsBG', 'game/02 - Game Menu/2G_btnsBackground.png');
+
+        this.load.image('G_btnAbout', 'game/02 - Game Menu/2G_btnAbout.png');
+        this.load.image('G_btnInventory', 'game/02 - Game Menu/2G_btnInventory.png');
+        this.load.image('G_btnWarriors', 'game/02 - Game Menu/2G_btnWarriors.png');
+
+        this.load.image('G_btnSettings', 'game/02 - Game Menu/2G_btnSettings.png');
+        this.load.image('G_btnTeam', 'game/02 - Game Menu/2G_btnTeam.png');
+        this.load.image('G_btnLeaderboards', 'game/02 - Game Menu/2G_btnLeaderboards.png');
+
+        // Settings
+        this.load.image('S_title', 'game/05 - Settings/5S_titleSetting.png');
+        
+        this.load.image('S_btnBack', 'game/05 - Settings/5S_btnBack.png');
+        this.load.image('S_btnLinkAcc', 'game/05 - Settings/5S_btnLinkAccount.png');
+        this.load.image('S_btnLogout', 'game/05 - Settings/5S_btnLogout.png');
+        this.load.image('S_btnTerms', 'game/05 - Settings/5S_btnTerms.png');
     }
 
     create ()

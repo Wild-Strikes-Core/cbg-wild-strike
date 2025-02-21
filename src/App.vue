@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, toRaw } from 'vue';
-import type { LandingPage } from './game/scenes/LandingPage';
+// import type { LandingPage } from './game/scenes/LandingPage';
+import type { GameMenu } from './game/scenes/GameMenu';
 import PhaserGame from './game/PhaserGame.vue';
 
 // The sprite can only be moved in the MainMenu Scene
@@ -11,7 +12,7 @@ const phaserRef = ref();
 
 const changeScene = () => {
 
-    const scene = toRaw(phaserRef.value.scene) as LandingPage;
+    const scene = toRaw(phaserRef.value.scene) as GameMenu;
 
     if (scene)
     {
@@ -23,9 +24,9 @@ const changeScene = () => {
 
 
 // Event emitted from the PhaserGame component
-const currentScene = (scene: LandingPage) => {
+const currentScene = (scene: GameMenu) => {
 
-    canMoveSprite.value = (scene.scene.key !== "LandingPage");
+    canMoveSprite.value = (scene.scene.key !== "GameMenu");
 
 }
 
