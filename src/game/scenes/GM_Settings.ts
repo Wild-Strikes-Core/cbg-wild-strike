@@ -14,7 +14,15 @@ export class GM_Settings extends Scene
 
     create ()
     {
-        this.add.image(450, 100, 'playerNameCard').setScale(0.8).setDepth(100);
+        const backBTN = this.add.image(250, 100, 'S_btnBack').setScale(0.8).setDepth(100);
+        backBTN.setInteractive({cursor: 'pointer'});
+        backBTN.on('pointerdown', this.changeScene, this);
+
+        this.add.image(1000, 100, 'S_title').setScale(0.8).setDepth(100);
+        
+        this.add.image(400, 940, 'S_btnLogout').setScale(0.8).setDepth(100);
+        this.add.image(900, 940, 'S_btnTerms').setScale(0.8).setDepth(100);
+        this.add.image(1480, 940, 'S_btnLinkAcc').setScale(0.8).setDepth(100);
 
 
         EventBus.emit('current-scene-ready', this);
@@ -22,6 +30,6 @@ export class GM_Settings extends Scene
 
     changeScene ()
     {
-        this.scene.start('LandingPage');
+        this.scene.start('GameMenu');
     }
 }
