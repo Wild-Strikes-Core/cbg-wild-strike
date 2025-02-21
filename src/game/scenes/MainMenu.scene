@@ -15,6 +15,40 @@
     "displayList": [
         {
             "type": "Layer",
+            "id": "d4c5623c-46f1-40b6-8acd-dfdd54b0b462",
+            "label": "bgClouds",
+            "blendMode": -1,
+            "list": [
+                {
+                    "type": "Image",
+                    "id": "92659b65-3400-4e45-9f96-91dcac321b2b",
+                    "label": "bgCloudsTWO",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "2G_bgClouds_1"
+                    },
+                    "x": 736,
+                    "y": 688,
+                    "scaleX": 2.4929575936045327,
+                    "scaleY": 2.4929575936045327
+                },
+                {
+                    "type": "Image",
+                    "id": "57b157c9-bab1-4910-9da3-afd1f761075a",
+                    "label": "bgCloudsONE",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "2G_bgClouds_2"
+                    },
+                    "x": 848,
+                    "y": 336,
+                    "scaleX": 2.414775497570459,
+                    "scaleY": 2.414775497570459
+                }
+            ]
+        },
+        {
+            "type": "Layer",
             "id": "c0f903e4-e7cc-4c9a-9ebf-ce18798bc342",
             "label": "menuBTNS_1",
             "blendMode": -1,
@@ -28,8 +62,8 @@
                     },
                     "x": 1531,
                     "y": 470,
-                    "scaleX": 1.53697456223443,
-                    "scaleY": 1.53697456223443
+                    "scaleX": 1.866553479953844,
+                    "scaleY": 1.866553479953844
                 },
                 {
                     "type": "Image",
@@ -38,30 +72,48 @@
                     "texture": {
                         "key": "2G_btnSettings"
                     },
-                    "x": 1408,
-                    "y": 656
+                    "x": 1680,
+                    "y": 656,
+                    "scaleX": 1.291935634726196,
+                    "scaleY": 1.291935634726196
+                },
+                {
+                    "type": "Image",
+                    "id": "fd6f3ba5-9d8b-46dd-a6ae-187a92a4e37b",
+                    "label": "image_3",
+                    "texture": {
+                        "key": "2G_btnTeam"
+                    },
+                    "x": 1536,
+                    "y": 656,
+                    "scaleX": 1.291935634726196,
+                    "scaleY": 1.291935634726196
+                },
+                {
+                    "type": "Image",
+                    "id": "93a9a354-eba2-49a6-ae86-13ee9d9ac3ad",
+                    "label": "image_4",
+                    "texture": {
+                        "key": "2G_btnLeaderboards"
+                    },
+                    "x": 1392,
+                    "y": 656,
+                    "scaleX": 1.291935634726196,
+                    "scaleY": 1.291935634726196
+                },
+                {
+                    "type": "Image",
+                    "id": "d5d1693a-23f1-4fab-b635-a8f3c6c2126d",
+                    "label": "image_8",
+                    "texture": {
+                        "key": "2G_btnArena"
+                    },
+                    "x": 1536,
+                    "y": 464,
+                    "scaleX": 1.0624955964435157,
+                    "scaleY": 1.0624955964435157
                 }
             ]
-        },
-        {
-            "type": "Image",
-            "id": "fd6f3ba5-9d8b-46dd-a6ae-187a92a4e37b",
-            "label": "image_3",
-            "texture": {
-                "key": "2G_btnTeam"
-            },
-            "x": 1360,
-            "y": 528
-        },
-        {
-            "type": "Image",
-            "id": "93a9a354-eba2-49a6-ae86-13ee9d9ac3ad",
-            "label": "image_4",
-            "texture": {
-                "key": "2G_btnLeaderboards"
-            },
-            "x": 1520,
-            "y": 544
         },
         {
             "type": "Image",
@@ -70,8 +122,8 @@
             "texture": {
                 "key": "2G_btnInventory"
             },
-            "x": 512,
-            "y": 272
+            "x": 960,
+            "y": 944
         },
         {
             "type": "Image",
@@ -80,8 +132,8 @@
             "texture": {
                 "key": "2G_btnAbout"
             },
-            "x": 752,
-            "y": 272
+            "x": 656,
+            "y": 944
         },
         {
             "type": "Image",
@@ -90,18 +142,8 @@
             "texture": {
                 "key": "2G_btnWarriors"
             },
-            "x": 272,
-            "y": 496
-        },
-        {
-            "type": "Image",
-            "id": "d5d1693a-23f1-4fab-b635-a8f3c6c2126d",
-            "label": "image_8",
-            "texture": {
-                "key": "2G_btnArena"
-            },
-            "x": 1408,
-            "y": 400
+            "x": 352,
+            "y": 944
         },
         {
             "type": "Image",
@@ -110,8 +152,10 @@
             "texture": {
                 "key": "2G_Player_Name_Card"
             },
-            "x": 512,
-            "y": 176
+            "x": 464,
+            "y": 160,
+            "scaleX": 0.8582378709610599,
+            "scaleY": 0.8582378709610599
         }
     ],
     "plainObjects": [],
