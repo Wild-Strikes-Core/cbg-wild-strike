@@ -43,6 +43,7 @@ export class Preloader extends Scene
         this.load.image('G_BG-Clouds2', 'game/02 - Game Menu/2G_bgClouds_2.png');
 
         this.load.image('playerNameCard', 'game/02 - Game Menu/2G_Player_Name_Card.png');
+        this.load.image('G_btnArena', 'game/02 - Game Menu/2G_btnArena.png');
         
         this.load.image('G_btnsBG', 'game/02 - Game Menu/2G_btnsBackground.png');
 
