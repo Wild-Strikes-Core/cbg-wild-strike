@@ -16,7 +16,12 @@ export class GM_Settings extends Scene
     {
         const backBTN = this.add.image(250, 100, 'S_btnBack').setScale(0.8).setDepth(100);
         backBTN.setInteractive({cursor: 'pointer'});
-        backBTN.on('pointerdown', this.changeScene, this);
+        backBTN.on('pointerdown', () => {
+            this.cameras.main.fadeOut(180, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+               this.changeScene();
+            });
+        });
 
         this.add.image(1000, 100, 'S_title').setScale(0.8).setDepth(100);
         

@@ -31,6 +31,6 @@ export class LandingPage extends Scene
     
     changeScene ()
     {
-        this.scene.start('Settings');
+        this.scene.start('GameMenu');
     }
 }

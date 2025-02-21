@@ -1,8 +1,15 @@
 import { Boot } from './scenes/Boot';
 import { LandingPage } from './scenes/LandingPage';
 
+// GAME MENU
 import { GameMenu } from './scenes/GameMenu';
+import { GM_About as About } from './scenes/GM_About';
+import { GM_Inventory as Inventory } from './scenes/GM_Inventory';
+import { GM_Leaderboards as Leaderboards } from './scenes/GM_Leaderboards';
 import { GM_Settings as Settings } from './scenes/GM_Settings';
+import { GM_Teams as Teams } from './scenes/GM_Teams';
+import { GM_Warriors as Warriors } from './scenes/GM_Warriors';
+
 
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
@@ -28,7 +35,12 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         LandingPage,
         GameMenu,
+        About,
+        Inventory,
+        Leaderboards,
         Settings,
+        Teams,
+        Warriors,
     ]
 };
 
