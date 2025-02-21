@@ -1,144 +1,89 @@
-# Wild Strikes: Turn-Based Strategy Combat
+# Phaser Editor Vue TypeScript Template
 
-[![Generic badge](https://img.shields.io/badge/Status-In%20Development-yellow.svg)](https://shields.io/)
+This is a Phaser Editor v4 project template that uses Vue TypeScript for bundling. It supports hot-reloading for quick development workflow and includes scripts to generate production-ready builds.
 
-## Overview
+### Versions
 
-**Wild Strikes** is a fast-paced, turn-based strategy game that blends the chaotic projectile combat of *Wild Ones* with the strategic card-based mechanics of *Axie Infinity*. Control a team of unique warriors, each possessing distinct abilities and skill cards, and engage in action-packed battles where skill, planning, and a bit of luck determine the victor. Prepare for a tactical and engaging experience where every decision matters!
+This template has been updated for:
 
-## Key Features
+- [Phaser 3.85.1](https://github.com/phaserjs/phaser)
+- Phaser Editor v4.0 and above
 
-*   **Turn-Based Combat with a Twist:** Players take turns selecting and using skill cards to attack, move, and defend. But unlike traditional turn-based games, characters have a limited time to *freely move* within a set range before executing their chosen action, adding a layer of dynamic positioning to the strategy.
-*   **Energy Management:** Master the energy system! You receive 3 energy per round. Carefully manage your resources to unleash powerful combos and abilities. Unused energy carries over to the next round (Overcharge), allowing for even stronger moves.
-*   **Unique Characters:** Choose from four distinct classes, each with their own playstyle and strategic depth:
-    *   **Titan (Tank):** A defensive powerhouse with AOE abilities.
-    *   **Sage (Wizard/Healer):** A versatile support character with magic attacks and healing capabilities.
-    *   **Hawk (Sniper):** A long-range specialist with precision strikes and evasive maneuvers.
-    *   **Blaze (Fighter):** A fast and aggressive melee combatant with burning attacks.
-*   **Strategic Card System:** Each character has a unique deck of skill cards. At the start of each round, you'll receive a random selection, forcing you to adapt your strategy on the fly. Card selection is *final* for the round, so choose wisely!
-*   **Round-Based Matches:** Battles continue until one player's team is completely eliminated.
-*   **Competitive Multiplayer:** Challenge other players in various modes:
-    *   **1v1 Duels:** Test your skills in head-to-head combat.
-    *   **Free-For-All (FFA):** Engage in chaotic battles with multiple opponents.
-    *   **Ranked Matches:** Climb the leaderboards and prove your dominance.
-*   **Blockchain & NFT Integration:**
-    *   **Own Your Assets:** Collect unique characters, weapons, and skins as NFTs.
-    *   **Play-to-Earn (P2E):** Earn in-game rewards through gameplay.
-    *   **In-Game Marketplace:** Trade your NFTs with other players.
+![screenshot](screenshot.png)
 
-## Core Mechanics
+## What is Phaser Editor?
 
-### Game Flow
+Phaser Editor enables you to visually create Phaser games. Instead of entering numbers in your code to position Game Objects, you can drag and drop them into place, tweak their animations, adjust their physics bodies, enable special effects, and more. It's quicker and faster for both artists and developers alike and publishes pure Phaser code.
 
-1.  **Pre-Phase Positioning:** Before the match begins, players have 30 seconds to strategically position their three characters on their side of the map.
-2.  **Card Selection Phase:** At the start of each round, players receive a random selection of cards. You must choose *one* card per character. Once a card is selected, it *cannot* be changed for that round.
-3.  **Turn-Based Combat with Free Movement:** The round begins, and characters act based on their speed stat. During their turn, a character can *move freely* within a set radius for a limited time *before* executing their selected card's action. This allows for dynamic positioning and adds a layer of real-time strategy to the turn-based combat.
-4.  **New Cards:** After each round, players receive three new random cards to choose from for the next turn.
+See more at [phaser.io](https://phaser.io/editor)
 
-### Energy System
+## Requirements
 
-*   Players receive 3 energy per round.
-*   Energy is used to play cards (attack, movement, defense).
-*   Unused energy carries over to the next round (Overcharge), allowing for more powerful plays.
+[Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
 
-## Characters and Abilities
+An active subscription to Phaser Editor is required to load and use this template within it.
 
-Below are the details for each character class, including their cards and potential combos:
+## Available Commands
 
-### 1. Titan (Tank)
+| Command | Description |
+|---------|-------------|
+| `npm install` | Install project dependencies |
+| `npm run dev` | Launch a development web server |
+| `npm run build` | Create a production build in the `dist` folder |
 
-A walking fortress designed for defense and area-of-effect (AOE) attacks.
+## Writing Code
 
-| Card           | Energy Cost | Speed | Effect                                                                 |
-| -------------- | :---------: | :---: | ---------------------------------------------------------------------- |
-| Shield Bash    |      2      |  10   | Powerful bash, stuns enemy for 1 turn (25 DMG).                       |
-| Fortified Armor |      2      |   5   | Reduces damage taken by 50% for 1 turn.                               |
-| Ground Slam    |      3      |   8   | Damages and knocks back all enemies (30 DMG).                          |
-| Counter Guard  |      3      |   6   | Blocks an attack and reflects 50% of the damage.                      |
+After cloning the repo, run `npm install` from your project directory.
 
-**Possible Combos:**
+To start the local development server use `npm run dev`.
 
-*   Shield Bash → Ground Slam: Stun an enemy, then knock them back to prevent counterattacks.
-*   Fortified Armor → Counter Guard: Minimize incoming damage and reflect a portion back to the attacker.
+## Deploying to Production
 
-### 2. Sage (Wizard/Healer)
+To create a production build use the command `npm run build`.
 
-A mystical supporter capable of both dealing magical damage and healing allies.
+This will take your game code and build it into a single bundle, ready for deployment. This bundle is saved to the `dist` folder. Please note that some templates save to the `build` folder instead. The deployment script will also copy any assets your project imported, or stored in the public assets folder.
 
-| Card           | Energy Cost | Speed | Effect                                                                  |
-| -------------- | :---------: | :---: | ----------------------------------------------------------------------- |
-| Arcane Blast   |      1      |  12   | Fires a magic bolt (25 DMG).                                           |
-| Healing Wave   |      2      |   9   | Restores 30 HP to self or an ally.                                   |
-| Mana Surge     |      2      |   7   | Grants an extra energy point for next turn if shield is broken. |
-| Mystic Shield  |      3      |   6   | Creates a barrier that absorbs 40 damage.                              |
+To deploy your game, upload *all* of the contents of the `dist` folder to a public-facing web server.
 
-**Possible Combos:**
+**Note:** In some templates, the `dist` folder has been renamed to `build` to remain within that framework's conventions.
 
-*   Mana Surge → Mystic Shield:  Boost energy, then create a strong defense.
-*   Arcane Blast → Healing Wave:  Damage an enemy and then heal yourself or an ally.
+## Phaser Editor considerations
 
-### 3. Hawk (Sniper)
+### Excluding files from the project
 
-A deadly marksman specializing in precision strikes and evasion.
+You don't want to add every file in this template to your Phaser Editor project. For example, the whole of `node_modules` can be excluded.
 
-| Card           | Energy Cost | Speed | Effect                                                                   |
-| -------------- | :---------: | :---: | ------------------------------------------------------------------------ |
-| Piercing Shot  |      2      |  11   | Ignores 50% of target's defense (30 DMG).                              |
-| Camouflage     |      2      |   8   | Becomes untargetable for one turn.                                      |
-| Rapid Fire     |      3      |  10   | Fires three quick shots (3 x 15 DMG).                                  |
-| Deadeye        |      4      |   5   | A charged shot with high accuracy (60 DMG).                             |
+The `/.skip` file lists the folders and files to exclude from the editor's project.
 
-**Possible Combos:**
+[Learn more about resource filtering in Phaser Editor](https://phaser.io/editor/docs/misc/resources-filtering)
 
-*   Camouflage → Deadeye:  Hide for a turn, then unleash a devastating, high-damage shot.
-*   Piercing Shot → Rapid Fire:  Bypass defenses and follow up with multiple hits.
+### Asset Pack
 
-### 4. Blaze (Fighter)
+Phaser has the ability to load what are known as 'asset packs'. These are JSON files that describe all of the content that your game needs to load, such as images, audio, and fonts. Phaser Editor will generate and use asset packs intensively and tools such as the Scene Editor depend upon the information stored in the asset pack files.
 
-A fast and aggressive melee combatant who excels at close-quarters combat.
+You can have multiple asset packs per project, which is the recommended practice for larger games, allowing you to load only the pack of assets the game requires at that specific point.
 
-| Card           | Energy Cost | Speed | Effect                                                                    |
-| -------------- | :---------: | :---: | ------------------------------------------------------------------------- |
-| Flame Slash    |      2      |  10   | Melee attack that burns the enemy for 2 turns (30 DMG + 5 burn/turn).   |
-| Dash Strike    |      2      |  12   | Dashes forward and slashes (25 DMG).                                    |
-| Adrenaline Boost|      2      |   7   | Gains an extra action next turn.                                       |
-| Final Blow     |      4      |   6   | A high-risk, high-damage attack (50 DMG).                               |
+In this template, we have pre-configured two types of asset packs: `boot-asset-pack.json` and `preload-asset-pack.json`.
 
-**Possible Combos:**
+The `boot-asset-pack.json` file is used to load assets when the game first boots. Typically, you would store a small selection of initial assets in here, such as a loading screen image and progress bar.
 
-*   Adrenaline Boost → Final Blow:  Gain an extra action to immediately execute a powerful attack.
-*   Dash Strike → Flame Slash:  Quickly close the distance and inflict burn damage over time.
+The `preload-asset-pack.json` in this template contains the rest of the assets the game needs. You are free to create additional packs as required, but for the sake of simplicity, this template has been configured with just these two packs.
 
-## Multiplayer & Blockchain Features
+[Learn more about Asset Pack loading in Phaser](https://newdocs.phaser.io/docs/3.80.0/Phaser.Loader.LoaderPlugin#pack)
 
-*   **Game Modes:**
-    *   1v1 Duels
-    *   Free-For-All (FFA)
-    *   Ranked Matches
-*   **Competitive Play:**
-    *   Leaderboards
-    *   Tournaments
-*   **Blockchain Integration:**
-    *   NFT Characters and Weapons
-    *   Play-to-Earn (P2E) Rewards
-    *   In-Game Marketplace
+## Join the Phaser Community!
 
-## Getting Started (Future Section - Add when you have more details)
+We love to see what developers like you create with Phaser! It really motivates us to keep improving. So please join our community and show off your work 😄
 
-*   Instructions on how to download/access the game.
-*   Links to any necessary wallets or accounts.
-*   Tutorial or beginner's guide link.
+**Visit:** The [Phaser website](https://phaser.io) and follow on [Phaser Twitter](https://twitter.com/phaser_)<br />
+**Play:** Some of the amazing games [#madewithphaser](https://twitter.com/search?q=%23madewithphaser&src=typed_query&f=live)<br />
+**Learn:** [API Docs](https://newdocs.phaser.io), [Support Forum](https://phaser.discourse.group/) and [StackOverflow](https://stackoverflow.com/questions/tagged/phaser-framework)<br />
+**Discord:** Join us on [Discord](https://discord.gg/phaser)<br />
+**Code:** 2000+ [Examples](https://labs.phaser.io)<br />
+**Read:** The [Phaser World](https://phaser.io/community/newsletter) Newsletter<br />
 
-## Community (Future Section - Add when you have community channels)
+Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
 
-*   Links to Discord, Telegram, Twitter, etc.
-*   Forum link (if applicable).
+The Phaser logo and characters are &copy; 2011 - 2024 Phaser Studio Inc.
 
-## Contributing (Future Section - Add if you want to accept contributions)
-
-*   Guidelines for contributing to the project (code, art, etc.).
-*   Link to contribution guide.
-
-## License (Future Section - Add when you have chosen a license)
-
-*   Specify the license under which the game is released (e.g., MIT, Apache 2.0, etc.).
+All rights reserved.
