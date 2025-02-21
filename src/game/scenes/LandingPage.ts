@@ -24,7 +24,14 @@ export class LandingPage extends Scene
         // }).setOrigin(0.5).setDepth(100);
 
         // Add the play button image
-        this.add.image(960, 750, 'playButton').setDepth(100);
+        const playBTN = this.add.image(960, 750, 'playButton').setDepth(100);
+        playBTN.setInteractive({cursor: 'pointer'});
+        playBTN.on('pointerdown', () => {
+            this.cameras.main.fadeOut(180, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+               this.changeScene();
+            });
+        });
 
         EventBus.emit('current-scene-ready', this);
     }
