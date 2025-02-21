@@ -3,6 +3,7 @@ import GameOver from './scenes/GameOver';
 import MainGame from './scenes/Game';
 import LandingPage from './scenes/LandingPage';
 import MainMenu from './scenes/MainMenu';
+import GM_ListofTeams from './scenes/GM_ListofTeams';
 import Preloader from './scenes/Preloader';
 import { AUTO, Game } from 'phaser';
 
@@ -14,11 +15,18 @@ const config: Phaser.Types.Core.GameConfig = {
     height: 1080,
     parent: 'game-container',
     backgroundColor: '#1a022b',
+
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
+    
     scene: [
         Boot,
         Preloader,
         LandingPage,
         MainMenu,
+        GM_ListofTeams,
         MainGame,
         GameOver
     ]

@@ -49,8 +49,28 @@ export default class LandingPage extends Phaser.Scene {
 	// Write your code here
 
 	create() {
-
 		this.editorCreate();
+	
+		this.cameras.main.fadeIn(180, 0, 0, 0);
+
+		const playBtn = this.playBtn; 
+		playBtn.setInteractive({ cursor: 'pointer' });
+	
+		playBtn.on("pointerdown", () => {
+			this.cameras.main.fadeOut(180, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+			this.scene.start("MainMenu");
+			});
+		});
+	
+		playBtn.on("pointerover", () => {
+			playBtn.setTint(0xffff66); // Yellow highlight
+		});
+	
+		playBtn.on("pointerout", () => {
+			playBtn.clearTint();
+		});
+	
 	}
 
 	update() {
