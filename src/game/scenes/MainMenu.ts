@@ -69,7 +69,7 @@ export default class MainMenu extends Phaser.Scene {
 
     changeScene ()
     {
-        this.scene.start('Game');
+        this.scene.start('LandingPage');
     }
     /* END-USER-CODE */
 }
