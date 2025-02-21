@@ -1,241 +1,144 @@
-# Phaser Vue TypeScript Template
+# Wild Strikes: Turn-Based Strategy Combat
 
-This is a Phaser 3 project template that uses the Vue framework, TypeScript and Vite for bundling. It includes a bridge for Vue to Phaser game communication, hot-reloading for quick development workflow and scripts to generate production-ready builds.
+[![Generic badge](https://img.shields.io/badge/Status-In%20Development-yellow.svg)](https://shields.io/)
 
-**[This Template is also available as a JavaScript version.](https://github.com/phaserjs/template-vue)**
+## Overview
 
-### Versions
+**Wild Strikes** is a fast-paced, turn-based strategy game that blends the chaotic projectile combat of *Wild Ones* with the strategic card-based mechanics of *Axie Infinity*. Control a team of unique warriors, each possessing distinct abilities and skill cards, and engage in action-packed battles where skill, planning, and a bit of luck determine the victor. Prepare for a tactical and engaging experience where every decision matters!
 
-This template has been updated for:
+## Key Features
 
-- [Phaser 3.88.2](https://github.com/phaserjs/phaser)
-- [Vue 3.4.27](https://github.com/vuejs)
-- [Vite 5.2.11](https://github.com/vitejs/vite)
-- [TypeScript 5.3.3](https://github.com/microsoft/TypeScript)
+*   **Turn-Based Combat with a Twist:** Players take turns selecting and using skill cards to attack, move, and defend. But unlike traditional turn-based games, characters have a limited time to *freely move* within a set range before executing their chosen action, adding a layer of dynamic positioning to the strategy.
+*   **Energy Management:** Master the energy system! You receive 3 energy per round. Carefully manage your resources to unleash powerful combos and abilities. Unused energy carries over to the next round (Overcharge), allowing for even stronger moves.
+*   **Unique Characters:** Choose from four distinct classes, each with their own playstyle and strategic depth:
+    *   **Titan (Tank):** A defensive powerhouse with AOE abilities.
+    *   **Sage (Wizard/Healer):** A versatile support character with magic attacks and healing capabilities.
+    *   **Hawk (Sniper):** A long-range specialist with precision strikes and evasive maneuvers.
+    *   **Blaze (Fighter):** A fast and aggressive melee combatant with burning attacks.
+*   **Strategic Card System:** Each character has a unique deck of skill cards. At the start of each round, you'll receive a random selection, forcing you to adapt your strategy on the fly. Card selection is *final* for the round, so choose wisely!
+*   **Round-Based Matches:** Battles continue until one player's team is completely eliminated.
+*   **Competitive Multiplayer:** Challenge other players in various modes:
+    *   **1v1 Duels:** Test your skills in head-to-head combat.
+    *   **Free-For-All (FFA):** Engage in chaotic battles with multiple opponents.
+    *   **Ranked Matches:** Climb the leaderboards and prove your dominance.
+*   **Blockchain & NFT Integration:**
+    *   **Own Your Assets:** Collect unique characters, weapons, and skins as NFTs.
+    *   **Play-to-Earn (P2E):** Earn in-game rewards through gameplay.
+    *   **In-Game Marketplace:** Trade your NFTs with other players.
 
-![screenshot](screenshot.png)
+## Core Mechanics
 
-## Requirements
+### Game Flow
 
-[Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
+1.  **Pre-Phase Positioning:** Before the match begins, players have 30 seconds to strategically position their three characters on their side of the map.
+2.  **Card Selection Phase:** At the start of each round, players receive a random selection of cards. You must choose *one* card per character. Once a card is selected, it *cannot* be changed for that round.
+3.  **Turn-Based Combat with Free Movement:** The round begins, and characters act based on their speed stat. During their turn, a character can *move freely* within a set radius for a limited time *before* executing their selected card's action. This allows for dynamic positioning and adds a layer of real-time strategy to the turn-based combat.
+4.  **New Cards:** After each round, players receive three new random cards to choose from for the next turn.
 
-## Available Commands
+### Energy System
 
-| Command | Description |
-|---------|-------------|
-| `npm install` | Install project dependencies |
-| `npm run dev` | Launch a development web server |
-| `npm run build` | Create a production build in the `dist` folder |
-| `npm run dev-nolog` | Launch a development web server without sending anonymous data (see "About log.js" below) |
-| `npm run build-nolog` | Create a production build in the `dist` folder without sending anonymous data (see "About log.js" below) |
+*   Players receive 3 energy per round.
+*   Energy is used to play cards (attack, movement, defense).
+*   Unused energy carries over to the next round (Overcharge), allowing for more powerful plays.
 
-## Writing Code
+## Characters and Abilities
 
-After cloning the repo, run `npm install` from your project directory. Then, you can start the local development server by running `npm run dev`.
+Below are the details for each character class, including their cards and potential combos:
 
-The local development server runs on `http://localhost:8080` by default. Please see the Vite documentation if you wish to change this, or add SSL support.
+### 1. Titan (Tank)
 
-Once the server is running you can edit any of the files in the `src` folder. Vite will automatically recompile your code and then reload the browser.
+A walking fortress designed for defense and area-of-effect (AOE) attacks.
 
-## Template Project Structure
+| Card           | Energy Cost | Speed | Effect                                                                 |
+| -------------- | :---------: | :---: | ---------------------------------------------------------------------- |
+| Shield Bash    |      2      |  10   | Powerful bash, stuns enemy for 1 turn (25 DMG).                       |
+| Fortified Armor |      2      |   5   | Reduces damage taken by 50% for 1 turn.                               |
+| Ground Slam    |      3      |   8   | Damages and knocks back all enemies (30 DMG).                          |
+| Counter Guard  |      3      |   6   | Blocks an attack and reflects 50% of the damage.                      |
 
-We have provided a default project structure to get you started. This is as follows:
+**Possible Combos:**
 
-- `index.html` - A basic HTML page to contain the game.
-- `src` - Contains the Vue source code.
-- `src/main.ts` - The main **Vue** entry point. This bootstraps the Vue application.
-- `src/vite-env.d.ts` - Global TypeScript declarations, provide types information.
-- `src/App.vue` - The main Vue component.
-- `src/game/PhaserGame.vue` - The Vue component that initializes the Phaser Game and serve like a bridge between Vue and Phaser.
-- `src/game/EventBus.ts` - A simple event bus to communicate between Vue and Phaser.
-- `src/game` - Contains the game source code.
-- `src/game/main.ts` - The main **game** entry point. This contains the game configuration and start the game.
-- `src/game/scenes/` - The Phaser Scenes are in this folder.
-- `public/style.css` - Some simple CSS rules to help with page layout.
-- `public/assets` - Contains the static assets used by the game.
+*   Shield Bash → Ground Slam: Stun an enemy, then knock them back to prevent counterattacks.
+*   Fortified Armor → Counter Guard: Minimize incoming damage and reflect a portion back to the attacker.
 
-## Vue Bridge
+### 2. Sage (Wizard/Healer)
 
-The `PhaserGame.vue` component is the bridge between Vue and Phaser. It initializes the Phaser game and passes events between the two.
+A mystical supporter capable of both dealing magical damage and healing allies.
 
-To communicate between Vue and Phaser, you can use the **EventBus.ts** file. This is a simple event bus that allows you to emit and listen for events from both Vue and Phaser.
+| Card           | Energy Cost | Speed | Effect                                                                  |
+| -------------- | :---------: | :---: | ----------------------------------------------------------------------- |
+| Arcane Blast   |      1      |  12   | Fires a magic bolt (25 DMG).                                           |
+| Healing Wave   |      2      |   9   | Restores 30 HP to self or an ally.                                   |
+| Mana Surge     |      2      |   7   | Grants an extra energy point for next turn if shield is broken. |
+| Mystic Shield  |      3      |   6   | Creates a barrier that absorbs 40 damage.                              |
 
-```js
-// In Vue
-import { EventBus } from './EventBus';
+**Possible Combos:**
 
-// Emit an event
-EventBus.emit('event-name', data);
+*   Mana Surge → Mystic Shield:  Boost energy, then create a strong defense.
+*   Arcane Blast → Healing Wave:  Damage an enemy and then heal yourself or an ally.
 
-// In Phaser
-// Listen for an event
-EventBus.on('event-name', (data) => {
-    // Do something with the data
-});
-```
+### 3. Hawk (Sniper)
 
-In addition to this, the `PhaserGame` component exposes the Phaser game instance along with the most recently active Phaser Scene. You can pick these up from Vue via `(defineExpose({ scene, game }))`.
+A deadly marksman specializing in precision strikes and evasion.
 
-Once exposed, you can access them like any regular state reference.
+| Card           | Energy Cost | Speed | Effect                                                                   |
+| -------------- | :---------: | :---: | ------------------------------------------------------------------------ |
+| Piercing Shot  |      2      |  11   | Ignores 50% of target's defense (30 DMG).                              |
+| Camouflage     |      2      |   8   | Becomes untargetable for one turn.                                      |
+| Rapid Fire     |      3      |  10   | Fires three quick shots (3 x 15 DMG).                                  |
+| Deadeye        |      4      |   5   | A charged shot with high accuracy (60 DMG).                             |
 
-## Phaser Scene Handling
+**Possible Combos:**
 
-In Phaser, the Scene is the lifeblood of your game. It is where you sprites, game logic and all of the Phaser systems live. You can also have multiple scenes running at the same time. This template provides a way to obtain the current active scene from Vue.
+*   Camouflage → Deadeye:  Hide for a turn, then unleash a devastating, high-damage shot.
+*   Piercing Shot → Rapid Fire:  Bypass defenses and follow up with multiple hits.
 
-You can get the current Phaser Scene from the component event `"current-active-scene"`. In order to do this, you need to emit the event `"current-scene-ready"` from the Phaser Scene class. This event should be emitted when the scene is ready to be used. You can see this done in all of the Scenes in our template.
+### 4. Blaze (Fighter)
 
-**Important**: When you add a new Scene to your game, make sure you expose to Vue by emitting the `"current-scene-ready"` event via the `EventBus`, like this:
+A fast and aggressive melee combatant who excels at close-quarters combat.
 
+| Card           | Energy Cost | Speed | Effect                                                                    |
+| -------------- | :---------: | :---: | ------------------------------------------------------------------------- |
+| Flame Slash    |      2      |  10   | Melee attack that burns the enemy for 2 turns (30 DMG + 5 burn/turn).   |
+| Dash Strike    |      2      |  12   | Dashes forward and slashes (25 DMG).                                    |
+| Adrenaline Boost|      2      |   7   | Gains an extra action next turn.                                       |
+| Final Blow     |      4      |   6   | A high-risk, high-damage attack (50 DMG).                               |
 
-```js
-class MyScene extends Phaser.Scene
-{
-    constructor ()
-    {
-        super('MyScene');
-    }
+**Possible Combos:**
 
-    create ()
-    {
-        // Your Game Objects and logic here
+*   Adrenaline Boost → Final Blow:  Gain an extra action to immediately execute a powerful attack.
+*   Dash Strike → Flame Slash:  Quickly close the distance and inflict burn damage over time.
 
-        // At the end of create method:
-        EventBus.emit('current-scene-ready', this);
-    }
-}
-```
+## Multiplayer & Blockchain Features
 
-You don't have to emit this event if you don't need to access the specific scene from Vue. Also, you don't have to emit it at the end of `create`, you can emit it at any point. For example, should your Scene be waiting for a network request or API call to complete, it could emit the event once that data is ready.
+*   **Game Modes:**
+    *   1v1 Duels
+    *   Free-For-All (FFA)
+    *   Ranked Matches
+*   **Competitive Play:**
+    *   Leaderboards
+    *   Tournaments
+*   **Blockchain Integration:**
+    *   NFT Characters and Weapons
+    *   Play-to-Earn (P2E) Rewards
+    *   In-Game Marketplace
 
-### Vue Component Example
+## Getting Started (Future Section - Add when you have more details)
 
-Here's an example of how to access Phaser data for use in a Vue Component:
+*   Instructions on how to download/access the game.
+*   Links to any necessary wallets or accounts.
+*   Tutorial or beginner's guide link.
 
-```typescript
-// In a parent component
-<script setup lang="ts">
-import { ref, toRaw } from 'vue';
+## Community (Future Section - Add when you have community channels)
 
-const phaserRef = ref();
-const game = toRaw(phaserRef.value.game) as Phaser.Game;
-const scene = toRaw(phaserRef.value.scene) as Phaser.Scene;
+*   Links to Discord, Telegram, Twitter, etc.
+*   Forum link (if applicable).
 
-const onCurrentActiveScene = (scene) => {
-    
-    // This is invoked
+## Contributing (Future Section - Add if you want to accept contributions)
 
-}
+*   Guidelines for contributing to the project (code, art, etc.).
+*   Link to contribution guide.
 
-</script>
-<template>
-  <PhaserGame ref="phaserRef" @current-active-scene="onCurrentActiveScene" />
-</template>
-```
+## License (Future Section - Add when you have chosen a license)
 
-In the code above, you can get a reference to the current Phaser Game instance and the current Scene by calling `ref()`.
-
-From this state reference, the game instance is available via `toRaw(phaserRef.value.game)` and the most recently active Scene via `toRaw(phaserRef.value.scene)`
-
-The `onCurrentActiveScene` callback will also be invoked whenever the the Phaser Scene changes, as long as you emit the event via the EventBus, as outlined above.
-
-## Handling Assets
-
-Vite supports loading assets via JavaScript module `import` statements.
-
-This template provides support for both embedding assets and also loading them from a static folder. To embed an asset, you can import it at the top of the JavaScript file you are using it in:
-
-```js
-import logoImg from './assets/logo.png'
-```
-
-To load static files such as audio files, videos, etc place them into the `public/assets` folder. Then you can use this path in the Loader calls within Phaser:
-
-```js
-preload ()
-{
-    //  This is an example of an imported bundled image.
-    //  Remember to import it at the top of this file
-    this.load.image('logo', logoImg);
-
-    //  This is an example of loading a static image
-    //  from the public/assets folder:
-    this.load.image('background', 'assets/bg.png');
-}
-```
-
-When you issue the `npm run build` command, all static assets are automatically copied to the `dist/assets` folder.
-
-## Deploying to Production
-
-After you run the `npm run build` command, your code will be built into a single bundle and saved to the `dist` folder, along with any other assets your project imported, or stored in the public assets folder.
-
-In order to deploy your game, you will need to upload *all* of the contents of the `dist` folder to a public facing web server.
-
-## Customizing the Template
-
-### Vite
-
-If you want to customize your build, such as adding plugin (i.e. for loading CSS or fonts), you can modify the `vite/config.*.mjs` file for cross-project changes, or you can modify and/or create new configuration files and target them in specific npm tasks inside of `package.json`. Please see the [Vite documentation](https://vitejs.dev/) for more information.
-
-## About log.js
-
-If you inspect our node scripts you will see there is a file called `log.js`. This file makes a single silent API call to a domain called `gryzor.co`. This domain is owned by Phaser Studio Inc. The domain name is a homage to one of our favorite retro games.
-
-We send the following 3 pieces of data to this API: The name of the template being used (vue, react, etc). If the build was 'dev' or 'prod' and finally the version of Phaser being used.
-
-At no point is any personal data collected or sent. We don't know about your project files, device, browser or anything else. Feel free to inspect the `log.js` file to confirm this.
-
-Why do we do this? Because being open source means we have no visible metrics about which of our templates are being used. We work hard to maintain a large and diverse set of templates for Phaser developers and this is our small anonymous way to determine if that work is actually paying off, or not. In short, it helps us ensure we're building the tools for you.
-
-However, if you don't want to send any data, you can use these commands instead:
-
-Dev:
-
-```bash
-npm run dev-nolog
-```
-
-Build:
-
-```bash
-npm run build-nolog
-```
-
-Or, to disable the log entirely, simply delete the file `log.js` and remove the call to it in the `scripts` section of `package.json`:
-
-Before:
-
-```json
-"scripts": {
-    "dev": "node log.js dev & dev-template-script",
-    "build": "node log.js build & build-template-script"
-},
-```
-
-After:
-
-```json
-"scripts": {
-    "dev": "dev-template-script",
-    "build": "build-template-script"
-},
-```
-
-Either of these will stop `log.js` from running. If you do decide to do this, please could you at least join our Discord and tell us which template you're using! Or send us a quick email. Either will be super-helpful, thank you.
-
-## Join the Phaser Community!
-
-We love to see what developers like you create with Phaser! It really motivates us to keep improving. So please join our community and show-off your work 😄
-
-**Visit:** The [Phaser website](https://phaser.io) and follow on [Phaser Twitter](https://twitter.com/phaser_)<br />
-**Play:** Some of the amazing games [#madewithphaser](https://twitter.com/search?q=%23madewithphaser&src=typed_query&f=live)<br />
-**Learn:** [API Docs](https://newdocs.phaser.io), [Support Forum](https://phaser.discourse.group/) and [StackOverflow](https://stackoverflow.com/questions/tagged/phaser-framework)<br />
-**Discord:** Join us on [Discord](https://discord.gg/phaser)<br />
-**Code:** 2000+ [Examples](https://labs.phaser.io)<br />
-**Read:** The [Phaser World](https://phaser.io/community/newsletter) Newsletter<br />
-
-Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
-
-The Phaser logo and characters are &copy; 2011 - 2024 Phaser Studio Inc.
-
-All rights reserved.
+*   Specify the license under which the game is released (e.g., MIT, Apache 2.0, etc.).
