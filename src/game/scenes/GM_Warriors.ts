@@ -16,6 +16,12 @@ export class GM_Warriors extends Scene
     {
         const backBTN = this.add.image(250, 100, 'S_btnBack').setScale(0.8).setDepth(100);
         backBTN.setInteractive({cursor: 'pointer'});
+        backBTN.on('pointerdown', () => {
+            this.cameras.main.fadeOut(180, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+               this.changeScene();
+            });
+        });
 
         EventBus.emit('current-scene-ready', this);
     }
