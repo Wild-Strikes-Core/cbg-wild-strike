@@ -55,6 +55,7 @@ export default class Preloader extends Phaser.Scene {
     {
         this.load.pack('gameMenu', 'assets/gameMenu-asset-pack.json');
         this.load.pack('landingPage', 'assets/landingPage-asset-pack.json');
+        this.load.pack('settingsMenu', 'assets/settingsMenu-asset-pack.json');
     }
 
     create ()

@@ -1,10 +1,24 @@
 import Boot from './scenes/Boot';
 import GameOver from './scenes/GameOver';
 import MainGame from './scenes/Game';
+
 import LandingPage from './scenes/LandingPage';
 import MainMenu from './scenes/MainMenu';
+
 import GM_ListofTeams from './scenes/GM_ListofTeams';
 import Preloader from './scenes/Preloader';
+import GameOver from './scenes/GameOver.ts';
+import MainGame from './scenes/Game.ts';
+
+// GameMenu
+import MainMenu from './scenes/MainMenu.ts';
+import GM_Settings from './scenes/GM_Settings.ts';
+import GM_About from './scenes/GM_About.ts';
+import GM_Inventory from './scenes/GM_Inventory.ts';
+import GM_SelectTeam from './scenes/GM_SelectTeam.ts';
+
+import Preloader from './scenes/Preloader.ts';
+
 import { AUTO, Game } from 'phaser';
 
 //  Find out more information about the Game Config at:
@@ -28,6 +42,10 @@ const config: Phaser.Types.Core.GameConfig = {
         MainMenu,
         GM_ListofTeams,
         MainGame,
+        GM_Settings,
+        GM_About,
+        GM_Inventory,
+        GM_SelectTeam,
         GameOver
     ]
 };
