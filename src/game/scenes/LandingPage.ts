@@ -77,6 +77,11 @@ export default class LandingPage extends Phaser.Scene {
 		this.bgClouds.tilePositionX += 1; // No more "property does not exist" error
 	}
 
+    changeScene ()
+    {
+        this.scene.start("MainMenu"); 
+    }
+
 	/* END-USER-CODE */
 }
 
