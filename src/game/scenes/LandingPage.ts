@@ -79,7 +79,8 @@ export default class LandingPage extends Phaser.Scene {
 
     changeScene ()
     {
-        this.scene.start("MainMenu"); 
+        // this.scene.start("MainMenu"); 
+        this.scene.start("GM_SelectTeam"); 
     }
 
 	/* END-USER-CODE */

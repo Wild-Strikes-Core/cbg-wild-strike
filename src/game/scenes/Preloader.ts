@@ -2,7 +2,6 @@
 
 /* START OF COMPILED CODE */
 
-import Phaser from "phaser";
 /* START-USER-IMPORTS */
 /* END-USER-IMPORTS */
 
@@ -18,18 +17,8 @@ export default class Preloader extends Phaser.Scene {
 
 	editorCreate(): void {
 
-		// progressBar
-		const progressBar = this.add.rectangle(512, 384, 468, 32);
-		progressBar.isFilled = true;
-		progressBar.fillColor = 14737632;
-		progressBar.isStroked = true;
-
-		this.progressBar = progressBar;
-
 		this.events.emit("scene-awake");
 	}
-
-	private progressBar!: Phaser.GameObjects.Rectangle;
 
 	/* START-USER-CODE */
 
@@ -40,7 +29,7 @@ export default class Preloader extends Phaser.Scene {
 		this.editorCreate();
 
         //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
-        const bar = this.add.rectangle(this.progressBar.x - this.progressBar.width / 2 + 4, this.progressBar.y, 4, 28, 0xffffff)
+        const bar = this.add.rectangle(726, 524, 4, 28, 0xffffff)
 
         //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
         this.load.on('progress', (progress: number) => {
@@ -56,6 +45,10 @@ export default class Preloader extends Phaser.Scene {
         this.load.pack('gameMenu', 'assets/gameMenu-asset-pack.json');
         this.load.pack('landingPage', 'assets/landingPage-asset-pack.json');
         this.load.pack('settingsMenu', 'assets/settingsMenu-asset-pack.json');
+        this.load.pack('aboutMenu', 'assets/aboutMenu-asset-pack.json');
+        this.load.pack('invMenu', 'assets/invMenu-asset-pack.json');
+
+        this.load.pack('selectTeam', 'assets/selectTeam-asset-pack.json');
     }
 
     create ()
