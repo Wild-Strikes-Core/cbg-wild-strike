@@ -37,8 +37,6 @@ const currentScene = (scene: LandingPage) => {
 <template>
     <PhaserGame ref="phaserRef" @current-active-scene="currentScene" />
     <div>
-        <div>
-            <button class="button" @click="changeScene">Change Scene</button>
-        </div>
+        <!-- Removed the change scene button -->
     </div>
 </template>
