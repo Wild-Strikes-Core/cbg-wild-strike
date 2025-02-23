@@ -1,0 +1,24 @@
+{
+    "id": "2e88be88-4fda-4d63-a3d4-bbba761dc63e",
+    "sceneType": "SCENE",
+    "settings": {
+        "snapEnabled": true,
+        "exportClass": true,
+        "autoImport": true,
+        "displayName": "Matchmaking",
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "M_Matchmaking",
+        "compilerOutputLanguage": "TYPE_SCRIPT",
+        "borderWidth": 1920,
+        "borderHeight": 1080
+    },
+    "displayList": [],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}
