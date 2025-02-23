@@ -6,10 +6,10 @@
 /* START-USER-IMPORTS */
 /* END-USER-IMPORTS */
 
-export default class GM_SelectTeam extends Phaser.Scene {
+export default class GM_selectTeam extends Phaser.Scene {
 
 	constructor() {
-		super("GM_SelectTeam");
+		super("GM_selectTeam");
 
 		/* START-USER-CTR-CODE */
 		// Write your code here.
@@ -18,15 +18,11 @@ export default class GM_SelectTeam extends Phaser.Scene {
 
 	editorCreate(): void {
 
-		// btnBACK
-		const btnBACK = this.add.image(160, 448, "5G_btnBack");
-
-		this.btnBACK = btnBACK;
+		// image_1
+		this.add.image(1041, 627, "8G_btnSAVE");
 
 		this.events.emit("scene-awake");
 	}
-
-	private btnBACK!: Phaser.GameObjects.Image;
 
 	/* START-USER-CODE */
 
