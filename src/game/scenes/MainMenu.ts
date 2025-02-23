@@ -142,12 +142,12 @@ export default class MainMenu extends Phaser.Scene {
 
         // Add interactions for all buttons with their corresponding scenes
         addButtonInteraction(this.btnSETTINGS, 'GM_Settings');
-        addButtonInteraction(this.btnTEAM, 'GM_ListofTeams');
+        addButtonInteraction(this.btnTEAM, 'GM_SelectTeam');
         addButtonInteraction(this.btnLEADERBOARDS, 'GM_Leaderboards'); // You might want to change this to a proper leaderboards scene
-        addButtonInteraction(this.btnARENA, 'GM_Settings');
+        addButtonInteraction(this.btnARENA, 'M_Matchmaking');
         addButtonInteraction(this.btnINVENTORY, 'GM_Inventory');
         addButtonInteraction(this.btnABOUT, 'GM_About');
-        addButtonInteraction(this.btnWARRIORS, 'GM_SelectTeam');
+        addButtonInteraction(this.btnWARRIORS, 'GM_Warriors');
 
         EventBus.emit('current-scene-ready', this);
     }
