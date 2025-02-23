@@ -13,6 +13,7 @@ import GM_Settings from './scenes/GM_Settings.ts';
 import GM_About from './scenes/GM_About.ts';
 import GM_Inventory from './scenes/GM_Inventory.ts';
 import GM_SelectTeam from './scenes/GM_SelectTeam.ts';
+import GM_Leaderboards from './scenes/GM_Leaderboards.ts';
 
 import { AUTO, Game } from 'phaser';
 
@@ -39,6 +40,7 @@ const config: Phaser.Types.Core.GameConfig = {
         MainGame,
         GM_Settings,
         GM_About,
+        GM_Leaderboards,
         GM_Inventory,
         GM_SelectTeam,
         GameOver
