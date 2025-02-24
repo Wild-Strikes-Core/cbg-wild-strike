@@ -18,6 +18,7 @@ import GM_Warriors from './scenes/GM_Warriors.ts';
 
 // In-game
 import M_Matchmaking from './scenes/match/M_Matchmaking.ts';
+import M_Game from './scenes/match/M_Game.ts';
 
 import { AUTO, Game } from 'phaser';
 
@@ -49,6 +50,7 @@ const config: Phaser.Types.Core.GameConfig = {
         GM_Inventory,
         GM_SelectTeam,
         M_Matchmaking,
+        M_Game,
         GameOver
     ]
 };
