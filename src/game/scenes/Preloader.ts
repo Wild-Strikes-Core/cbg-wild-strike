@@ -50,6 +50,9 @@ export default class Preloader extends Phaser.Scene {
         this.load.pack('leadMENU', 'assets/leadMENU-asset-pack.json');
 
         this.load.pack('selectTeam', 'assets/selectTeam-asset-pack.json');
+
+        this.load.pack('matchMaking', 'assets/Match/matchMaking-asset-pack.json');
+        this.load.pack('map', 'assets/Match/map-asset-pack.json');
     }
 
     create ()
