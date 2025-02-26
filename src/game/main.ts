@@ -3,7 +3,6 @@ import Preloader from './scenes/Preloader';
 
 import LandingPage from './scenes/LandingPage';
 
-import GM_ListofTeams from './scenes/GM_ListofTeams';
 import GameOver from './scenes/GameOver.ts';
 import MainGame from './scenes/Game.ts';
 
@@ -13,6 +12,12 @@ import GM_Settings from './scenes/GM_Settings.ts';
 import GM_About from './scenes/GM_About.ts';
 import GM_Inventory from './scenes/GM_Inventory.ts';
 import GM_SelectTeam from './scenes/GM_SelectTeam.ts';
+import GM_ListofTeams from './scenes/GM_ListofTeams';
+
+// InGameSequence
+import VictoryPage from './scenes/VictoryPage.ts';
+import DefeatPage from './scenes/DefeatPage.ts';
+import DrawPage from './scenes/DrawPage.ts';
 
 import { AUTO, Game } from 'phaser';
 
@@ -41,6 +46,9 @@ const config: Phaser.Types.Core.GameConfig = {
         GM_About,
         GM_Inventory,
         GM_SelectTeam,
+        VictoryPage,
+        DefeatPage,
+        DrawPage,
         GameOver
     ]
 };

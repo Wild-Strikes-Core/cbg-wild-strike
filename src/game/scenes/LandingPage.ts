@@ -58,11 +58,20 @@ export default class LandingPage extends Phaser.Scene {
 	
 		playBtn.on("pointerdown", () => {
 			this.cameras.main.fadeOut(180, 0, 0, 0);
-            this.cameras.main.once('camerafadeoutcomplete', () => {
-			this.scene.start("MainMenu");
+			
+			this.cameras.main.once('camerafadeoutcomplete', () => {
+				this.tweens.add({
+					targets: playBtn,
+					scale: '*=0.9',
+					duration: 100,
+					yoyo: true,
+					onComplete: () => {
+						this.scene.start("MainMenu");
+					}
+				});
 			});
 		});
-	
+		
 		playBtn.on("pointerover", () => {
 			playBtn.setTint(0xffff66); // Yellow highlight
 		});

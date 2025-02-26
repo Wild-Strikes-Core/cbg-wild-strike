@@ -56,6 +56,10 @@ export default class Preloader extends Phaser.Scene {
         this.load.pack('gameMenu', 'assets/gameMenu-asset-pack.json');
         this.load.pack('landingPage', 'assets/landingPage-asset-pack.json');
         this.load.pack('settingsMenu', 'assets/settingsMenu-asset-pack.json');
+        this.load.pack('listofteamsMenu','assets/listofteamsMenu-asset-pack.json');
+        this.load.pack('victoryPage','assets/victoryPage-asset-pack.json');
+        this.load.pack('defeatPage','assets/defeatPage-asset-pack.json');
+        this.load.pack('drawPage','assets/drawPage-asset-pack.json');
     }
 
     create ()
@@ -64,7 +68,7 @@ export default class Preloader extends Phaser.Scene {
         //  For example, you can define global animations here, so we can use them in other scenes.
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('LandingPage');
+        this.scene.start('VictoryPage');
     }
     /* END-USER-CODE */
 }
