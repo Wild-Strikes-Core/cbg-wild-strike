@@ -21,8 +21,92 @@
             "texture": {
                 "key": "5G_btnBack"
             },
-            "x": 467,
-            "y": 531
+            "x": 224,
+            "y": 128
+        },
+        {
+            "type": "Container",
+            "id": "3908cf68-f296-4b3d-9114-23e413e514cf",
+            "label": "devPictures",
+            "blendMode": -1,
+            "x": 272,
+            "y": 380,
+            "list": [
+                {
+                    "type": "Image",
+                    "id": "69a434c4-bbcc-49a7-87d1-80baeaec3553",
+                    "label": "image",
+                    "texture": {
+                        "key": "4G_devZoks"
+                    },
+                    "x": 960,
+                    "y": 160
+                },
+                {
+                    "type": "Image",
+                    "id": "09c3a1df-0ba2-4e54-9fad-9adb4b869765",
+                    "label": "image_4",
+                    "texture": {
+                        "key": "4G_devJeyz"
+                    },
+                    "x": 1232,
+                    "y": 160
+                },
+                {
+                    "type": "Image",
+                    "id": "c82ce0ff-169a-4ad0-b600-816d42976c7a",
+                    "label": "image_1",
+                    "texture": {
+                        "key": "4G_devSquishy"
+                    },
+                    "x": 144,
+                    "y": 160
+                },
+                {
+                    "type": "Image",
+                    "id": "6d902d30-7acd-4409-9a1a-5c23d4857b8c",
+                    "label": "image_3",
+                    "texture": {
+                        "key": "4G_devCarts"
+                    },
+                    "x": 416,
+                    "y": 160
+                },
+                {
+                    "type": "Image",
+                    "id": "8308dcbf-9866-4223-95c0-3c67b8bd479e",
+                    "label": "image_2",
+                    "texture": {
+                        "key": "4G_devSquishy"
+                    },
+                    "x": 688,
+                    "y": 160
+                }
+            ]
+        },
+        {
+            "type": "Image",
+            "id": "fc6add91-af88-446e-85d8-eea8ecd2cf30",
+            "label": "image_5",
+            "texture": {
+                "key": "4G_titleDEV"
+            },
+            "x": 960,
+            "y": 160
+        },
+        {
+            "type": "Text",
+            "id": "7d048781-9311-4014-b130-18467d3e955f",
+            "label": "text_1",
+            "x": 270.5,
+            "y": 752,
+            "text": "Wild Strikes is a fast-paced, turn-based battle game that combines strategic card selection with skill-based movement and aiming. Choose your team, position them on the battlefield, and unleash powerful attacks using unique ability cards. Move freely within your turn, take cover, and master combos to outplay your opponents. Defeat all enemy characters to claim victory in intense, action-packed matches!        ",
+            "align": "center",
+            "fontFamily": "Negrita Pro",
+            "fontSize": "40px",
+            "maxLines": 8,
+            "wordWrapWidth": 1400,
+            "wordWrapUseAdvanced": true
         }
     ],
     "plainObjects": [],

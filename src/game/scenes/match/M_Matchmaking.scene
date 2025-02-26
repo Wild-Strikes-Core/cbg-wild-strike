@@ -1,0 +1,110 @@
+{
+    "id": "2e88be88-4fda-4d63-a3d4-bbba761dc63e",
+    "sceneType": "SCENE",
+    "settings": {
+        "snapEnabled": true,
+        "exportClass": true,
+        "autoImport": true,
+        "displayName": "Matchmaking",
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "M_Matchmaking",
+        "compilerOutputLanguage": "TYPE_SCRIPT",
+        "borderWidth": 1920,
+        "borderHeight": 1080
+    },
+    "displayList": [
+        {
+            "type": "Image",
+            "id": "0e0a4fbc-fc66-4b44-b6b8-54123cad4a6f",
+            "label": "image_1",
+            "texture": {
+                "key": "M_charTWO"
+            },
+            "x": 544,
+            "y": 576,
+            "scaleX": 1.4199690280632038,
+            "scaleY": 1.4199690280632038
+        },
+        {
+            "type": "Image",
+            "id": "4b91c3df-e1ce-413c-babd-0d9e866e2728",
+            "label": "image_2",
+            "texture": {
+                "key": "M_charONE"
+            },
+            "x": 224,
+            "y": 640,
+            "scaleX": 1.310153805177419,
+            "scaleY": 1.310153805177419
+        },
+        {
+            "type": "Image",
+            "id": "567b982b-66ff-4a44-a601-686e498725db",
+            "label": "image",
+            "texture": {
+                "key": "M_charTHREE"
+            },
+            "x": 848,
+            "y": 640,
+            "scaleX": 1.4199690280632038,
+            "scaleY": 1.4199690280632038
+        },
+        {
+            "type": "Image",
+            "id": "99b06d1a-31a1-40e6-83b6-4304029eb7ca",
+            "label": "image_3",
+            "texture": {
+                "key": "M_playerCard"
+            },
+            "x": 160,
+            "y": 176
+        },
+        {
+            "type": "Image",
+            "id": "8afc2e77-3311-4e75-b89a-8a84ff92fcc1",
+            "label": "image_4",
+            "texture": {
+                "key": "M_btnCancel"
+            },
+            "x": 1424,
+            "y": 704,
+            "scaleX": 1.419003049417908,
+            "scaleY": 1.419003049417908
+        },
+        {
+            "type": "Text",
+            "id": "e157eccb-a1b6-4212-9811-154a3194f8a7",
+            "label": "text_1",
+            "x": 1168,
+            "y": 416,
+            "scaleX": 1.4657553250177893,
+            "scaleY": 1.4657553250177893,
+            "text": "Finding a Match",
+            "fontFamily": "Arial",
+            "fontSize": "48px",
+            "fontStyle": "bold"
+        },
+        {
+            "type": "Text",
+            "id": "363cf10c-6983-444b-803d-9921f25aa883",
+            "label": "loader",
+            "scope": "CLASS",
+            "x": 1392,
+            "y": 496,
+            "scaleX": 1.4657553250177893,
+            "scaleY": 1.4657553250177893,
+            "text": "...",
+            "fontFamily": "Arial",
+            "fontSize": "48px",
+            "fontStyle": "bold"
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}

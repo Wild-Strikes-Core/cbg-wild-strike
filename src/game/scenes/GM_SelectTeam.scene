@@ -1,5 +1,5 @@
 {
-    "id": "3ee7fea3-8547-40df-9023-2592e71c3a83",
+    "id": "51cde1e9-a42b-4478-8f82-878803f1d664",
     "sceneType": "SCENE",
     "settings": {
         "snapEnabled": true,
@@ -15,14 +15,122 @@
     "displayList": [
         {
             "type": "Image",
-            "id": "504b1573-b1f8-48c5-ba98-571133c13a3d",
+            "id": "096a7881-1f1e-4a81-9773-db54a0637fe9",
+            "label": "btnSAVE",
+            "scope": "CLASS",
+            "texture": {
+                "key": "8G_btnSAVE"
+            },
+            "x": 960,
+            "y": 944
+        },
+        {
+            "type": "Container",
+            "id": "32a1500c-61b5-4e0e-9b1d-bd2db5bb8dac",
+            "label": "selectTeam",
+            "scope": "CLASS",
+            "blendMode": -1,
+            "x": 272,
+            "y": 624,
+            "list": [
+                {
+                    "type": "Image",
+                    "id": "b2a27ac6-2112-490e-b2ce-a327816951ff",
+                    "label": "image_2",
+                    "texture": {
+                        "key": "8G_containerINACTIVE"
+                    },
+                    "x": 272,
+                    "y": 96
+                },
+                {
+                    "type": "Image",
+                    "id": "8cbb4ca8-b00d-4a44-930c-ddf8ca002139",
+                    "label": "image",
+                    "texture": {
+                        "key": "8G_containerINACTIVE"
+                    },
+                    "x": 480,
+                    "y": 96
+                },
+                {
+                    "type": "Image",
+                    "id": "f50b16c9-c216-4e6b-9157-beaa0e3b5af2",
+                    "label": "image_4",
+                    "texture": {
+                        "key": "8G_containerINACTIVE"
+                    },
+                    "x": 896,
+                    "y": 96
+                },
+                {
+                    "type": "Image",
+                    "id": "2c5a0b06-8665-47bf-902b-aa4b09659204",
+                    "label": "image_5",
+                    "texture": {
+                        "key": "8G_containerINACTIVE"
+                    },
+                    "x": 1104,
+                    "y": 96
+                },
+                {
+                    "type": "Image",
+                    "id": "1b6a5b48-9741-4a9e-a41d-b01f6d2eba72",
+                    "label": "image_3",
+                    "texture": {
+                        "key": "8G_containerACTIVE"
+                    },
+                    "x": 688,
+                    "y": 96,
+                    "scaleX": 1.4555550764038239,
+                    "scaleY": 1.4555550764038239
+                },
+                {
+                    "type": "Image",
+                    "id": "9d6f2083-2ad2-41b0-aae3-9edf7cb28f91",
+                    "label": "btnLEFT",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "8G_btnLEFT"
+                    },
+                    "x": 80,
+                    "y": 96
+                },
+                {
+                    "type": "Image",
+                    "id": "e1a33427-e96b-4bd4-908a-0b6fcfc2288b",
+                    "label": "btnRIGHT",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "8G_btnRIGHT"
+                    },
+                    "x": 1296,
+                    "y": 96
+                }
+            ]
+        },
+        {
+            "type": "Image",
+            "id": "bcff9a26-b3ec-46ca-8177-d303d75a6c27",
+            "label": "image_6",
+            "texture": {
+                "key": "8G_teamTITLE"
+            },
+            "x": 976,
+            "y": 208,
+            "scaleX": 1.5094924615757046,
+            "scaleY": 1.5094924615757046
+        },
+        {
+            "type": "Image",
+            "id": "2e6eb7dd-6789-42c6-920e-5aa5a0fb9547",
             "label": "btnBACK",
             "scope": "CLASS",
             "texture": {
                 "key": "5G_btnBack"
             },
-            "x": 160,
-            "y": 448
+            "x": 224,
+            "y": 128
         }
     ],
     "plainObjects": [],

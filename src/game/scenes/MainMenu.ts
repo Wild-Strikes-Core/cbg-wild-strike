@@ -132,8 +132,8 @@ export default class MainMenu extends Phaser.Scene {
                     this.time.delayedCall(150, () => { // Delay more than 50ms of the tweens duration
                         this.cameras.main.fadeOut(400, 0, 0, 0);
                         this.cameras.main.once('camerafadeoutcomplete', () => {
-                            const nextScene = this.scene.get(targetScene);
-                            nextScene.cameras.main.fadeIn(400, 0, 0, 0);
+                            // const nextScene = this.scene.get(targetScene);
+                            // nextScene.cameras.main.fadeIn(400, 0, 0, 0);
                             this.scene.start(targetScene);
                         });
                     });
@@ -142,12 +142,12 @@ export default class MainMenu extends Phaser.Scene {
 
         // Add interactions for all buttons with their corresponding scenes
         addButtonInteraction(this.btnSETTINGS, 'GM_Settings');
-        addButtonInteraction(this.btnTEAM, 'GM_ListofTeams');
-        addButtonInteraction(this.btnLEADERBOARDS, 'GM_Settings'); // You might want to change this to a proper leaderboards scene
-        addButtonInteraction(this.btnARENA, 'MainGame');
+        addButtonInteraction(this.btnTEAM, 'GM_SelectTeam');
+        addButtonInteraction(this.btnLEADERBOARDS, 'GM_Leaderboards'); // You might want to change this to a proper leaderboards scene
+        addButtonInteraction(this.btnARENA, 'M_Matchmaking');
         addButtonInteraction(this.btnINVENTORY, 'GM_Inventory');
         addButtonInteraction(this.btnABOUT, 'GM_About');
-        addButtonInteraction(this.btnWARRIORS, 'GM_SelectTeam');
+        addButtonInteraction(this.btnWARRIORS, 'GM_Warriors');
 
         EventBus.emit('current-scene-ready', this);
     }

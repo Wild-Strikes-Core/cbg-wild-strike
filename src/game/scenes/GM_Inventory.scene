@@ -21,8 +21,309 @@
             "texture": {
                 "key": "5G_btnBack"
             },
-            "x": 832,
-            "y": 464
+            "x": 224,
+            "y": 128
+        },
+        {
+            "type": "Container",
+            "id": "5d02d211-1c9e-4bea-bb51-5384d0969281",
+            "label": "inventory",
+            "blendMode": -1,
+            "x": 147.4894485473633,
+            "y": 176,
+            "scaleX": 1.1039545963152655,
+            "scaleY": 1.1039545963152655,
+            "list": [
+                {
+                    "type": "Image",
+                    "id": "7b309f9e-17e5-428c-88d4-2b595b6fbae0",
+                    "label": "invContainerBG",
+                    "texture": {
+                        "key": "9G_invContainer"
+                    },
+                    "x": 736,
+                    "y": 416,
+                    "scaleX": 2.2206310815079697,
+                    "scaleY": 2.2206310815079697
+                },
+                {
+                    "type": "Container",
+                    "id": "6ef4d8cd-5c14-4e88-ac73-f9277f793180",
+                    "label": "inv_rowONE",
+                    "scope": "CLASS",
+                    "blendMode": -1,
+                    "x": 144,
+                    "y": 160,
+                    "list": [
+                        {
+                            "type": "Image",
+                            "id": "e5a622a6-feac-4060-9287-f5bc7968c7bb",
+                            "label": "slot1",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 80,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "d72009b5-e209-4acd-a1db-ed1ce1f5058b",
+                            "label": "slot2",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 288,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "096c4c60-b102-4f65-bf66-35efe6e71799",
+                            "label": "slot3",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 496,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "a3b90f9a-2537-4d09-be21-30efb829ea43",
+                            "label": "slot4",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 704,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "11bf78e3-295b-410a-b180-ac3e40b70921",
+                            "label": "slot5",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 912,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "5a995fab-8550-4735-8585-282325aed2ef",
+                            "label": "slot6",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 1120,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        }
+                    ]
+                },
+                {
+                    "type": "Container",
+                    "id": "f550db01-6d5f-45f2-ab92-2283974f3978",
+                    "label": "inv_rowTWO",
+                    "scope": "CLASS",
+                    "blendMode": -1,
+                    "x": 144,
+                    "y": 352,
+                    "list": [
+                        {
+                            "type": "Image",
+                            "id": "966286a5-144e-457a-9841-cb7a96134da2",
+                            "label": "slot",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 80,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "823bc85f-8659-4697-bf05-9ab96f249a9c",
+                            "label": "slot_1",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 288,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "8099dd59-099c-44c1-b83a-507be1a08ba6",
+                            "label": "slot_2",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 496,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "ca8561e9-61a7-49fb-ba03-22be01c62002",
+                            "label": "slot_3",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 704,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "4dace5dc-fc5d-403d-a2ee-c45af93c753a",
+                            "label": "slot_4",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 912,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "b08235d3-45ad-4e7a-a831-cda69a007426",
+                            "label": "slot_5",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 1120,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        }
+                    ]
+                },
+                {
+                    "type": "Container",
+                    "id": "8fefe4a0-b7ad-464e-a9c2-56519377236c",
+                    "label": "inv_rowTHREE",
+                    "scope": "CLASS",
+                    "blendMode": -1,
+                    "x": 144,
+                    "y": 544,
+                    "list": [
+                        {
+                            "type": "Image",
+                            "id": "ae3d7eaa-f45d-486f-a3d4-d3bcd9b5f9ef",
+                            "label": "slot_6",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 80,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "b232330f-6ccd-4b89-83cc-e73ce6d3f1d9",
+                            "label": "slot_7",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 288,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "8a089521-0360-4aa0-96ac-91de8a6e85de",
+                            "label": "slot_8",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 496,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "66a96a7c-fba4-483f-8bc9-66268817ffcd",
+                            "label": "slot_9",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 704,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "05d6fba0-6967-453d-9c89-f136445aa668",
+                            "label": "slot_10",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 912,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        },
+                        {
+                            "type": "Image",
+                            "id": "62ec1104-ea7c-486f-b280-d5b2003d91c0",
+                            "label": "slot_11",
+                            "scope": "CLASS",
+                            "texture": {
+                                "key": "9G_invSlot"
+                            },
+                            "x": 1120,
+                            "y": 80,
+                            "scaleX": 0.817259210209954,
+                            "scaleY": 0.817259210209954
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Image",
+            "id": "6119ce9b-53ba-40c6-bfd0-597cca759225",
+            "label": "titleINV",
+            "texture": {
+                "key": "9G_titleINV"
+            },
+            "x": 960,
+            "y": 192
         }
     ],
     "plainObjects": [],

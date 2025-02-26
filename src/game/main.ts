@@ -19,6 +19,14 @@ import VictoryPage from './scenes/VictoryPage.ts';
 import DefeatPage from './scenes/DefeatPage.ts';
 import DrawPage from './scenes/DrawPage.ts';
 
+import GM_Leaderboards from './scenes/GM_Leaderboards.ts';
+import GM_Warriors from './scenes/GM_Warriors.ts';
+
+// In-game
+import M_Matchmaking from './scenes/match/M_Matchmaking.ts';
+import M_Game from './scenes/match/M_Game.ts';
+
+
 import { AUTO, Game } from 'phaser';
 
 //  Find out more information about the Game Config at:
@@ -44,11 +52,15 @@ const config: Phaser.Types.Core.GameConfig = {
         MainGame,
         GM_Settings,
         GM_About,
+        GM_Warriors,
+        GM_Leaderboards,
         GM_Inventory,
         GM_SelectTeam,
         VictoryPage,
         DefeatPage,
         DrawPage,
+        M_Matchmaking,
+        M_Game,
         GameOver
     ]
 };
