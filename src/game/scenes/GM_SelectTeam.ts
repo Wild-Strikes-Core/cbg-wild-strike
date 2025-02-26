@@ -118,7 +118,7 @@ export default class GM_SelectTeam extends Phaser.Scene {
                 });
         };
 
-		addButtonInteraction(this.btnBACK, "MainMenu");
+		addButtonInteraction(this.btnBACK, "GM_ListofTeams");
 		addButtonInteraction(this.btnSAVE);
 		addButtonInteraction(this.btnRIGHT);
 		addButtonInteraction(this.btnLEFT);

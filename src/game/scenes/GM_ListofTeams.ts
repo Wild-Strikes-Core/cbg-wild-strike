@@ -71,7 +71,14 @@ export default class GM_ListofTeams extends Phaser.Scene {
                 this.scene.start("MainMenu"); 
             });
 		});
-	}
+
+        this.btnCREATETEAM.on('pointerdown', () => {
+            this.cameras.main.fadeOut(180, 0, 0, 0);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start("GM_SelectTeam"); 
+            });
+		});
+	}    
 
 	/* END-USER-CODE */
 }
