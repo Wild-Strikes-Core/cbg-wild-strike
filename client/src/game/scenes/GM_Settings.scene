@@ -1,0 +1,87 @@
+{
+    "id": "c4ebcf4b-5879-4a0a-b7f0-c6ae75bdb111",
+    "sceneType": "SCENE",
+    "settings": {
+        "snapEnabled": true,
+        "exportClass": true,
+        "autoImport": true,
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "GM_Settings",
+        "compilerOutputLanguage": "TYPE_SCRIPT",
+        "borderWidth": 1920,
+        "borderHeight": 1080
+    },
+    "displayList": [
+        {
+            "type": "Image",
+            "id": "10549ada-09c7-4f4a-9f4f-30cb7b39966d",
+            "label": "titleSetting",
+            "scope": "CLASS",
+            "texture": {
+                "key": "5G_titleSetting"
+            },
+            "x": 976,
+            "y": 144,
+            "scaleX": 0.8898481920954107,
+            "scaleY": 0.8898481920954107
+        },
+        {
+            "type": "Image",
+            "id": "a8dcc172-05ef-4ab1-94a6-c6dce68aeaf4",
+            "label": "btnBACK",
+            "scope": "CLASS",
+            "texture": {
+                "key": "5G_btnBack"
+            },
+            "x": 224,
+            "y": 128
+        },
+        {
+            "type": "Image",
+            "id": "af705b13-aefb-46b5-bc26-69d97a7be959",
+            "label": "btnLOGOUT",
+            "scope": "CLASS",
+            "texture": {
+                "key": "5G_btnLogout"
+            },
+            "x": 416,
+            "y": 928,
+            "scaleX": 0.773009459221538,
+            "scaleY": 0.773009459221538
+        },
+        {
+            "type": "Image",
+            "id": "5b96066a-67a1-45fb-86c9-55311bf207f5",
+            "label": "btnTERMS",
+            "scope": "CLASS",
+            "texture": {
+                "key": "5G_btnTermsAndServices"
+            },
+            "x": 880,
+            "y": 928,
+            "scaleX": 0.773009459221538,
+            "scaleY": 0.773009459221538
+        },
+        {
+            "type": "Image",
+            "id": "39477cb6-5720-46e7-968b-1ff687a8373b",
+            "label": "btnACCOUNT",
+            "scope": "CLASS",
+            "texture": {
+                "key": "5G_btnLinkAccount"
+            },
+            "x": 1440,
+            "y": 928,
+            "scaleX": 0.773009459221538,
+            "scaleY": 0.773009459221538
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}

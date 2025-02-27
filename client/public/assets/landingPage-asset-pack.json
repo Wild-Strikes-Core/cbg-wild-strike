@@ -1,0 +1,49 @@
+{
+    "section1": {
+        "files": [
+            {
+                "url": "assets/Loading.png",
+                "type": "image",
+                "key": "Loading"
+            },
+            {
+                "url": "assets/Logo.png",
+                "type": "image",
+                "key": "Logo"
+            },
+            {
+                "url": "assets/Logo (Trans).png",
+                "type": "image",
+                "key": "Logo (Trans)"
+            },
+            {
+                "url": "assets/01 - Landing Page/Logo Trans(Fixed).png",
+                "type": "image",
+                "key": "Logo Trans(Fixed)"
+            },
+            {
+                "url": "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png",
+                "type": "image",
+                "key": "Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview"
+            },
+            {
+                "url": "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview.png",
+                "type": "image",
+                "key": "Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview"
+            },
+            {
+                "url": "assets/01 - Landing Page/WildStrike-Logo-trans.png",
+                "type": "image",
+                "key": "WildStrike-Logo-trans"
+            }
+        ]
+    },
+    "meta": {
+        "app": "Phaser Editor 2D - Asset Pack Editor",
+        "contentType": "phasereditor2d.pack.core.AssetContentType",
+        "url": "https://phasereditor2d.com",
+        "version": 2,
+        "showAllFilesInBlocks": false,
+        "visible": true
+    }
+}
