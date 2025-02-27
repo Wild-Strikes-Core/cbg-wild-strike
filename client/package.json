@@ -37,6 +37,7 @@
         "phaser": "^3.88.2",
         "react": "^18",
         "react-dom": "^18",
+        "socket.io-client": "^4.8.1",
         "viem": "2.x",
         "wagmi": "^2.14.12"
     },
