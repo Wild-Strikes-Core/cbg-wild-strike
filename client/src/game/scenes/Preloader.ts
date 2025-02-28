@@ -42,6 +42,7 @@ export default class Preloader extends Phaser.Scene {
 
     preload ()
     {
+        
         this.load.pack('gameMenu', 'assets/gameMenu-asset-pack.json');
         this.load.pack('landingPage', 'assets/landingPage-asset-pack.json');
         this.load.pack('settingsMenu', 'assets/settingsMenu-asset-pack.json');
@@ -58,6 +59,9 @@ export default class Preloader extends Phaser.Scene {
         this.load.pack('selectTeam', 'assets/selectTeam-asset-pack.json');
 
         this.load.pack('matchMaking', 'assets/Match/matchMaking-asset-pack.json');
+        this.load.pack('map', 'assets/Match/map-asset-pack.json');
+
+        
         this.load.pack('map', 'assets/Match/map-asset-pack.json');
     }
 

@@ -67,45 +67,6 @@
                 },
                 {
                     "type": "Image",
-                    "id": "81b05036-7f03-4eb6-8270-c9636e317fcb",
-                    "label": "btnSETTINGS",
-                    "scope": "CLASS",
-                    "texture": {
-                        "key": "2G_btnSettings"
-                    },
-                    "x": 1680,
-                    "y": 656,
-                    "scaleX": 1.291935634726196,
-                    "scaleY": 1.291935634726196
-                },
-                {
-                    "type": "Image",
-                    "id": "fd6f3ba5-9d8b-46dd-a6ae-187a92a4e37b",
-                    "label": "btnTEAM",
-                    "scope": "CLASS",
-                    "texture": {
-                        "key": "2G_btnTeam"
-                    },
-                    "x": 1536,
-                    "y": 656,
-                    "scaleX": 1.291935634726196,
-                    "scaleY": 1.291935634726196
-                },
-                {
-                    "type": "Image",
-                    "id": "93a9a354-eba2-49a6-ae86-13ee9d9ac3ad",
-                    "label": "btnLEADERBOARDS",
-                    "scope": "CLASS",
-                    "texture": {
-                        "key": "2G_btnLeaderboards"
-                    },
-                    "x": 1392,
-                    "y": 656,
-                    "scaleX": 1.291935634726196,
-                    "scaleY": 1.291935634726196
-                },
-                {
-                    "type": "Image",
                     "id": "d5d1693a-23f1-4fab-b635-a8f3c6c2126d",
                     "label": "btnARENA",
                     "scope": "CLASS",
@@ -118,17 +79,6 @@
                     "scaleY": 1.0624955964435157
                 }
             ]
-        },
-        {
-            "type": "Image",
-            "id": "ed18c55c-83e3-4d8c-acf0-5fbe85804f38",
-            "label": "btnINVENTORY",
-            "scope": "CLASS",
-            "texture": {
-                "key": "2G_btnInventory"
-            },
-            "x": 960,
-            "y": 944
         },
         {
             "type": "Image",

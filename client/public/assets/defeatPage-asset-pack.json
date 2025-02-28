@@ -2,37 +2,37 @@
     "section1": {
         "files": [
             {
-                "url": "client/public/assets/11 - Victory/1 (1).png",
+                "url": "assets/11 - Victory/1 (1).png",
                 "type": "image",
                 "key": "1 (1)"
             },
             {
-                "url": "client/public/assets/12 - Defeat/1 (4).png",
+                "url": "assets/12 - Defeat/1 (4).png",
                 "type": "image",
                 "key": "1 (4)"
             },
             {
-                "url": "client/public/assets/12 - Defeat/1 (5).png",
+                "url": "assets/12 - Defeat/1 (5).png",
                 "type": "image",
                 "key": "1 (5)"
             },
             {
-                "url": "client/public/assets/12 - Defeat/1 (6).png",
+                "url": "assets/12 - Defeat/1 (6).png",
                 "type": "image",
                 "key": "1 (6)"
             },
             {
-                "url": "client/public/assets/12 - Defeat/1 (7).png",
+                "url": "assets/12 - Defeat/1 (7).png",
                 "type": "image",
                 "key": "1 (7)"
             },
             {
-                "url": "client/public/assets/12 - Defeat/1 (8).png",
+                "url": "assets/12 - Defeat/1 (8).png",
                 "type": "image",
                 "key": "1 (8)"
             },
             {
-                "url": "client/public/assets/12 - Defeat/1 (9).png",
+                "url": "assets/12 - Defeat/1 (9).png",
                 "type": "image",
                 "key": "1 (9)"
             }

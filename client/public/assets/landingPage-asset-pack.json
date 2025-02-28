@@ -2,39 +2,46 @@
     "section1": {
         "files": [
             {
-                "url": "client/public/assets/Loading.png",
+                "url": "assets/Loading.png",
                 "type": "image",
-                "key": "Loading"
+                "key": "Loading",
+                "normalMap": ""
             },
             {
-                "url": "client/public/assets/logo.png",
+                "url": "assets/logo copy.png",
                 "type": "image",
-                "key": "Logo"
+                "key": "Logo",
+                "normalMap": ""
             },
             {
-                "url": "client/public/assets/Logo (Trans).png",
+                "url": "assets/Logo (Trans).png",
                 "type": "image",
-                "key": "Logo (Trans)"
+                "key": "Logo (Trans)",
+                "normalMap": ""
             },
             {
-                "url": "client/public/assets/logo copy.png",
+                "url": "assets/logo copy.png",
                 "type": "image",
-                "key": "Logo Trans(Fixed)"
+                "key": "Logo Trans(Fixed)",
+                "normalMap": ""
             },
             {
-                "url": "client/public/assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png",
+                "url": "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png",
                 "type": "image",
-                "key": "Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview"
+                "key": "Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview",
+                "normalMap": ""
             },
             {
-                "url": "client/public/assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview.png",
+                "url": "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview.png",
                 "type": "image",
-                "key": "Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview"
+                "key": "Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview",
+                "normalMap": ""
             },
             {
-                "url": "client/public/assets/01 - Landing Page/WildStrike-Logo-trans.png",
+                "url": "assets/01 - Landing Page/WildStrike-Logo-trans.png",
                 "type": "image",
-                "key": "WildStrike-Logo-trans"
+                "key": "WildStrike-Logo-trans",
+                "normalMap": ""
             }
         ]
     },

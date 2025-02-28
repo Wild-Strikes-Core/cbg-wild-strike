@@ -2,17 +2,17 @@
     "section1": {
         "files": [
             {
-                "url": "client/public/assets/03 - Leaderboards/3G_imgTROPHY.png",
+                "url": "assets/03 - Leaderboards/3G_imgTROPHY.png",
                 "type": "image",
                 "key": "3G_imgTROPHY"
             },
             {
-                "url": "client/public/assets/03 - Leaderboards/3G_leadCONTAINER.png",
+                "url": "assets/03 - Leaderboards/3G_leadCONTAINER.png",
                 "type": "image",
                 "key": "3G_leadCONTAINER"
             },
             {
-                "url": "client/public/assets/03 - Leaderboards/3G_titleLEAD.png",
+                "url": "assets/03 - Leaderboards/3G_titleLEAD.png",
                 "type": "image",
                 "key": "3G_titleLEAD"
             }

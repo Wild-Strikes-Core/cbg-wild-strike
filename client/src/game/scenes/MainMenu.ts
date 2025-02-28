@@ -44,32 +44,11 @@ export default class MainMenu extends Phaser.Scene {
 		image_2.scaleY = 1.866553479953844;
 		menuBTNS_1.add(image_2);
 
-		// btnSETTINGS
-		const btnSETTINGS = this.add.image(1680, 656, "2G_btnSettings");
-		btnSETTINGS.scaleX = 1.291935634726196;
-		btnSETTINGS.scaleY = 1.291935634726196;
-		menuBTNS_1.add(btnSETTINGS);
-
-		// btnTEAM
-		const btnTEAM = this.add.image(1536, 656, "2G_btnTeam");
-		btnTEAM.scaleX = 1.291935634726196;
-		btnTEAM.scaleY = 1.291935634726196;
-		menuBTNS_1.add(btnTEAM);
-
-		// btnLEADERBOARDS
-		const btnLEADERBOARDS = this.add.image(1392, 656, "2G_btnLeaderboards");
-		btnLEADERBOARDS.scaleX = 1.291935634726196;
-		btnLEADERBOARDS.scaleY = 1.291935634726196;
-		menuBTNS_1.add(btnLEADERBOARDS);
-
 		// btnARENA
 		const btnARENA = this.add.image(1536, 464, "2G_btnArena");
 		btnARENA.scaleX = 1.0624955964435157;
 		btnARENA.scaleY = 1.0624955964435157;
 		menuBTNS_1.add(btnARENA);
-
-		// btnINVENTORY
-		const btnINVENTORY = this.add.image(960, 944, "2G_btnInventory");
 
 		// btnABOUT
 		const btnABOUT = this.add.image(656, 944, "2G_btnAbout");
@@ -84,11 +63,7 @@ export default class MainMenu extends Phaser.Scene {
 
 		this.bgCloudsTWO = bgCloudsTWO;
 		this.bgCloudsONE = bgCloudsONE;
-		this.btnSETTINGS = btnSETTINGS;
-		this.btnTEAM = btnTEAM;
-		this.btnLEADERBOARDS = btnLEADERBOARDS;
 		this.btnARENA = btnARENA;
-		this.btnINVENTORY = btnINVENTORY;
 		this.btnABOUT = btnABOUT;
 		this.btnWARRIORS = btnWARRIORS;
 
@@ -97,11 +72,7 @@ export default class MainMenu extends Phaser.Scene {
 
 	private bgCloudsTWO!: Phaser.GameObjects.Image;
 	private bgCloudsONE!: Phaser.GameObjects.Image;
-	private btnSETTINGS!: Phaser.GameObjects.Image;
-	private btnTEAM!: Phaser.GameObjects.Image;
-	private btnLEADERBOARDS!: Phaser.GameObjects.Image;
 	private btnARENA!: Phaser.GameObjects.Image;
-	private btnINVENTORY!: Phaser.GameObjects.Image;
 	private btnABOUT!: Phaser.GameObjects.Image;
 	private btnWARRIORS!: Phaser.GameObjects.Image;
 
@@ -141,11 +112,7 @@ export default class MainMenu extends Phaser.Scene {
         };
 
         // Add interactions for all buttons with their corresponding scenes
-        addButtonInteraction(this.btnSETTINGS, 'GM_Settings');
-        addButtonInteraction(this.btnTEAM, 'GM_ListofTeams');
-        addButtonInteraction(this.btnLEADERBOARDS, 'GM_Leaderboards'); // You might want to change this to a proper leaderboards scene
         addButtonInteraction(this.btnARENA, 'M_Matchmaking');
-        addButtonInteraction(this.btnINVENTORY, 'GM_Inventory');
         addButtonInteraction(this.btnABOUT, 'GM_About');
         addButtonInteraction(this.btnWARRIORS, 'GM_Warriors');
 
