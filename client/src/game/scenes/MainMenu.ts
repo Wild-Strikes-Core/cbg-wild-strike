@@ -39,15 +39,15 @@ export default class MainMenu extends Phaser.Scene {
 		menuBTNS_1.blendMode = Phaser.BlendModes.SKIP_CHECK;
 
 		// image_2
-		const image_2 = this.add.image(1531, 470, "2G_btnsBackground");
-		image_2.scaleX = 1.866553479953844;
-		image_2.scaleY = 1.866553479953844;
+		const image_2 = this.add.image(1392, 544, "2G_btnsBackground");
+		image_2.scaleX = 2.2795097751295637;
+		image_2.scaleY = 2.2795097751295637;
 		menuBTNS_1.add(image_2);
 
 		// btnARENA
-		const btnARENA = this.add.image(1536, 464, "2G_btnArena");
-		btnARENA.scaleX = 1.0624955964435157;
-		btnARENA.scaleY = 1.0624955964435157;
+		const btnARENA = this.add.image(512, 544, "2G_btnArena");
+		btnARENA.scaleX = 1.4346425946756112;
+		btnARENA.scaleY = 1.4346425946756112;
 		menuBTNS_1.add(btnARENA);
 
 		// btnABOUT
@@ -57,7 +57,7 @@ export default class MainMenu extends Phaser.Scene {
 		const btnWARRIORS = this.add.image(352, 944, "2G_btnWarriors");
 
 		// image_9
-		const image_9 = this.add.image(464, 160, "2G_Player_Name_Card");
+		const image_9 = this.add.image(1392, 208, "2G_Player_Name_Card");
 		image_9.scaleX = 0.8582378709610599;
 		image_9.scaleY = 0.8582378709610599;
 
