@@ -1,5 +1,5 @@
 {
-    "preload": {
+    "section1": {
         "files": [
             {
                 "url": "assets/logo.png",
@@ -7,7 +7,7 @@
                 "key": "logo"
             },
             {
-                "url": "assets/star.png",
+                "url": "client/public/assets/star.png",
                 "type": "image",
                 "key": "star"
             }
@@ -16,8 +16,9 @@
     "meta": {
         "app": "Phaser Editor 2D - Asset Pack Editor",
         "contentType": "phasereditor2d.pack.core.AssetContentType",
-        "url": "https://phaser.io/editor",
+        "url": "https://phasereditor2d.com",
         "version": 2,
-        "showAllFilesInBlocks": false
+        "showAllFilesInBlocks": false,
+        "visible": true
     }
 }

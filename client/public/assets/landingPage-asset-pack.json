@@ -2,37 +2,37 @@
     "section1": {
         "files": [
             {
-                "url": "assets/Loading.png",
+                "url": "client/public/assets/Loading.png",
                 "type": "image",
                 "key": "Loading"
             },
             {
-                "url": "assets/Logo.png",
+                "url": "client/public/assets/logo.png",
                 "type": "image",
                 "key": "Logo"
             },
             {
-                "url": "assets/Logo (Trans).png",
+                "url": "client/public/assets/Logo (Trans).png",
                 "type": "image",
                 "key": "Logo (Trans)"
             },
             {
-                "url": "assets/01 - Landing Page/Logo Trans(Fixed).png",
+                "url": "client/public/assets/logo copy.png",
                 "type": "image",
                 "key": "Logo Trans(Fixed)"
             },
             {
-                "url": "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png",
+                "url": "client/public/assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png",
                 "type": "image",
                 "key": "Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview"
             },
             {
-                "url": "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview.png",
+                "url": "client/public/assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview.png",
                 "type": "image",
                 "key": "Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview"
             },
             {
-                "url": "assets/01 - Landing Page/WildStrike-Logo-trans.png",
+                "url": "client/public/assets/01 - Landing Page/WildStrike-Logo-trans.png",
                 "type": "image",
                 "key": "WildStrike-Logo-trans"
             }

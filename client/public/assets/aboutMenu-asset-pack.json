@@ -2,27 +2,28 @@
     "section1": {
         "files": [
             {
-                "url": "assets/04 - Team-Developers/4G_devCarts.png",
+                "url": "client/public/assets/04 - Team-Developers/4G_devCarts.png",
                 "type": "image",
                 "key": "4G_devCarts"
             },
             {
-                "url": "assets/04 - Team-Developers/4G_devJeyz.png",
+                "url": "client/public/assets/04 - Team-Developers/4G_devJeyz.png",
                 "type": "image",
                 "key": "4G_devJeyz"
             },
             {
-                "url": "assets/04 - Team-Developers/4G_devSquishy.png",
+                "url": "client/public/assets/04 - Team-Developers/4G_devSquishy.png",
                 "type": "image",
                 "key": "4G_devSquishy"
             },
             {
                 "url": "assets/04 - Team-Developers/4G_devZoks.png",
                 "type": "image",
-                "key": "4G_devZoks"
+                "key": "4G_devZoks",
+                "normalMap": "client/public/assets/04 - Team-Developers/4G_devZoks.png"
             },
             {
-                "url": "assets/04 - Team-Developers/4G_titleDEV.png",
+                "url": "client/public/assets/04 - Team-Developers/4G_titleDEV.png",
                 "type": "image",
                 "key": "4G_titleDEV"
             }

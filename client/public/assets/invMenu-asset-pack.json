@@ -2,22 +2,22 @@
     "section1": {
         "files": [
             {
-                "url": "assets/09 - Inventory/9G_invContainer.png",
+                "url": "client/public/assets/09 - Inventory/9G_invContainer.png",
                 "type": "image",
                 "key": "9G_invContainer"
             },
             {
-                "url": "assets/09 - Inventory/9G_invSlot.png",
+                "url": "client/public/assets/09 - Inventory/9G_invSlot.png",
                 "type": "image",
                 "key": "9G_invSlot"
             },
             {
-                "url": "assets/09 - Inventory/9G_titleINV.png",
+                "url": "client/public/assets/09 - Inventory/9G_titleINV.png",
                 "type": "image",
                 "key": "9G_titleINV"
             },
             {
-                "url": "assets/09 - Inventory/items/itm_Generic.png",
+                "url": "client/public/assets/09 - Inventory/items/itm_Generic.png",
                 "type": "image",
                 "key": "itm_Generic"
             }
