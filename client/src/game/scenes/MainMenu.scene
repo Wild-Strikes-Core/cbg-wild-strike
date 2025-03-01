@@ -14,6 +14,36 @@
     },
     "displayList": [
         {
+            "type": "ArcadeImage",
+            "id": "88f546a0-582a-4fb4-938c-72bf44c56712",
+            "label": "background",
+            "scope": "CLASS",
+            "texture": {
+                "key": "Space Background"
+            },
+            "x": 960,
+            "y": 540,
+            "scaleX": 1.4612663364490137,
+            "scaleY": 1.4612663364490137,
+            "body.width": 1920,
+            "body.height": 1080,
+            "list": [
+                {
+                    "type": "Bloom",
+                    "id": "4c6f2a9a-3245-43a3-90b1-11e4ad579de1",
+                    "label": "bloomFx",
+                    "preFX": true
+                },
+                {
+                    "type": "Vignette",
+                    "id": "22d4ec06-77a4-4da2-b000-36eb8d102df2",
+                    "label": "vignetteFx",
+                    "radius": 0.6,
+                    "preFX": true
+                }
+            ]
+        },
+        {
             "type": "Layer",
             "id": "d4c5623c-46f1-40b6-8acd-dfdd54b0b462",
             "label": "bgClouds",
@@ -74,7 +104,7 @@
                         "key": "2G_btnArena"
                     },
                     "x": 512,
-                    "y": 544,
+                    "y": 592,
                     "scaleX": 1.4346425946756112,
                     "scaleY": 1.4346425946756112
                 }

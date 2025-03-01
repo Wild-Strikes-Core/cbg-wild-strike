@@ -18,20 +18,32 @@ export default class M_Matchmaking extends Phaser.Scene {
 
 	editorCreate(): void {
 
-		// image_1
-		const image_1 = this.add.image(544, 576, "M_charTWO");
-		image_1.scaleX = 1.4199690280632038;
-		image_1.scaleY = 1.4199690280632038;
+		// background
+		const background = this.physics.add.image(960, 540, "Space Background");
+		background.scaleX = 1.4612663364490137;
+		background.scaleY = 1.4612663364490137;
+		background.body.setSize(1920, 1080, false);
+
+		// bloomFx
+		background.preFX!.addBloom(16777215, 1, 1, 1, 1, 4);
+
+		// vignetteFx
+		background.preFX!.addVignette(0.5, 0.5, 0.6, 0.5);
+
+		// bgCloudsTWO
+		const bgCloudsTWO = this.add.image(1024, 752, "2G_bgClouds_1");
+		bgCloudsTWO.scaleX = 2.4929575936045327;
+		bgCloudsTWO.scaleY = 2.4929575936045327;
+
+		// bgCloudsONE
+		const bgCloudsONE = this.add.image(1136, 288, "2G_bgClouds_2");
+		bgCloudsONE.scaleX = 2.414775497570459;
+		bgCloudsONE.scaleY = 2.414775497570459;
 
 		// image_2
-		const image_2 = this.add.image(224, 640, "M_charONE");
+		const image_2 = this.add.image(528, 608, "M_charONE");
 		image_2.scaleX = 1.310153805177419;
 		image_2.scaleY = 1.310153805177419;
-
-		// image
-		const image = this.add.image(848, 640, "M_charTHREE");
-		image.scaleX = 1.4199690280632038;
-		image.scaleY = 1.4199690280632038;
 
 		// image_3
 		this.add.image(160, 176, "M_playerCard");
@@ -55,11 +67,17 @@ export default class M_Matchmaking extends Phaser.Scene {
 		loader.text = "...";
 		loader.setStyle({ "fontFamily": "Arial", "fontSize": "48px", "fontStyle": "bold" });
 
+		this.background = background;
+		this.bgCloudsTWO = bgCloudsTWO;
+		this.bgCloudsONE = bgCloudsONE;
 		this.loader = loader;
 
 		this.events.emit("scene-awake");
 	}
 
+	private background!: Phaser.Physics.Arcade.Image;
+	private bgCloudsTWO!: Phaser.GameObjects.Image;
+	private bgCloudsONE!: Phaser.GameObjects.Image;
 	private loader!: Phaser.GameObjects.Text;
 
 	/* START-USER-CODE */
@@ -73,10 +91,24 @@ export default class M_Matchmaking extends Phaser.Scene {
 		this.fakeLoad(5);
 	}
 
+	update ()
+	{
+		this.bgCloudsONE.x -= 0.8;
+		this.bgCloudsTWO.x -= 0.8;
+
+		// Reset cloud positions when they move off screen
+        if (this.bgCloudsONE.x < -1000) {
+            this.bgCloudsONE.x = 2600;
+        }
+        if (this.bgCloudsTWO.x < -1000) {
+            this.bgCloudsTWO.x = 2600;
+        }
+	}
+
 	private fakeLoad(seconds: integer) {
 		let dots = [".", "..", "..."];
 		let index = 0;
-		
+
 		let timer = this.time.addEvent({
 			delay: 250, // Update every 200ms
 			repeat: (seconds * 4) - 1, // Repeat for the given duration in 200ms intervals

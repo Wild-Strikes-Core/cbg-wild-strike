@@ -18,6 +18,28 @@ export default class GM_About extends Phaser.Scene {
 
 	editorCreate(): void {
 
+		// background
+		const background = this.physics.add.image(960, 540, "Space Background");
+		background.scaleX = 1.4612663364490137;
+		background.scaleY = 1.4612663364490137;
+		background.body.setSize(1920, 1080, false);
+
+		// bloomFx
+		background.preFX!.addBloom(16777215, 1, 1, 1, 1, 4);
+
+		// vignetteFx
+		background.preFX!.addVignette(0.5, 0.5, 0.6, 0.5);
+
+		// bgCloudsTWO
+		const bgCloudsTWO = this.add.image(976, 768, "2G_bgClouds_1");
+		bgCloudsTWO.scaleX = 2.4929575936045327;
+		bgCloudsTWO.scaleY = 2.4929575936045327;
+
+		// bgCloudsONE
+		const bgCloudsONE = this.add.image(1088, 304, "2G_bgClouds_2");
+		bgCloudsONE.scaleX = 2.414775497570459;
+		bgCloudsONE.scaleY = 2.414775497570459;
+
 		// btnBACK
 		const btnBACK = this.add.image(224, 128, "5G_btnBack");
 
@@ -54,11 +76,17 @@ export default class GM_About extends Phaser.Scene {
 		text_1.setStyle({ "align": "center", "fontFamily": "Negrita Pro", "fontSize": "40px", "maxLines": 8 });
 		text_1.setWordWrapWidth(1400, true);
 
+		this.background = background;
+		this.bgCloudsTWO = bgCloudsTWO;
+		this.bgCloudsONE = bgCloudsONE;
 		this.btnBACK = btnBACK;
 
 		this.events.emit("scene-awake");
 	}
 
+	private background!: Phaser.Physics.Arcade.Image;
+	private bgCloudsTWO!: Phaser.GameObjects.Image;
+	private bgCloudsONE!: Phaser.GameObjects.Image;
 	private btnBACK!: Phaser.GameObjects.Image;
 
 	/* START-USER-CODE */
@@ -97,6 +125,20 @@ export default class GM_About extends Phaser.Scene {
         };
 
 		addButtonInteraction(this.btnBACK, "MainMenu");
+	}
+
+	update ()
+	{
+		this.bgCloudsONE.x -= 0.8;
+		this.bgCloudsTWO.x -= 0.8;
+
+		// Reset cloud positions when they move off screen
+        if (this.bgCloudsONE.x < -1000) {
+            this.bgCloudsONE.x = 2600;
+        }
+        if (this.bgCloudsTWO.x < -1000) {
+            this.bgCloudsTWO.x = 2600;
+        }
 	}
 
 	/* END-USER-CODE */

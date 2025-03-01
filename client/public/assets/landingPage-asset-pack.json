@@ -38,6 +38,11 @@
                 "normalMap": ""
             },
             {
+                "url": "assets/01 - Landing Page/Space Background.png",
+                "type": "image",
+                "key": "Space Background"
+            },
+            {
                 "url": "assets/01 - Landing Page/WildStrike-Logo-trans.png",
                 "type": "image",
                 "key": "WildStrike-Logo-trans",
