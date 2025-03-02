@@ -16,7 +16,8 @@
         {
             "type": "Image",
             "id": "719a2368-50ce-4a77-85eb-634fc6f4510c",
-            "label": "image_1",
+            "label": "bgIMAGE",
+            "scope": "CLASS",
             "texture": {
                 "key": "2M_mapBG"
             },
@@ -40,7 +41,7 @@
                 "frame": 1
             },
             "x": 32,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -66,7 +67,7 @@
                 "frame": 1
             },
             "x": 112,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -92,7 +93,7 @@
                 "frame": 1
             },
             "x": 192,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -118,7 +119,7 @@
                 "frame": 1
             },
             "x": 272,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -144,7 +145,7 @@
                 "frame": 1
             },
             "x": 352,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -170,7 +171,7 @@
                 "frame": 1
             },
             "x": 432,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -196,7 +197,7 @@
                 "frame": 1
             },
             "x": 512,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -222,7 +223,7 @@
                 "frame": 1
             },
             "x": 592,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -248,9 +249,9 @@
                 "frame": 50
             },
             "x": 304,
-            "y": 800,
-            "scaleX": 5.09820455448002,
-            "scaleY": 5.09820455448002,
+            "y": 832,
+            "scaleX": 3,
+            "scaleY": 3,
             "body.gravity.y": 10000,
             "body.width": 18,
             "body.height": 32,
@@ -267,7 +268,7 @@
                 "frame": 1
             },
             "x": 672,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -293,7 +294,7 @@
                 "frame": 1
             },
             "x": 752,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -319,7 +320,7 @@
                 "frame": 1
             },
             "x": 832,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -345,7 +346,7 @@
                 "frame": 1
             },
             "x": 912,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -371,7 +372,7 @@
                 "frame": 1
             },
             "x": 992,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -397,7 +398,7 @@
                 "frame": 1
             },
             "x": 1072,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -423,7 +424,7 @@
                 "frame": 1
             },
             "x": 1152,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -449,7 +450,7 @@
                 "frame": 1
             },
             "x": 1232,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -475,7 +476,7 @@
                 "frame": 1
             },
             "x": 1312,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -501,7 +502,7 @@
                 "frame": 1
             },
             "x": 1392,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -527,7 +528,7 @@
                 "frame": 1
             },
             "x": 1472,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -553,7 +554,7 @@
                 "frame": 1
             },
             "x": 1552,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -579,7 +580,7 @@
                 "frame": 1
             },
             "x": 1632,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -605,7 +606,7 @@
                 "frame": 1
             },
             "x": 1712,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -631,7 +632,7 @@
                 "frame": 1
             },
             "x": 1792,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -657,7 +658,7 @@
                 "frame": 1
             },
             "x": 1872,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -683,7 +684,7 @@
                 "frame": 1
             },
             "x": 1952,
-            "y": 1040,
+            "y": 1072,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,

@@ -81,7 +81,7 @@ export default class Preloader extends Phaser.Scene {
         console.log("All assets loaded successfully");
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('LandingPage');
+        this.scene.start('M_Game');
     }
     /* END-USER-CODE */
 }
