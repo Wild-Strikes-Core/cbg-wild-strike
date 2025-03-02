@@ -79,8 +79,8 @@ export default class MainMenu extends Phaser.Scene {
     create() {
         this.editorCreate();
         
-        // Create a simpler entrance transition for the scene
-        this.createSimpleEntrance();
+        // Create a flashy entrance transition for the scene
+        this.createSceneEntrance();
 
         // Set up initial states for all UI components
         const buttons = [this.btnARENA, this.btnABOUT, this.btnWARRIORS];
@@ -260,7 +260,9 @@ export default class MainMenu extends Phaser.Scene {
                                             duration: 600,
                                             ease: 'Cubic.easeIn',
                                             onComplete: () => {
-                                                this.scene.start('M_Matchmaking');
+                                                this.time.delayedCall(1000, () => {
+                                                    this.scene.start('M_Matchmaking');
+                                                });
                                             }
                                         });
                                     }
@@ -332,32 +334,29 @@ export default class MainMenu extends Phaser.Scene {
         setupCasualTransition(this.btnWARRIORS, 'GM_Warriors');
     }
     
-    // Create a simple yet elegant entrance transition
-    createSimpleEntrance() {
-        // Create a dark overlay that will slide away
+    // Create a simple entrance effect for the scene
+    createSceneEntrance() {
+        // Create a black overlay that will fade out
         const overlay = this.add.rectangle(
-            this.cameras.main.width / 2, 
-            this.cameras.main.height / 2,
-            this.cameras.main.width,
-            this.cameras.main.height,
+            this.cameras.main.centerX,
+            this.cameras.main.centerY,
+            this.cameras.main.width * 2,
+            this.cameras.main.height * 2,
             0x000000
         );
-        overlay.setOrigin(0.5);
         overlay.depth = 1000;
-        
-        // Create a simple wipe effect by sliding the overlay off-screen
+        overlay.alpha = 1;
+
+        // Simple fade out animation
         this.tweens.add({
             targets: overlay,
-            x: this.cameras.main.width * 1.5, // Move off-screen to the right
-            duration: 700,
-            ease: 'Cubic.easeIn',
+            alpha: 0,
+            duration: 500,
+            ease: 'Linear',
             onComplete: () => {
                 overlay.destroy();
             }
         });
-        
-        // Add a subtle camera effect
-        this.cameras.main.flash(300, 0, 0, 0, true);
     }
 
     changeScene() {

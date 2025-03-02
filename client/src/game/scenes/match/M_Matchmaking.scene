@@ -17,7 +17,8 @@
         {
             "type": "Image",
             "id": "4b91c3df-e1ce-413c-babd-0d9e866e2728",
-            "label": "image_2",
+            "label": "playerCharSprite",
+            "scope": "CLASS",
             "texture": {
                 "key": "M_charONE"
             },
@@ -74,6 +75,19 @@
             "text": "...",
             "fontFamily": "Arial",
             "fontSize": "48px",
+            "fontStyle": "bold"
+        },
+        {
+            "type": "Text",
+            "id": "4f2eccf9-f6cc-4d17-adb5-f70a995e60bd",
+            "label": "playerName",
+            "scope": "CLASS",
+            "x": 32,
+            "y": 144,
+            "text": "Player Naem",
+            "align": "center",
+            "fontFamily": "Arial",
+            "fontSize": "64px",
             "fontStyle": "bold"
         }
     ],
