@@ -5,18 +5,13 @@ import LandingPage from "./scenes/LandingPage";
 
 // GameMenu
 import MainMenu from "./scenes/MainMenu";
-import GM_Settings from "./scenes/GM_Settings";
 import GM_About from "./scenes/GM_About";
-import GM_Inventory from "./scenes/GM_Inventory";
-import GM_SelectTeam from "./scenes/GM_SelectTeam";
-import GM_ListofTeams from "./scenes/GM_ListofTeams";
 
 // InGameSequence
 import VictoryPage from "./scenes/VictoryPage";
 import DefeatPage from "./scenes/DefeatPage";
 import DrawPage from "./scenes/DrawPage";
 
-import GM_Leaderboards from "./scenes/GM_Leaderboards";
 import GM_Warriors from "./scenes/GM_Warriors";
 
 // In-game
@@ -57,20 +52,15 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         LandingPage,
         MainMenu,
-        GM_ListofTeams,
-        GM_Settings,
         GM_About,
         GM_Warriors,
-        GM_Leaderboards,
-        GM_Inventory,
-        GM_SelectTeam,
         VictoryPage,
         DefeatPage,
         DrawPage,
         M_Matchmaking,
         M_MatchFound,
         M_Game,
-    ],
+    ]
 };
 
 const StartGame = (parent: string) => {

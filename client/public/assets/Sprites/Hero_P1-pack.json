@@ -15,6 +15,11 @@
                 "key": "Hero_P1"
             },
             {
+                "url": "assets/Sprites/Hero_P1-anim_ATK.json",
+                "type": "animation",
+                "key": "Hero_P1-anim_ATK"
+            },
+            {
                 "url": "assets/Sprites/Hero_P1-anim_IDLE.json",
                 "type": "animation",
                 "key": "Hero_P1-anim_IDLE"
@@ -23,6 +28,11 @@
                 "url": "assets/Sprites/Hero_P1-anim_JUMP.json",
                 "type": "animation",
                 "key": "Hero_P1-anim_JUMP"
+            },
+            {
+                "url": "assets/Sprites/Hero_P1-anim_RUN.json",
+                "type": "animation",
+                "key": "Hero_P1-anim_RUN"
             },
             {
                 "url": "assets/Sprites/Hero_P1-anim.json",
