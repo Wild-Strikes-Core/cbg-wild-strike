@@ -15,62 +15,6 @@
     },
     "displayList": [
         {
-            "type": "ArcadeImage",
-            "id": "183b762a-9584-49bb-a50b-eef3c4270f23",
-            "label": "background",
-            "scope": "CLASS",
-            "texture": {
-                "key": "Space Background"
-            },
-            "x": 960,
-            "y": 540,
-            "scaleX": 1.4612663364490137,
-            "scaleY": 1.4612663364490137,
-            "body.width": 1920,
-            "body.height": 1080,
-            "list": [
-                {
-                    "type": "Bloom",
-                    "id": "efa7d6c1-78f1-49b6-97a7-0bbeefbf1961",
-                    "label": "bloomFx",
-                    "preFX": true
-                },
-                {
-                    "type": "Vignette",
-                    "id": "c064ee6f-3cee-4414-946d-4dbae2cf54e4",
-                    "label": "vignetteFx",
-                    "radius": 0.6,
-                    "preFX": true
-                }
-            ]
-        },
-        {
-            "type": "Image",
-            "id": "7aa6b43b-71c3-4bd4-a4c9-2407fd42fc21",
-            "label": "bgCloudsTWO",
-            "scope": "CLASS",
-            "texture": {
-                "key": "2G_bgClouds_1"
-            },
-            "x": 1024,
-            "y": 752,
-            "scaleX": 2.4929575936045327,
-            "scaleY": 2.4929575936045327
-        },
-        {
-            "type": "Image",
-            "id": "9b8fc230-93d1-4f82-b405-507c77da2dcd",
-            "label": "bgCloudsONE",
-            "scope": "CLASS",
-            "texture": {
-                "key": "2G_bgClouds_2"
-            },
-            "x": 1136,
-            "y": 288,
-            "scaleX": 2.414775497570459,
-            "scaleY": 2.414775497570459
-        },
-        {
             "type": "Image",
             "id": "4b91c3df-e1ce-413c-babd-0d9e866e2728",
             "label": "image_2",
@@ -95,7 +39,8 @@
         {
             "type": "Image",
             "id": "8afc2e77-3311-4e75-b89a-8a84ff92fcc1",
-            "label": "image_4",
+            "label": "btnCancel",
+            "scope": "CLASS",
             "texture": {
                 "key": "M_btnCancel"
             },

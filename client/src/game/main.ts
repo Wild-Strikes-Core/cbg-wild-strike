@@ -3,9 +3,6 @@ import Preloader from "./scenes/Preloader";
 
 import LandingPage from "./scenes/LandingPage";
 
-import GameOver from "./scenes/GameOver";
-import MainGame from "./scenes/Game";
-
 // GameMenu
 import MainMenu from "./scenes/MainMenu";
 import GM_Settings from "./scenes/GM_Settings";
@@ -33,6 +30,7 @@ const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
     width: 1920,
     height: 1080,
+    pixelArt: true,
     parent: "game-container",
     backgroundColor: "#1a022b",
 
@@ -59,7 +57,6 @@ const config: Phaser.Types.Core.GameConfig = {
         LandingPage,
         MainMenu,
         GM_ListofTeams,
-        MainGame,
         GM_Settings,
         GM_About,
         GM_Warriors,
@@ -71,7 +68,6 @@ const config: Phaser.Types.Core.GameConfig = {
         DrawPage,
         M_Matchmaking,
         M_Game,
-        GameOver,
     ],
 };
 

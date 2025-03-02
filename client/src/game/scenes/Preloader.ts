@@ -3,6 +3,7 @@
 /* START OF COMPILED CODE */
 
 /* START-USER-IMPORTS */
+// No need to import bgClouds here - it's a class, not an asset
 /* END-USER-IMPORTS */
 
 export default class Preloader extends Phaser.Scene {
@@ -63,14 +64,21 @@ export default class Preloader extends Phaser.Scene {
 
         this.load.pack('sprite_heroP1', 'assets/Sprites/Hero_P1-pack.json');
         this.load.pack('tiles', 'assets/Match/02 - Map/tiles-asset-pack.json');
-
         
+        // Ensure the cloud image is loaded for bgClouds
+        this.load.image("2G_bgClouds_2", "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png");
+        
+        // Optional: Add a cloud atlas if you want multiple cloud variations
+        // this.load.atlas("clouds", "assets/images/clouds.png", "assets/images/clouds.json");
     }
 
     create ()
     {
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
+
+        // Log that assets were loaded successfully (can be useful for debugging)
+        console.log("All assets loaded successfully");
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('LandingPage');

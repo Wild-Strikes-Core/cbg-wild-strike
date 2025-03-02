@@ -14,71 +14,6 @@
     },
     "displayList": [
         {
-            "type": "ArcadeImage",
-            "id": "664e6864-9322-4531-80f8-1fac80a8420c",
-            "label": "background",
-            "scope": "CLASS",
-            "texture": {
-                "key": "Space Background"
-            },
-            "x": 960,
-            "y": 540,
-            "scaleX": 1.4612663364490137,
-            "scaleY": 1.4612663364490137,
-            "body.width": 1920,
-            "body.height": 1080,
-            "list": [
-                {
-                    "type": "Bloom",
-                    "id": "fb052717-c6ac-4f75-8508-8a6cc92e6640",
-                    "label": "bloomFx",
-                    "preFX": true
-                },
-                {
-                    "type": "Vignette",
-                    "id": "0f96260c-2da2-4db7-832e-638b0abd8be4",
-                    "label": "vignetteFx",
-                    "radius": 0.6,
-                    "preFX": true
-                }
-            ]
-        },
-        {
-            "type": "Image",
-            "id": "963c05f6-5ba1-47c8-a6e4-3a4cefc0d1ba",
-            "label": "bgClouds",
-            "scope": "CLASS",
-            "texture": {
-                "key": "2G_bgClouds_1"
-            },
-            "x": 1056,
-            "y": 560,
-            "scaleX": 3.3066851319295054,
-            "scaleY": 3.3066851319295054
-        },
-        {
-            "type": "Image",
-            "id": "8055d097-57d1-4241-b793-8af7a59f3704",
-            "label": "btnLEFT",
-            "scope": "CLASS",
-            "texture": {
-                "key": "8G_btnLEFT"
-            },
-            "x": 896,
-            "y": 896
-        },
-        {
-            "type": "Image",
-            "id": "c80ed7fe-9b7f-4f89-b5a3-b5f0f6c5f605",
-            "label": "btnRIGHT",
-            "scope": "CLASS",
-            "texture": {
-                "key": "8G_btnRIGHT"
-            },
-            "x": 1104,
-            "y": 896
-        },
-        {
             "type": "Image",
             "id": "0b8cdd84-2213-484a-b875-81d7cb0cd2b1",
             "label": "btnBACK",
@@ -98,6 +33,38 @@
             },
             "x": 960,
             "y": 160
+        },
+        {
+            "type": "Container",
+            "id": "585e3524-0f61-4814-ba85-c3b1b0f32472",
+            "label": "container_1",
+            "blendMode": -1,
+            "x": 800,
+            "y": 832,
+            "list": [
+                {
+                    "type": "Image",
+                    "id": "8055d097-57d1-4241-b793-8af7a59f3704",
+                    "label": "btnLEFT",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "8G_btnLEFT"
+                    },
+                    "x": 64,
+                    "y": 64
+                },
+                {
+                    "type": "Image",
+                    "id": "c80ed7fe-9b7f-4f89-b5a3-b5f0f6c5f605",
+                    "label": "btnRIGHT",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "8G_btnRIGHT"
+                    },
+                    "x": 272,
+                    "y": 64
+                }
+            ]
         }
     ],
     "plainObjects": [],
