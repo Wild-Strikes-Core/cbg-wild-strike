@@ -59,6 +59,7 @@ export default class Preloader extends Phaser.Scene {
 
         this.load.pack('matchMaking', 'assets/Match/matchMaking-asset-pack.json');
         this.load.pack('map', 'assets/Match/map-asset-pack.json');
+        this.load.pack('matchUI', 'assets/Match/match-skills-assets-pack.json');
     }
 
     create ()
