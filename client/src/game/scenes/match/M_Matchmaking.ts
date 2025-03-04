@@ -1,4 +1,3 @@
-
 // You can write more code here
 
 /* START OF COMPILED CODE */
@@ -18,10 +17,10 @@ export default class M_Matchmaking extends Phaser.Scene {
 
 	editorCreate(): void {
 
-		// image_2
-		const image_2 = this.add.image(528, 608, "M_charONE");
-		image_2.scaleX = 1.310153805177419;
-		image_2.scaleY = 1.310153805177419;
+		// playerCharSprite
+		const playerCharSprite = this.add.image(528, 608, "M_charONE");
+		playerCharSprite.scaleX = 1.310153805177419;
+		playerCharSprite.scaleY = 1.310153805177419;
 
 		// image_3
 		this.add.image(160, 176, "M_playerCard");
@@ -45,51 +44,72 @@ export default class M_Matchmaking extends Phaser.Scene {
 		loader.text = "...";
 		loader.setStyle({ "fontFamily": "Arial", "fontSize": "48px", "fontStyle": "bold" });
 
+		// playerName
+		const playerName = this.add.text(32, 144, "", {});
+		playerName.text = "Player Naem";
+		playerName.setStyle({ "align": "center", "fontFamily": "Arial", "fontSize": "64px", "fontStyle": "bold" });
+
+		this.playerCharSprite = playerCharSprite;
 		this.btnCancel = btnCancel;
 		this.loader = loader;
+		this.playerName = playerName;
 
 		this.events.emit("scene-awake");
 	}
 
+	private playerCharSprite!: Phaser.GameObjects.Image;
 	private btnCancel!: Phaser.GameObjects.Image;
 	private loader!: Phaser.GameObjects.Text;
+	private playerName!: Phaser.GameObjects.Text;
 
 	/* START-USER-CODE */
 
 	// Write your code here
 
 	create() {
-
 		this.editorCreate();
 
-        this.btnCancel.setInteractive();
-        this.btnCancel.on("pointerdown", () => {
-            this.cameras.main.fadeOut(180, 0, 0, 0);
+		// Set up camera fade-in entrance transition
+		this.setupEntranceTransition();
 
-            this.cameras.main.once('camerafadeoutcomplete', () => {
-                this.tweens.add({
-                    targets: this.btnCancel,
-                    scale: '*=0.9',
-                    duration: 100,
-                    yoyo: true,
-                    onComplete: () => {
-                        this.scene.start("MainMenu");
-                    }
-                });
-            });
-        });
+		this.btnCancel.setInteractive();
+		this.btnCancel.on("pointerdown", () => {
+			this.cameras.main.fadeOut(180, 0, 0, 0);
 
-        this.btnCancel.on("pointerover", () => {
-            this.btnCancel.setTint(0xffff66);
-        });
+			this.cameras.main.once('camerafadeoutcomplete', () => {
+				this.tweens.add({
+					targets: this.btnCancel,
+					scale: '*=0.9',
+					duration: 100,
+					yoyo: true,
+					onComplete: () => {
+						this.scene.start("MainMenu");
+					}
+				});
+			});
+		});
 
-        this.btnCancel.on("pointerout", () => {
-            this.btnCancel.clearTint();
-        });
+		this.btnCancel.on("pointerover", () => {
+			this.btnCancel.setTint(0xffff66);
+		});
+
+		this.btnCancel.on("pointerout", () => {
+			this.btnCancel.clearTint();
+		});
 
 		this.fakeLoad(5);
 	}
 
+	// Create a smooth camera fade-in entrance transition
+	setupEntranceTransition() {
+		// Start with black screen
+		this.cameras.main.fadeIn(800, 0, 0, 0, (_, progress) => {
+			// Custom cubic easing for smoother fade-in
+			// This applies a cubic ease-in curve to the default linear camera fade
+			const easedProgress = Math.pow(progress, 3);
+			this.cameras.main.setAlpha(easedProgress);
+		});
+	}
 
 	private fakeLoad(seconds: integer) {
 		let dots = [".", "..", "..."];
@@ -104,17 +124,13 @@ export default class M_Matchmaking extends Phaser.Scene {
 			}
 		});
 
-		this.time.delayedCall((seconds) * 1000, () => { // Delay more than 50ms of the tweens duration
+		this.time.delayedCall((seconds) * 1000, () => { // Delay more than IDUNNOms of the tweens duration
 			this.cameras.main.fadeOut(400, 0, 0, 0);
 			this.cameras.main.once('camerafadeoutcomplete', () => {
-				// const nextScene = this.scene.get(targetScene);
-				// nextScene.cameras.main.fadeIn(400, 0, 0, 0);
-				this.scene.start('M_Game');
+					this.scene.start('M_MatchFound');
 			});
 		});
 	}
-
-
 
 	/* END-USER-CODE */
 }

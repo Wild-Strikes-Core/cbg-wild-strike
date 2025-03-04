@@ -21,6 +21,7 @@ import GM_Warriors from "./scenes/GM_Warriors";
 
 // In-game
 import M_Matchmaking from "./scenes/match/M_Matchmaking";
+import M_MatchFound from "./scenes/match/M_MatchFound";
 import M_Game from "./scenes/match/M_Game";
 import { AUTO, Game } from "phaser";
 
@@ -67,6 +68,7 @@ const config: Phaser.Types.Core.GameConfig = {
         DefeatPage,
         DrawPage,
         M_Matchmaking,
+        M_MatchFound,
         M_Game,
     ],
 };
