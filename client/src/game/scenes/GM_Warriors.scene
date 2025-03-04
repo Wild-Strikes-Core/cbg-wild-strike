@@ -14,6 +14,36 @@
     },
     "displayList": [
         {
+            "type": "ArcadeImage",
+            "id": "664e6864-9322-4531-80f8-1fac80a8420c",
+            "label": "background",
+            "scope": "CLASS",
+            "texture": {
+                "key": "Space Background"
+            },
+            "x": 960,
+            "y": 540,
+            "scaleX": 1.4612663364490137,
+            "scaleY": 1.4612663364490137,
+            "body.width": 1920,
+            "body.height": 1080,
+            "list": [
+                {
+                    "type": "Bloom",
+                    "id": "fb052717-c6ac-4f75-8508-8a6cc92e6640",
+                    "label": "bloomFx",
+                    "preFX": true
+                },
+                {
+                    "type": "Vignette",
+                    "id": "0f96260c-2da2-4db7-832e-638b0abd8be4",
+                    "label": "vignetteFx",
+                    "radius": 0.6,
+                    "preFX": true
+                }
+            ]
+        },
+        {
             "type": "Image",
             "id": "963c05f6-5ba1-47c8-a6e4-3a4cefc0d1ba",
             "label": "bgClouds",
@@ -28,24 +58,14 @@
         },
         {
             "type": "Image",
-            "id": "2fa319b0-a934-402a-8ac8-d833b1aaac54",
-            "label": "image_1",
-            "texture": {
-                "key": "2G_statContainer"
-            },
-            "x": 1312,
-            "y": 640
-        },
-        {
-            "type": "Image",
             "id": "8055d097-57d1-4241-b793-8af7a59f3704",
             "label": "btnLEFT",
             "scope": "CLASS",
             "texture": {
                 "key": "8G_btnLEFT"
             },
-            "x": 304,
-            "y": 800
+            "x": 896,
+            "y": 896
         },
         {
             "type": "Image",
@@ -55,8 +75,8 @@
             "texture": {
                 "key": "8G_btnRIGHT"
             },
-            "x": 512,
-            "y": 800
+            "x": 1104,
+            "y": 896
         },
         {
             "type": "Image",

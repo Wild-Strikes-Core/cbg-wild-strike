@@ -17,15 +17,18 @@ export default class LandingPage extends Phaser.Scene {
 
 	editorCreate(): void {
 
+		// background
+		const background = this.physics.add.image(960, 528, "Space Background");
+		background.scaleX = 1.4612663364490137;
+		background.scaleY = 1.4612663364490137;
+		background.body.setSize(1920, 1080, false);
+
+		// bloomFx
+		background.preFX!.addBloom(16777215, 1, 1, 1, 1, 4);
+
 		// bgLayer
 		const bgLayer = this.add.layer();
 		bgLayer.blendMode = Phaser.BlendModes.SKIP_CHECK;
-
-		// bgClouds
-		const bgClouds = this.add.tileSprite(976, 320, 1029, 242, "Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview");
-		bgClouds.scaleX = 2;
-		bgClouds.scaleY = 2;
-		bgLayer.add(bgClouds);
 
 		// playBtn
 		const playBtn = this.add.image(960, 864, "Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview");
@@ -35,13 +38,13 @@ export default class LandingPage extends Phaser.Scene {
 		wildstrikeLogo.scaleX = 0.5;
 		wildstrikeLogo.scaleY = 0.5;
 
-		this.bgClouds = bgClouds;
+		this.background = background;
 		this.playBtn = playBtn;
 
 		this.events.emit("scene-awake");
 	}
 
-	private bgClouds!: Phaser.GameObjects.TileSprite;
+	private background!: Phaser.Physics.Arcade.Image;
 	private playBtn!: Phaser.GameObjects.Image;
 
 	/* START-USER-CODE */
@@ -50,15 +53,15 @@ export default class LandingPage extends Phaser.Scene {
 
 	create() {
 		this.editorCreate();
-	
+
 		this.cameras.main.fadeIn(180, 0, 0, 0);
 
 		const playBtn = this.playBtn; 
 		playBtn.setInteractive({ cursor: 'pointer' });
-	
+
 		playBtn.on("pointerdown", () => {
 			this.cameras.main.fadeOut(180, 0, 0, 0);
-			
+
 			this.cameras.main.once('camerafadeoutcomplete', () => {
 				this.tweens.add({
 					targets: playBtn,
@@ -71,20 +74,20 @@ export default class LandingPage extends Phaser.Scene {
 				});
 			});
 		});
-		
+
 		playBtn.on("pointerover", () => {
 			playBtn.setTint(0xffff66); // Yellow highlight
 		});
-	
+
 		playBtn.on("pointerout", () => {
 			playBtn.clearTint();
 		});
-	
+
 	}
 
-	update() {
-		this.bgClouds.tilePositionX += 1; // No more "property does not exist" error
-	}
+    update() {
+        
+    }
 
     changeScene ()
     {

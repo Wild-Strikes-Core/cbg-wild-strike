@@ -61,6 +61,9 @@ export default class Preloader extends Phaser.Scene {
         this.load.pack('matchMaking', 'assets/Match/matchMaking-asset-pack.json');
         this.load.pack('map', 'assets/Match/map-asset-pack.json');
 
+        this.load.pack('sprite_heroP1', 'assets/Sprites/Hero_P1-pack.json');
+        this.load.pack('tiles', 'assets/Match/02 - Map/tiles-asset-pack.json');
+
         
     }
 
@@ -70,7 +73,7 @@ export default class Preloader extends Phaser.Scene {
         //  For example, you can define global animations here, so we can use them in other scenes.
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('M_Game');
+        this.scene.start('LandingPage');
     }
     /* END-USER-CODE */
 }

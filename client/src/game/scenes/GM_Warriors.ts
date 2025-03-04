@@ -18,19 +18,28 @@ export default class GM_Warriors extends Phaser.Scene {
 
 	editorCreate(): void {
 
+		// background
+		const background = this.physics.add.image(960, 540, "Space Background");
+		background.scaleX = 1.4612663364490137;
+		background.scaleY = 1.4612663364490137;
+		background.body.setSize(1920, 1080, false);
+
+		// bloomFx
+		background.preFX!.addBloom(16777215, 1, 1, 1, 1, 4);
+
+		// vignetteFx
+		background.preFX!.addVignette(0.5, 0.5, 0.6, 0.5);
+
 		// bgClouds
 		const bgClouds = this.add.image(1056, 560, "2G_bgClouds_1");
 		bgClouds.scaleX = 3.3066851319295054;
 		bgClouds.scaleY = 3.3066851319295054;
 
-		// image_1
-		this.add.image(1312, 640, "2G_statContainer");
-
 		// btnLEFT
-		const btnLEFT = this.add.image(304, 800, "8G_btnLEFT");
+		const btnLEFT = this.add.image(896, 896, "8G_btnLEFT");
 
 		// btnRIGHT
-		const btnRIGHT = this.add.image(512, 800, "8G_btnRIGHT");
+		const btnRIGHT = this.add.image(1104, 896, "8G_btnRIGHT");
 
 		// btnBACK
 		const btnBACK = this.add.image(224, 128, "5G_btnBack");
@@ -38,6 +47,7 @@ export default class GM_Warriors extends Phaser.Scene {
 		// image_4
 		this.add.image(960, 160, "2G_titleWARRIORS");
 
+		this.background = background;
 		this.bgClouds = bgClouds;
 		this.btnLEFT = btnLEFT;
 		this.btnRIGHT = btnRIGHT;
@@ -46,6 +56,7 @@ export default class GM_Warriors extends Phaser.Scene {
 		this.events.emit("scene-awake");
 	}
 
+	private background!: Phaser.Physics.Arcade.Image;
 	private bgClouds!: Phaser.GameObjects.Image;
 	private btnLEFT!: Phaser.GameObjects.Image;
 	private btnRIGHT!: Phaser.GameObjects.Image;

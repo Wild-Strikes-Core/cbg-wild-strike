@@ -18,6 +18,18 @@ export default class MainMenu extends Phaser.Scene {
 
 	editorCreate(): void {
 
+		// background
+		const background = this.physics.add.image(960, 540, "Space Background");
+		background.scaleX = 1.4612663364490137;
+		background.scaleY = 1.4612663364490137;
+		background.body.setSize(1920, 1080, false);
+
+		// bloomFx
+		background.preFX!.addBloom(16777215, 1, 1, 1, 1, 4);
+
+		// vignetteFx
+		background.preFX!.addVignette(0.5, 0.5, 0.6, 0.5);
+
 		// bgClouds
 		const bgClouds = this.add.layer();
 		bgClouds.blendMode = Phaser.BlendModes.SKIP_CHECK;
@@ -45,7 +57,7 @@ export default class MainMenu extends Phaser.Scene {
 		menuBTNS_1.add(image_2);
 
 		// btnARENA
-		const btnARENA = this.add.image(512, 544, "2G_btnArena");
+		const btnARENA = this.add.image(512, 592, "2G_btnArena");
 		btnARENA.scaleX = 1.4346425946756112;
 		btnARENA.scaleY = 1.4346425946756112;
 		menuBTNS_1.add(btnARENA);
@@ -61,6 +73,7 @@ export default class MainMenu extends Phaser.Scene {
 		image_9.scaleX = 0.8582378709610599;
 		image_9.scaleY = 0.8582378709610599;
 
+		this.background = background;
 		this.bgCloudsTWO = bgCloudsTWO;
 		this.bgCloudsONE = bgCloudsONE;
 		this.btnARENA = btnARENA;
@@ -70,6 +83,7 @@ export default class MainMenu extends Phaser.Scene {
 		this.events.emit("scene-awake");
 	}
 
+	private background!: Phaser.Physics.Arcade.Image;
 	private bgCloudsTWO!: Phaser.GameObjects.Image;
 	private bgCloudsONE!: Phaser.GameObjects.Image;
 	private btnARENA!: Phaser.GameObjects.Image;

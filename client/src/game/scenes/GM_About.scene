@@ -14,6 +14,62 @@
     },
     "displayList": [
         {
+            "type": "ArcadeImage",
+            "id": "2977cad1-cf05-4daf-9590-67e16dc995a0",
+            "label": "background",
+            "scope": "CLASS",
+            "texture": {
+                "key": "Space Background"
+            },
+            "x": 960,
+            "y": 540,
+            "scaleX": 1.4612663364490137,
+            "scaleY": 1.4612663364490137,
+            "body.width": 1920,
+            "body.height": 1080,
+            "list": [
+                {
+                    "type": "Bloom",
+                    "id": "f5f114ac-6d01-47aa-ac61-3ee8a40f7e9c",
+                    "label": "bloomFx",
+                    "preFX": true
+                },
+                {
+                    "type": "Vignette",
+                    "id": "68f8ede6-8b34-4454-9870-f73db3a0a59a",
+                    "label": "vignetteFx",
+                    "radius": 0.6,
+                    "preFX": true
+                }
+            ]
+        },
+        {
+            "type": "Image",
+            "id": "293dbef9-56b6-4afe-84c6-22a06d8bd6fc",
+            "label": "bgCloudsTWO",
+            "scope": "CLASS",
+            "texture": {
+                "key": "2G_bgClouds_1"
+            },
+            "x": 976,
+            "y": 768,
+            "scaleX": 2.4929575936045327,
+            "scaleY": 2.4929575936045327
+        },
+        {
+            "type": "Image",
+            "id": "803ea6bf-1101-44eb-9545-01bd55f87f4b",
+            "label": "bgCloudsONE",
+            "scope": "CLASS",
+            "texture": {
+                "key": "2G_bgClouds_2"
+            },
+            "x": 1088,
+            "y": 304,
+            "scaleX": 2.414775497570459,
+            "scaleY": 2.414775497570459
+        },
+        {
             "type": "Image",
             "id": "b240cb5e-5a57-4550-bb9f-391dcf6ad337",
             "label": "btnBACK",

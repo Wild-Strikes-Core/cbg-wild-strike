@@ -15,16 +15,60 @@
     },
     "displayList": [
         {
-            "type": "Image",
-            "id": "0e0a4fbc-fc66-4b44-b6b8-54123cad4a6f",
-            "label": "image_1",
+            "type": "ArcadeImage",
+            "id": "183b762a-9584-49bb-a50b-eef3c4270f23",
+            "label": "background",
+            "scope": "CLASS",
             "texture": {
-                "key": "M_charTWO"
+                "key": "Space Background"
             },
-            "x": 544,
-            "y": 576,
-            "scaleX": 1.4199690280632038,
-            "scaleY": 1.4199690280632038
+            "x": 960,
+            "y": 540,
+            "scaleX": 1.4612663364490137,
+            "scaleY": 1.4612663364490137,
+            "body.width": 1920,
+            "body.height": 1080,
+            "list": [
+                {
+                    "type": "Bloom",
+                    "id": "efa7d6c1-78f1-49b6-97a7-0bbeefbf1961",
+                    "label": "bloomFx",
+                    "preFX": true
+                },
+                {
+                    "type": "Vignette",
+                    "id": "c064ee6f-3cee-4414-946d-4dbae2cf54e4",
+                    "label": "vignetteFx",
+                    "radius": 0.6,
+                    "preFX": true
+                }
+            ]
+        },
+        {
+            "type": "Image",
+            "id": "7aa6b43b-71c3-4bd4-a4c9-2407fd42fc21",
+            "label": "bgCloudsTWO",
+            "scope": "CLASS",
+            "texture": {
+                "key": "2G_bgClouds_1"
+            },
+            "x": 1024,
+            "y": 752,
+            "scaleX": 2.4929575936045327,
+            "scaleY": 2.4929575936045327
+        },
+        {
+            "type": "Image",
+            "id": "9b8fc230-93d1-4f82-b405-507c77da2dcd",
+            "label": "bgCloudsONE",
+            "scope": "CLASS",
+            "texture": {
+                "key": "2G_bgClouds_2"
+            },
+            "x": 1136,
+            "y": 288,
+            "scaleX": 2.414775497570459,
+            "scaleY": 2.414775497570459
         },
         {
             "type": "Image",
@@ -33,22 +77,10 @@
             "texture": {
                 "key": "M_charONE"
             },
-            "x": 224,
-            "y": 640,
+            "x": 528,
+            "y": 608,
             "scaleX": 1.310153805177419,
             "scaleY": 1.310153805177419
-        },
-        {
-            "type": "Image",
-            "id": "567b982b-66ff-4a44-a601-686e498725db",
-            "label": "image",
-            "texture": {
-                "key": "M_charTHREE"
-            },
-            "x": 848,
-            "y": 640,
-            "scaleX": 1.4199690280632038,
-            "scaleY": 1.4199690280632038
         },
         {
             "type": "Image",
