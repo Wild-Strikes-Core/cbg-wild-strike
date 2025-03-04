@@ -14,29 +14,6 @@
     },
     "displayList": [
         {
-            "type": "ArcadeImage",
-            "id": "f1cac56b-4d16-4642-818c-f5296a31aa35",
-            "label": "background",
-            "scope": "CLASS",
-            "texture": {
-                "key": "Space Background"
-            },
-            "x": 960,
-            "y": 528,
-            "scaleX": 1.4612663364490137,
-            "scaleY": 1.4612663364490137,
-            "body.width": 1920,
-            "body.height": 1080,
-            "list": [
-                {
-                    "type": "Bloom",
-                    "id": "07be89ab-42b2-4b8b-b6af-4703c1d55199",
-                    "label": "bloomFx",
-                    "preFX": true
-                }
-            ]
-        },
-        {
             "type": "Layer",
             "id": "df419eb3-74e2-49a7-a963-a90ee1f0a466",
             "label": "bgLayer",
@@ -51,7 +28,9 @@
                 "key": "Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview"
             },
             "x": 960,
-            "y": 864
+            "y": 832,
+            "scaleX": 0.8596074937886975,
+            "scaleY": 0.8596074937886975
         },
         {
             "type": "Image",
@@ -62,8 +41,8 @@
             },
             "x": 960,
             "y": 480,
-            "scaleX": 0.5,
-            "scaleY": 0.5
+            "scaleX": 0.41564372224194734,
+            "scaleY": 0.41564372224194734
         }
     ],
     "plainObjects": [],

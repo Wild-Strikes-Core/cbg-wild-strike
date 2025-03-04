@@ -135,8 +135,8 @@ export default class M_Game extends Phaser.Scene {
 
 		// player
 		const player = this.physics.add.sprite(176, 624, "Hero_P1", 50);
-		player.scaleX = 3.2106757654804943;
-		player.scaleY = 3.2106757654804943;
+		player.scaleX = 7.215280440642037;
+		player.scaleY = 7.215280440642037;
 		player.body.gravity.y = 10000;
 		player.body.setOffset(24, 14);
 		player.body.setSize(18, 32, false);
@@ -210,7 +210,7 @@ export default class M_Game extends Phaser.Scene {
             this.player.play('IDLEHero');
         }
 
-        
+
 
         // Reset horizontal velocity when no keys pressed
         if (!left.isDown && !right.isDown) {

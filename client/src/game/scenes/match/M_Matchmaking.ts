@@ -18,28 +18,6 @@ export default class M_Matchmaking extends Phaser.Scene {
 
 	editorCreate(): void {
 
-		// background
-		const background = this.physics.add.image(960, 540, "Space Background");
-		background.scaleX = 1.4612663364490137;
-		background.scaleY = 1.4612663364490137;
-		background.body.setSize(1920, 1080, false);
-
-		// bloomFx
-		background.preFX!.addBloom(16777215, 1, 1, 1, 1, 4);
-
-		// vignetteFx
-		background.preFX!.addVignette(0.5, 0.5, 0.6, 0.5);
-
-		// bgCloudsTWO
-		const bgCloudsTWO = this.add.image(1024, 752, "2G_bgClouds_1");
-		bgCloudsTWO.scaleX = 2.4929575936045327;
-		bgCloudsTWO.scaleY = 2.4929575936045327;
-
-		// bgCloudsONE
-		const bgCloudsONE = this.add.image(1136, 288, "2G_bgClouds_2");
-		bgCloudsONE.scaleX = 2.414775497570459;
-		bgCloudsONE.scaleY = 2.414775497570459;
-
 		// image_2
 		const image_2 = this.add.image(528, 608, "M_charONE");
 		image_2.scaleX = 1.310153805177419;
@@ -48,10 +26,10 @@ export default class M_Matchmaking extends Phaser.Scene {
 		// image_3
 		this.add.image(160, 176, "M_playerCard");
 
-		// image_4
-		const image_4 = this.add.image(1424, 704, "M_btnCancel");
-		image_4.scaleX = 1.419003049417908;
-		image_4.scaleY = 1.419003049417908;
+		// btnCancel
+		const btnCancel = this.add.image(1424, 704, "M_btnCancel");
+		btnCancel.scaleX = 1.419003049417908;
+		btnCancel.scaleY = 1.419003049417908;
 
 		// text_1
 		const text_1 = this.add.text(1168, 416, "", {});
@@ -67,17 +45,13 @@ export default class M_Matchmaking extends Phaser.Scene {
 		loader.text = "...";
 		loader.setStyle({ "fontFamily": "Arial", "fontSize": "48px", "fontStyle": "bold" });
 
-		this.background = background;
-		this.bgCloudsTWO = bgCloudsTWO;
-		this.bgCloudsONE = bgCloudsONE;
+		this.btnCancel = btnCancel;
 		this.loader = loader;
 
 		this.events.emit("scene-awake");
 	}
 
-	private background!: Phaser.Physics.Arcade.Image;
-	private bgCloudsTWO!: Phaser.GameObjects.Image;
-	private bgCloudsONE!: Phaser.GameObjects.Image;
+	private btnCancel!: Phaser.GameObjects.Image;
 	private loader!: Phaser.GameObjects.Text;
 
 	/* START-USER-CODE */
@@ -88,22 +62,34 @@ export default class M_Matchmaking extends Phaser.Scene {
 
 		this.editorCreate();
 
+        this.btnCancel.setInteractive();
+        this.btnCancel.on("pointerdown", () => {
+            this.cameras.main.fadeOut(180, 0, 0, 0);
+
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.tweens.add({
+                    targets: this.btnCancel,
+                    scale: '*=0.9',
+                    duration: 100,
+                    yoyo: true,
+                    onComplete: () => {
+                        this.scene.start("MainMenu");
+                    }
+                });
+            });
+        });
+
+        this.btnCancel.on("pointerover", () => {
+            this.btnCancel.setTint(0xffff66);
+        });
+
+        this.btnCancel.on("pointerout", () => {
+            this.btnCancel.clearTint();
+        });
+
 		this.fakeLoad(5);
 	}
 
-	update ()
-	{
-		this.bgCloudsONE.x -= 0.8;
-		this.bgCloudsTWO.x -= 0.8;
-
-		// Reset cloud positions when they move off screen
-        if (this.bgCloudsONE.x < -1000) {
-            this.bgCloudsONE.x = 2600;
-        }
-        if (this.bgCloudsTWO.x < -1000) {
-            this.bgCloudsTWO.x = 2600;
-        }
-	}
 
 	private fakeLoad(seconds: integer) {
 		let dots = [".", "..", "..."];
