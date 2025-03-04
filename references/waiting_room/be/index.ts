@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
       return waitingUser != socket.id;
     });
 
-    // Remove from waiting list if user disconnects
+    // Remove from waiting list if user disconnects~
 
     // When user is in match then disconnects
     const tempMatches = Object.entries(matches);
