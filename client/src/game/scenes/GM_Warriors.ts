@@ -18,38 +18,34 @@ export default class GM_Warriors extends Phaser.Scene {
 
 	editorCreate(): void {
 
-		// bgClouds
-		const bgClouds = this.add.image(1056, 560, "2G_bgClouds_1");
-		bgClouds.scaleX = 3.3066851319295054;
-		bgClouds.scaleY = 3.3066851319295054;
-
-		// image_1
-		this.add.image(1312, 640, "2G_statContainer");
-
-		// btnLEFT
-		const btnLEFT = this.add.image(304, 800, "8G_btnLEFT");
-
-		// btnRIGHT
-		const btnRIGHT = this.add.image(512, 800, "8G_btnRIGHT");
-
 		// btnBACK
 		const btnBACK = this.add.image(224, 128, "5G_btnBack");
 
 		// image_4
 		this.add.image(960, 160, "2G_titleWARRIORS");
 
-		this.bgClouds = bgClouds;
+		// container_1
+		const container_1 = this.add.container(800, 832);
+		container_1.blendMode = Phaser.BlendModes.SKIP_CHECK;
+
+		// btnLEFT
+		const btnLEFT = this.add.image(64, 64, "8G_btnLEFT");
+		container_1.add(btnLEFT);
+
+		// btnRIGHT
+		const btnRIGHT = this.add.image(272, 64, "8G_btnRIGHT");
+		container_1.add(btnRIGHT);
+
+		this.btnBACK = btnBACK;
 		this.btnLEFT = btnLEFT;
 		this.btnRIGHT = btnRIGHT;
-		this.btnBACK = btnBACK;
 
 		this.events.emit("scene-awake");
 	}
 
-	private bgClouds!: Phaser.GameObjects.Image;
+	private btnBACK!: Phaser.GameObjects.Image;
 	private btnLEFT!: Phaser.GameObjects.Image;
 	private btnRIGHT!: Phaser.GameObjects.Image;
-	private btnBACK!: Phaser.GameObjects.Image;
 
 	/* START-USER-CODE */
 
@@ -94,17 +90,6 @@ export default class GM_Warriors extends Phaser.Scene {
                 button.setInteractive();
             });
     }
-
-	update () {
-
-		this.bgClouds.x -= 0.8;
-
-		// Reset cloud positions when they move off screen
-        if (this.bgClouds.x < -1000) {
-            this.bgClouds.x = 2600;
-        }
-	}
-
 	/* END-USER-CODE */
 }
 

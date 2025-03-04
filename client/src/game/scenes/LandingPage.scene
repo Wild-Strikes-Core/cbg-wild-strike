@@ -17,24 +17,7 @@
             "type": "Layer",
             "id": "df419eb3-74e2-49a7-a963-a90ee1f0a466",
             "label": "bgLayer",
-            "blendMode": -1,
-            "list": [
-                {
-                    "type": "TileSprite",
-                    "id": "23f7c22a-88cf-48ba-89c5-2cf710fa3bfe",
-                    "label": "bgClouds",
-                    "scope": "CLASS",
-                    "texture": {
-                        "key": "Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview"
-                    },
-                    "x": 976,
-                    "y": 320,
-                    "scaleX": 2,
-                    "scaleY": 2,
-                    "width": 1029,
-                    "height": 242
-                }
-            ]
+            "blendMode": -1
         },
         {
             "type": "Image",
@@ -45,7 +28,9 @@
                 "key": "Purple_Green_Pixel_Illustration_Game_Presentation-removebg-preview"
             },
             "x": 960,
-            "y": 864
+            "y": 832,
+            "scaleX": 0.8596074937886975,
+            "scaleY": 0.8596074937886975
         },
         {
             "type": "Image",
@@ -56,8 +41,8 @@
             },
             "x": 960,
             "y": 480,
-            "scaleX": 0.5,
-            "scaleY": 0.5
+            "scaleX": 0.41564372224194734,
+            "scaleY": 0.41564372224194734
         }
     ],
     "plainObjects": [],

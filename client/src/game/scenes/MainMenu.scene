@@ -17,35 +17,7 @@
             "type": "Layer",
             "id": "d4c5623c-46f1-40b6-8acd-dfdd54b0b462",
             "label": "bgClouds",
-            "blendMode": -1,
-            "list": [
-                {
-                    "type": "Image",
-                    "id": "92659b65-3400-4e45-9f96-91dcac321b2b",
-                    "label": "bgCloudsTWO",
-                    "scope": "CLASS",
-                    "texture": {
-                        "key": "2G_bgClouds_1"
-                    },
-                    "x": 736,
-                    "y": 688,
-                    "scaleX": 2.4929575936045327,
-                    "scaleY": 2.4929575936045327
-                },
-                {
-                    "type": "Image",
-                    "id": "57b157c9-bab1-4910-9da3-afd1f761075a",
-                    "label": "bgCloudsONE",
-                    "scope": "CLASS",
-                    "texture": {
-                        "key": "2G_bgClouds_2"
-                    },
-                    "x": 848,
-                    "y": 336,
-                    "scaleX": 2.414775497570459,
-                    "scaleY": 2.414775497570459
-                }
-            ]
+            "blendMode": -1
         },
         {
             "type": "Layer",
@@ -56,11 +28,12 @@
                 {
                     "type": "Image",
                     "id": "c0bda69f-3537-4e26-85ff-7b235d5de6fd",
-                    "label": "image_2",
+                    "label": "leaderboardsContainer",
+                    "scope": "CLASS",
                     "texture": {
                         "key": "2G_btnsBackground"
                     },
-                    "x": 1392,
+                    "x": 464,
                     "y": 544,
                     "scaleX": 2.2795097751295637,
                     "scaleY": 2.2795097751295637
@@ -73,8 +46,8 @@
                     "texture": {
                         "key": "2G_btnArena"
                     },
-                    "x": 512,
-                    "y": 544,
+                    "x": 1392,
+                    "y": 592,
                     "scaleX": 1.4346425946756112,
                     "scaleY": 1.4346425946756112
                 }
@@ -88,8 +61,8 @@
             "texture": {
                 "key": "2G_btnAbout"
             },
-            "x": 656,
-            "y": 944
+            "x": 1536,
+            "y": 960
         },
         {
             "type": "Image",
@@ -99,20 +72,34 @@
             "texture": {
                 "key": "2G_btnWarriors"
             },
-            "x": 352,
-            "y": 944
+            "x": 1232,
+            "y": 960
         },
         {
             "type": "Image",
             "id": "357c1300-22c8-4806-8b50-a6068975f8a8",
-            "label": "image_9",
+            "label": "nameContainer",
+            "scope": "CLASS",
             "texture": {
                 "key": "2G_Player_Name_Card"
             },
-            "x": 1392,
+            "x": 464,
             "y": 208,
             "scaleX": 0.8582378709610599,
             "scaleY": 0.8582378709610599
+        },
+        {
+            "type": "Text",
+            "id": "6002395e-00cb-4ced-b78f-851520b4b5bf",
+            "label": "playerName",
+            "scope": "CLASS",
+            "x": 272,
+            "y": 176,
+            "text": "Player Naem",
+            "align": "center",
+            "fontFamily": "Arial",
+            "fontSize": "64px",
+            "fontStyle": "bold"
         }
     ],
     "plainObjects": [],

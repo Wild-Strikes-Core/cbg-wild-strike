@@ -16,39 +16,16 @@
     "displayList": [
         {
             "type": "Image",
-            "id": "0e0a4fbc-fc66-4b44-b6b8-54123cad4a6f",
-            "label": "image_1",
-            "texture": {
-                "key": "M_charTWO"
-            },
-            "x": 544,
-            "y": 576,
-            "scaleX": 1.4199690280632038,
-            "scaleY": 1.4199690280632038
-        },
-        {
-            "type": "Image",
             "id": "4b91c3df-e1ce-413c-babd-0d9e866e2728",
-            "label": "image_2",
+            "label": "playerCharSprite",
+            "scope": "CLASS",
             "texture": {
                 "key": "M_charONE"
             },
-            "x": 224,
-            "y": 640,
+            "x": 528,
+            "y": 608,
             "scaleX": 1.310153805177419,
             "scaleY": 1.310153805177419
-        },
-        {
-            "type": "Image",
-            "id": "567b982b-66ff-4a44-a601-686e498725db",
-            "label": "image",
-            "texture": {
-                "key": "M_charTHREE"
-            },
-            "x": 848,
-            "y": 640,
-            "scaleX": 1.4199690280632038,
-            "scaleY": 1.4199690280632038
         },
         {
             "type": "Image",
@@ -63,7 +40,8 @@
         {
             "type": "Image",
             "id": "8afc2e77-3311-4e75-b89a-8a84ff92fcc1",
-            "label": "image_4",
+            "label": "btnCancel",
+            "scope": "CLASS",
             "texture": {
                 "key": "M_btnCancel"
             },
@@ -97,6 +75,19 @@
             "text": "...",
             "fontFamily": "Arial",
             "fontSize": "48px",
+            "fontStyle": "bold"
+        },
+        {
+            "type": "Text",
+            "id": "4f2eccf9-f6cc-4d17-adb5-f70a995e60bd",
+            "label": "playerName",
+            "scope": "CLASS",
+            "x": 32,
+            "y": 144,
+            "text": "Player Naem",
+            "align": "center",
+            "fontFamily": "Arial",
+            "fontSize": "64px",
             "fontStyle": "bold"
         }
     ],

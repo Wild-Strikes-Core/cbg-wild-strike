@@ -1,0 +1,111 @@
+{
+    "id": "a010dd6e-890f-4240-be80-964531df0b2d",
+    "sceneType": "SCENE",
+    "settings": {
+        "exportClass": true,
+        "autoImport": true,
+        "preloadPackFiles": [],
+        "createMethodName": "editorCreate",
+        "sceneKey": "M_MatchFound",
+        "compilerOutputLanguage": "TYPE_SCRIPT",
+        "borderWidth": 1920,
+        "borderHeight": 1080
+    },
+    "displayList": [
+        {
+            "type": "Image",
+            "id": "ec23d861-2880-499e-bf1b-ea91b5a6b30d",
+            "label": "image_3",
+            "scope": "CLASS",
+            "texture": {
+                "key": "M_playerCard"
+            },
+            "x": 146,
+            "y": 216
+        },
+        {
+            "type": "Text",
+            "id": "383f0c32-cda4-41d5-a66f-17518cddb42d",
+            "label": "playerName",
+            "scope": "CLASS",
+            "x": 18,
+            "y": 184,
+            "text": "Player Naem",
+            "align": "center",
+            "fontFamily": "Arial",
+            "fontSize": "64px",
+            "fontStyle": "bold"
+        },
+        {
+            "type": "Image",
+            "id": "e0fef810-e074-45e7-a65f-49620d02e540",
+            "label": "image",
+            "scope": "CLASS",
+            "texture": {
+                "key": "M_playerCard"
+            },
+            "x": 1761,
+            "y": 216
+        },
+        {
+            "type": "Text",
+            "id": "2b336328-f7f6-485e-abb0-e5bfbba35b1d",
+            "label": "playerName_1",
+            "scope": "CLASS",
+            "x": 1521,
+            "y": 184,
+            "text": "Player Naem",
+            "align": "center",
+            "fontFamily": "Arial",
+            "fontSize": "64px",
+            "fontStyle": "bold"
+        },
+        {
+            "type": "Image",
+            "id": "051a7cc0-db0c-4fc7-b96d-107a18253f11",
+            "label": "playerCharSprite",
+            "scope": "CLASS",
+            "texture": {
+                "key": "M_charONE"
+            },
+            "x": 447,
+            "y": 555,
+            "scaleX": 1.310153805177419,
+            "scaleY": 1.310153805177419
+        },
+        {
+            "type": "Image",
+            "id": "ab4e5ec5-05aa-4eed-ac41-dc7d1c21b2e6",
+            "label": "enemyCharSprite",
+            "scope": "CLASS",
+            "texture": {
+                "key": "M_charONE"
+            },
+            "x": 1359,
+            "y": 555,
+            "scaleX": 1.310153805177419,
+            "scaleY": 1.310153805177419,
+            "flipX": true
+        },
+        {
+            "type": "Text",
+            "id": "674b3f89-5a1f-41e0-9363-3147ae323dfc",
+            "label": "vs",
+            "scope": "CLASS",
+            "x": 834,
+            "y": 486,
+            "text": "V.S",
+            "align": "center",
+            "fontFamily": "Arial",
+            "fontSize": "128px",
+            "fontStyle": "bold"
+        }
+    ],
+    "plainObjects": [],
+    "meta": {
+        "app": "Phaser Editor - Scene Editor",
+        "url": "https://phaser.io/editor",
+        "contentType": "phasereditor2d.core.scene.SceneContentType",
+        "version": 5
+    }
+}
