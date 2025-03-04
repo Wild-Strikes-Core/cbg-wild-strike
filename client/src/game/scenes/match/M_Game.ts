@@ -743,6 +743,12 @@ export default class M_Game extends Phaser.Scene {
         
         // ======== MULTIPLAYER SECTION ========
         
+        // Remove any previous listeners to prevent duplicates
+        this.socket.off("currentPlayers");
+        this.socket.off("newPlayer");
+        this.socket.off("playerDisconnected");
+        this.socket.off("playerMoved");
+        
         // Register player with server
         this.socket.emit("playerJoined", {
             x: this.player.x,
@@ -756,7 +762,7 @@ export default class M_Game extends Phaser.Scene {
             
             // Create sprites for existing players, excluding this client
             Object.keys(players).forEach(id => {
-                if (id !== this.socket.id) {
+                if (id !== this.socket.id && !this.otherPlayers[id]) {
                     this.addOtherPlayer(id, players[id]);
                 }
             });
@@ -765,12 +771,12 @@ export default class M_Game extends Phaser.Scene {
         // Handle new player connections
         this.socket.on("newPlayer", (playerInfo) => {
             console.log("New player joined:", playerInfo.id);
-            if (playerInfo.id !== this.socket.id) {
+            // Only add if this isn't our player and doesn't already exist
+            if (playerInfo.id !== this.socket.id && !this.otherPlayers[playerInfo.id]) {
                 this.addOtherPlayer(playerInfo.id, playerInfo);
+                // Refresh UI camera ignore settings
+                this.refreshUICameraIgnoreList();
             }
-            
-            // NEW: Make sure all UI camera ignore settings are refreshed
-            this.refreshUICameraIgnoreList();
         });
         
         // Handle player disconnection
@@ -1131,6 +1137,20 @@ export default class M_Game extends Phaser.Scene {
         if (this.socket && this.socket.connected) {
             this.socket.disconnect();
         }
+
+        // Clean up socket event listeners
+        this.socket.off("currentPlayers");
+        this.socket.off("newPlayer");
+        this.socket.off("playerDisconnected");
+        this.socket.off("playerMoved");
+        
+        // Clean up all other player sprites
+        Object.values(this.otherPlayers).forEach(player => {
+            const nameTag = player.getData('nameTag');
+            if (nameTag) nameTag.destroy();
+            player.destroy();
+        });
+        this.otherPlayers = {};
     }
     /* END-USER-CODE */
 }
