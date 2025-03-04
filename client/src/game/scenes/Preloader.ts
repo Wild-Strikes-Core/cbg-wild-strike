@@ -6,6 +6,10 @@
 // No need to import bgClouds here - it's a class, not an asset
 /* END-USER-IMPORTS */
 
+/**
+ * Preloader scene handles loading all game assets before the game starts
+ * This prevents loading delays during gameplay and ensures smooth transitions
+ */
 export default class Preloader extends Phaser.Scene {
 
 	constructor() {
@@ -17,70 +21,83 @@ export default class Preloader extends Phaser.Scene {
 	}
 
 	editorCreate(): void {
-
+		// Emit scene-awake event for any listeners
 		this.events.emit("scene-awake");
 	}
 
 	/* START-USER-CODE */
 
-	// Write your code here
-    init ()
-    {
-
+	/**
+	 * Initialize the preloader scene
+	 * Sets up progress bar and event listeners
+	 */
+    init() {
 		this.editorCreate();
 
-        //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
+        // Create a visual progress bar to show loading status
+        // This helps users understand that assets are loading
         const bar = this.add.rectangle(726, 524, 4, 28, 0xffffff)
 
-        //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
+        // Listen for loading progress updates
         this.load.on('progress', (progress: number) => {
-
-            //  Update the progress bar (our bar is 464px wide, so 100% = 464px)
+            // Update the progress bar width based on loading percentage
+            // The bar grows from 4px to 464px when fully loaded
             bar.width = 4 + (460 * progress);
-
         });
     }
 
-    preload ()
-    {
+    /**
+     * Preload all game assets
+     * Groups assets by categories for better organization
+     */
+    preload() {
+        // UI ASSETS
+        // Main menu and navigation screens
+        this.load.pack('gameMenu', 'assets/gameMenu-asset-pack.json');         // Main game menu UI
+        this.load.pack('landingPage', 'assets/landingPage-asset-pack.json');   // Initial landing page UI
+        this.load.pack('settingsMenu', 'assets/settingsMenu-asset-pack.json'); // Settings panel UI
         
-        this.load.pack('gameMenu', 'assets/gameMenu-asset-pack.json');
-        this.load.pack('landingPage', 'assets/landingPage-asset-pack.json');
-        this.load.pack('settingsMenu', 'assets/settingsMenu-asset-pack.json');
-      
-        this.load.pack('listofteamsMenu','assets/listofteamsMenu-asset-pack.json');
-        this.load.pack('victoryPage','assets/victoryPage-asset-pack.json');
-        this.load.pack('defeatPage','assets/defeatPage-asset-pack.json');
-        this.load.pack('drawPage','assets/drawPage-asset-pack.json');
-      
-        this.load.pack('aboutMenu', 'assets/aboutMenu-asset-pack.json');
-        this.load.pack('invMenu', 'assets/invMenu-asset-pack.json');
-        this.load.pack('leadMENU', 'assets/leadMENU-asset-pack.json');
-
-        this.load.pack('selectTeam', 'assets/selectTeam-asset-pack.json');
-
-        this.load.pack('matchMaking', 'assets/Match/matchMaking-asset-pack.json');
-        this.load.pack('map', 'assets/Match/map-asset-pack.json');
-
-        this.load.pack('sprite_heroP1', 'assets/Sprites/Hero_P1-pack.json');
-        this.load.pack('tiles', 'assets/Match/02 - Map/tiles-asset-pack.json');
+        // Team and inventory management screens
+        this.load.pack('listofteamsMenu','assets/listofteamsMenu-asset-pack.json'); // Team listing screen
+        this.load.pack('selectTeam', 'assets/selectTeam-asset-pack.json');          // Team selection interface
+        this.load.pack('invMenu', 'assets/invMenu-asset-pack.json');                // Inventory system UI
         
-        // Ensure the cloud image is loaded for bgClouds
+        // GAME RESULT SCREENS
+        this.load.pack('victoryPage','assets/victoryPage-asset-pack.json');    // Winner UI elements
+        this.load.pack('defeatPage','assets/defeatPage-asset-pack.json');      // Defeated UI elements
+        this.load.pack('drawPage','assets/drawPage-asset-pack.json');          // Tie game UI elements
+        
+        // ADDITIONAL SCREENS
+        this.load.pack('aboutMenu', 'assets/aboutMenu-asset-pack.json');       // About/credits screen
+        this.load.pack('leadMENU', 'assets/leadMENU-asset-pack.json');         // Leaderboards UI
+
+        // GAMEPLAY ASSETS
+        // Match-related assets for the active gameplay
+        this.load.pack('matchMaking', 'assets/Match/matchMaking-asset-pack.json'); // Matchmaking UI
+        this.load.pack('map', 'assets/Match/map-asset-pack.json');                 // Game map/battlefield
+        this.load.pack('tiles', 'assets/Match/02 - Map/tiles-asset-pack.json');    // Map tiles
+
+        // CHARACTER ASSETS
+        this.load.pack('sprite_heroP1', 'assets/Sprites/Hero_P1-pack.json');   // Player 1 sprite assets
+        
+        // ENVIRONMENT ASSETS
+        // Background elements and environmental effects
         this.load.image("2G_bgClouds_2", "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png");
-        
-        // Optional: Add a cloud atlas if you want multiple cloud variations
-        // this.load.atlas("clouds", "assets/images/clouds.png", "assets/images/clouds.json");
     }
 
-    create ()
-    {
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
+    /**
+     * Called when all assets have been loaded
+     * Initialize global game objects and proceed to the main game
+     */
+    create() {
+        // Everything is now loaded and ready to use
+        // This would be a good place to initialize game-wide systems
 
-        // Log that assets were loaded successfully (can be useful for debugging)
+        // Log success message for debugging purposes
         console.log("All assets loaded successfully");
 
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+        // Transition to the main game scene
+        // You could add a fade transition or other visual effect here
         this.scene.start('M_Game');
     }
     /* END-USER-CODE */

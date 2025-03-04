@@ -7,6 +7,27 @@ import { handlePlayerMovement } from "../../utils/playerMovement";
 import { StaminaManager } from "../../utils/staminaManager";
 /* END-USER-IMPORTS */
 
+/**
+ * Game scene representing the main gameplay area for a 2D platformer.
+ * 
+ * @class M_Game
+ * @extends Phaser.Scene
+ * @description This scene handles the core gameplay mechanics including:
+ *  - Player character movement and physics
+ *  - Terrain collision detection
+ *  - Camera controls with dynamic zoom and follow
+ *  - Parallax background effects
+ *  - Player animations based on movement state
+ *  - Stamina management system for running mechanics
+ *  - Health and stamina display
+ * 
+ * The scene is set up with an initial dramatic camera zoom effect and
+ * configures the player with movement capabilities including walking,
+ * running, and jumping, all affected by stamina consumption.
+ * 
+ * UI elements such as health and stamina are positioned dynamically
+ * to follow above the player character.
+ */
 export default class M_Game extends Phaser.Scene {
 
 	constructor() {
@@ -544,6 +565,7 @@ export default class M_Game extends Phaser.Scene {
 		// Set initial animation
 		this.player.play('IDLEHero');
 	}
+
 	update() {
 		// Use the simplified movement system with stamina integration
         handlePlayerMovement(

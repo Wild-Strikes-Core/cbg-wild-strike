@@ -1,20 +1,37 @@
 import { StaminaManager } from "./staminaManager";
 
+/**
+ * Configuration interface for player movement parameters
+ * Controls the speed values for different movement types
+ */
 export interface MovementConfig {
-    walkSpeed: number;
-    runSpeed: number;
-    jumpSpeed: number;
+    walkSpeed: number;   // Base movement speed when walking
+    runSpeed: number;    // Faster movement speed when running (uses stamina)
+    jumpSpeed: number;   // Vertical velocity applied when jumping
 }
 
+/**
+ * Animation keys interface to define the animation names for player states
+ * These should correspond to animation keys registered with the sprite
+ */
 export interface AnimationKeys {
-    idle: string;
-    walk: string;
-    jump: string;
-    run?: string;
+    idle: string;    // Animation played when player is standing still
+    walk: string;    // Animation played when player is walking
+    jump: string;    // Animation played when player is in the air
+    run: string;    // Optional animation played when player is running
 }
 
 /**
  * Handle player movement with stamina integration
+ * 
+ * This function manages player movement, animations, and stamina consumption
+ * based on input controls and configurable parameters.
+ * 
+ * @param player - The player sprite to control
+ * @param cursors - Keyboard input cursors from Phaser's input system
+ * @param config - Movement configuration settings (speeds)
+ * @param animationKeys - Keys for the different animation states
+ * @param staminaManager - Optional stamina manager to handle stamina consumption
  */
 export function handlePlayerMovement(
     player: Phaser.Physics.Arcade.Sprite,
@@ -23,47 +40,54 @@ export function handlePlayerMovement(
     animationKeys: AnimationKeys,
     staminaManager?: StaminaManager
 ) {
+    // Check if the player is touching the ground
     const onGround = player.body.touching.down || player.body.blocked.down;
     let isRunning = false;
     let currentAnimation = '';
     
-    // Calculate movement
+    // HORIZONTAL MOVEMENT HANDLING
     if (cursors.left.isDown) {
-        // Check if shift is pressed and we have stamina manager and enough stamina for running
+        // LEFT MOVEMENT
+        // Check if player is attempting to run (shift key + enough stamina)
         if (cursors.shift.isDown && staminaManager && staminaManager.hasEnoughStamina(0.5)) {
-            // Running
+            // Running left at higher speed
             player.setVelocityX(-config.runSpeed);
             isRunning = true;
-            //staminaManager.useStamina(0.5); // Use stamina while running
+            //staminaManager.useStamina(0.5); // Use stamina while running 
         } else {
-            // Walking
+            // Walking left at normal speed
             player.setVelocityX(-config.walkSpeed);
         }
         
+        // Flip sprite to face left
         player.setFlipX(true);
         
+        // Set appropriate animation when on ground
         if (onGround) {
             currentAnimation = isRunning && animationKeys.run ? animationKeys.run : animationKeys.walk;
         }
     } else if (cursors.right.isDown) {
-        // Check if shift is pressed and we have stamina manager and enough stamina for running
+        // RIGHT MOVEMENT
+        // Check if player is attempting to run (shift key + enough stamina)
         if (cursors.shift.isDown && staminaManager && staminaManager.hasEnoughStamina(0.5)) {
-            // Running
+            // Running right at higher speed
             player.setVelocityX(config.runSpeed);
             isRunning = true;
-            //staminaManager.useStamina(0.5); // Use stamina while running
+            //staminaManager.useStamina(0.5); // Use stamina while running - currently commented out
         } else {
-            // Walking
+            // Walking right at normal speed
             player.setVelocityX(config.walkSpeed);
         }
         
+        // Flip sprite to face right (no flip)
         player.setFlipX(false);
         
+        // Set appropriate animation when on ground
         if (onGround) {
             currentAnimation = isRunning && animationKeys.run ? animationKeys.run : animationKeys.walk;
         }
     } else {
-        // Idle state
+        // NO HORIZONTAL MOVEMENT - IDLE STATE
         player.setVelocityX(0);
         
         if (onGround) {
@@ -71,28 +95,34 @@ export function handlePlayerMovement(
         }
     }
     
-    // Handle jumping
+    // JUMP HANDLING
+    // Player can only jump when on the ground
     if (cursors.up.isDown && onGround) {
-        // Jump with extra stamina cost
+        // Jump with extra stamina cost if stamina system is active
         if (staminaManager && staminaManager.hasEnoughStamina(10)) {
+            // Apply vertical velocity for jump
             player.setVelocityY(config.jumpSpeed);
             currentAnimation = animationKeys.jump;
-            //staminaManager.useStamina(10); // Use stamina for jumping
+            //staminaManager.useStamina(10); // Use stamina for jumping - currently commented out
         } else if (!staminaManager) {
-            // If no stamina manager, still allow jumping
+            // If no stamina system is used, player can always jump
             player.setVelocityY(config.jumpSpeed);
             currentAnimation = animationKeys.jump;
         }
+        // Note: If stamina system is active but not enough stamina, jump doesn't occur
     }
     
-    // Set animation if in air and no other animation is set
+    // AIRBORNE HANDLING
+    // If player is in the air and no other animation has been set, use jump animation
     if (!onGround && !currentAnimation) {
         currentAnimation = animationKeys.jump;
     }
     
-    // Only change animation if we need to
+    // ANIMATION PLAYBACK
+    // Only change the animation if it's different from the current one
+    // This prevents animation restart flicker
     if (currentAnimation && player.anims.currentAnim?.key !== currentAnimation) {
-        console.log(`Playing animation: ${currentAnimation}`); // Debug log
+        console.log(`Playing animation: ${currentAnimation}`); // Debug logging
         player.play(currentAnimation, true);
     }
 }
