@@ -794,10 +794,86 @@ export default class M_Game extends Phaser.Scene {
                 this.updateOtherPlayer(playerInfo.id, playerInfo);
             }
         });
+
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            if (pointer.leftButtonDown()) {
+                this.handleAttack('left');
+            } else if (pointer.rightButtonDown()) {
+                this.handleAttack('right');
+            }
+        });
+
+        this.game.canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
+
 	}
+    private handleAttack(attackType: 'left' | 'right'): void {
+        
+        // Don't allow attacks if already attacking
+        if (this.player.anims.currentAnim?.key.includes('_Attack') || this.player.getData('isAttacking')) {
+            console.log("Attack canceled - already attacking");
+            return;
+        }
+        
+        // Play appropriate animation based on attack type
+        const animationKey = attackType === 'left' ? '_Attack' : '_Attack2';
+        
+        // console.log("Attempting to play animation:", animationKey);
+        
+        this.player.setData('isAttacking', true);
+        
+        if (attackType === 'right') {
+            this.player.setVelocityY(0);
+        }
+
+        this.player.play({
+            key: animationKey,
+            frameRate: attackType === 'left' ? 10 : 8, // Slower for heavy attack
+            repeat: 0
+        });
+        
+        if (attackType === 'right') {
+            this.player.setVelocityX(0);
+        }
+        
+        // Send attack to server for multiplayer
+        this.socket.emit("playerMovement", {
+            x: this.player.x,
+            y: this.player.y,
+            animation: animationKey,
+            flipX: this.player.flipX,
+            isAttacking: true
+        });
+        
+        // Return to idle state ONLY when animation is fully complete
+        this.player.once('animationcomplete', () => {
+            console.log("Attack animation complete, returning to idle");
+            this.player.setData('isAttacking', false);
+            // Use the correct idle animation
+            this.player.play('_Idle_Idle');
+            
+            // IMPORTANT: Tell other players that we're done attacking
+            this.socket.emit("playerMovement", {
+                x: this.player.x,
+                y: this.player.y,
+                animation: '_Idle_Idle',
+                flipX: this.player.flipX,
+                isAttacking: false
+            });
+        });
+    }
 
     
 	update(time: number, delta: number) {
+        // Check if player is currently attacking
+        if (this.player.getData('isAttacking')) {
+            // Only handle gravity and position HP text while attacking
+            this.positionHPTextAbovePlayer();
+            return; // Skip normal movement handling during attack animation
+        }
+        
 		// Use the simplified movement system with stamina integration
         // Handle player 1 movement with WASD controls
         const movementResult = handlePlayerMovement(
@@ -1056,21 +1132,7 @@ export default class M_Game extends Phaser.Scene {
             return;
         }
         
-        console.log(`Updating player ${id} position to (${playerInfo.x.toFixed(2)}, ${playerInfo.y.toFixed(2)})`);
-        
-        // Update flip X based on velocity
-        if (playerInfo.flipX !== undefined) {
-            otherPlayer.setFlipX(playerInfo.flipX);
-        } else if (playerInfo.velocityX !== undefined) {
-            // If flipX not provided, infer from velocity
-            if (playerInfo.velocityX < 0) {
-                otherPlayer.setFlipX(true);
-            } else if (playerInfo.velocityX > 0) {
-                otherPlayer.setFlipX(false);
-            }
-        }
-        
-        // Directly set position for immediate feedback (optional, can remove if too jittery)
+        // Update position
         otherPlayer.setPosition(playerInfo.x, playerInfo.y);
         
         // Smoothly move the player to the new position
@@ -1078,13 +1140,59 @@ export default class M_Game extends Phaser.Scene {
             targets: otherPlayer,
             x: playerInfo.x,
             y: playerInfo.y,
-            duration: 80, // Even shorter duration for smoother movement
+            duration: 80,
             ease: 'Linear'
         });
         
-        // Update animation state if provided
-        if (playerInfo.animation && otherPlayer.anims.currentAnim?.key !== playerInfo.animation) {
-            otherPlayer.play(playerInfo.animation);
+        // Update flip X based on velocity or provided flipX
+        if (playerInfo.flipX !== undefined) {
+            otherPlayer.setFlipX(playerInfo.flipX);
+        } else if (playerInfo.velocityX !== undefined && playerInfo.velocityX !== 0) {
+            otherPlayer.setFlipX(playerInfo.velocityX < 0);
+        }
+        
+        // Handle attack state
+        const wasAttacking = otherPlayer.getData('isAttacking') === true;
+        
+        // Update attack state data if provided
+        if (playerInfo.isAttacking !== undefined) {
+            otherPlayer.setData('isAttacking', playerInfo.isAttacking);
+        }
+        
+        // Handle animation changes
+        if (playerInfo.animation) {
+            const currentAnim = otherPlayer.anims.currentAnim?.key || '';
+            const newAnim = playerInfo.animation;
+            
+            // Detect animation changes
+            const isNewAttack = newAnim.includes('_Attack');
+            const isNewIdle = newAnim.includes('_Idle');
+            const isCurrentAttack = currentAnim.includes('_Attack');
+            
+            // Special case: Always force exit from attack to idle
+            if (wasAttacking && playerInfo.isAttacking === false) {
+                // If we were attacking but now we're not, immediately go to idle
+                otherPlayer.play('_Idle_Idle');
+                console.log(`Player ${id} forced to idle after attack ended`);
+            }
+            // Case 1: Starting a new attack - always allow this
+            else if (isNewAttack && !isCurrentAttack) {
+                otherPlayer.play(newAnim);
+                
+                // Set up auto-transition to idle when attack animation completes
+                otherPlayer.once('animationcomplete', () => {
+                    // Only transition to idle if we're still in the same attack animation
+                    if (otherPlayer.anims.currentAnim?.key === newAnim) {
+                        otherPlayer.play('_Idle_Idle');
+                        console.log(`Attack animation completed for player ${id}, auto-transitioning to idle`);
+                    }
+                });
+            }
+            // Case 2: Regular animation transitions (not attacks)
+            else if (!isCurrentAttack && currentAnim !== newAnim) {
+                // Only change non-attack animations if we're not in the middle of an attack
+                otherPlayer.play(newAnim);
+            }
         }
         
         // Update the name tag position
