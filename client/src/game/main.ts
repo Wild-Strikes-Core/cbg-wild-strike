@@ -36,6 +36,18 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: "game-container",
     backgroundColor: "#1a022b",
 
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity : {
+                x: 0,
+                y: 0
+            },
+            fps: 60,
+            debug: true,
+        }
+    },
+
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
