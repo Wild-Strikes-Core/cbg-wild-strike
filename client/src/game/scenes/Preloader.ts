@@ -81,6 +81,7 @@ export default class Preloader extends Phaser.Scene {
 
         // CHARACTER ASSETS
         this.load.pack('sprite_heroP1', 'assets/Sprites/Hero_P1-pack.json');   // Player 1 sprite assets
+        this.load.pack('placeholderChar', 'assets/Sprites/placeholderCharacter/placeholderCharacter-sprite-asset-pack.json');   // Player 1 sprite assets
         
         // ENVIRONMENT ASSETS
         // Background elements and environmental effects
@@ -100,7 +101,7 @@ export default class Preloader extends Phaser.Scene {
 
         // Transition to the main game scene
         // You could add a fade transition or other visual effect here
-        this.scene.start('M_Game');
+        this.scene.start('LandingPage');
     }
     /* END-USER-CODE */
 }

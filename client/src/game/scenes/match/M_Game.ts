@@ -14,8 +14,9 @@ export default class M_Game extends Phaser.Scene {
 
 		/* START-USER-CTR-CODE */
         // Write your code here.
-        this.moveSpeed = 300;  // Define player movement speed
+        this.walkSpeed = 300;  // Define player movement speed
         this.jumpSpeed = -1800; // Define player jump velocity
+        this.crouchSpeed = 150;
         this.matchTime = 90; // 1 minute and 30 seconds in total
         this.matchTimerEvent = null;
         /* END-USER-CTR-CODE */
@@ -359,12 +360,14 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_24.body.setSize(84, 84, false);
 
 		// player
-		const player = this.physics.add.sprite(304, 688, "Hero_P1", 50);
+		const player = this.physics.add.sprite(608, 752, "_Idle", 0);
+		player.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
 		player.scaleX = 3;
 		player.scaleY = 3;
+		player.setOrigin(0, 0);
 		player.body.gravity.y = 10000;
-		player.body.setOffset(24, 14);
-		player.body.setSize(18, 32, false);
+		player.body.setOffset(45, 40);
+		player.body.setSize(30, 40, false);
 
 		// player1HP
 		const player1HP = this.add.text(678, 708, "", {});
@@ -522,11 +525,12 @@ export default class M_Game extends Phaser.Scene {
 
 	/* START-USER-CODE */
 
-    // Define movement speed and jump power
-    private walkSpeed = 200;
-    private runSpeed = 400;
-    private jumpSpeed = -650;
-    private cursors!: any;
+	// Define movement speed and jump power
+	private walkSpeed = 200;
+	private runSpeed = 400;
+	private jumpSpeed = -650;
+	private crouchSpeed = 150;
+	private cursors!: any;
     private staminaManager!: StaminaManager;
     private bestZoom = 1.5; // Increased from 0.7 for a closer view of the player
     private parallaxFactor = 0.4; // How much the background moves relative to the camera (0 = fixed, 1 = moves with camera)
@@ -540,18 +544,20 @@ export default class M_Game extends Phaser.Scene {
     create() {
         this.editorCreate();
 
-        // Prevent spacebar from scrolling the page
-        const preventDefaultSpacebar = (e: KeyboardEvent) => {
-            if (e.code === 'Space') {
+        // Initialize all player animations
+        // Prevent spacebar and ctrl from scrolling the page and other default behaviors
+        const preventDefaultKeys = (e: KeyboardEvent) => {
+            if (e.code === 'Space' || e.ctrlKey) {
                 e.preventDefault();
             }
         };
 
-        // Add event listeners to prevent spacebar scrolling
-        window.addEventListener('keydown', preventDefaultSpacebar);
+        // Add event listeners to prevent spacebar and ctrl default behavior
+        window.addEventListener('keydown', preventDefaultKeys);
 
         // Store the event handler for cleanup
-        this.preventDefaultHandler = preventDefaultSpacebar;
+        this.preventDefaultHandler = preventDefaultKeys;
+
 
         // Store reference to main camera
         this.mainCamera = this.cameras.main;
@@ -682,6 +688,7 @@ export default class M_Game extends Phaser.Scene {
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
             shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+            ctrl: Phaser.Input.Keyboard.KeyCodes.CTRL,
             // Add skill keys
             skillE: Phaser.Input.Keyboard.KeyCodes.E,
             skillQ: Phaser.Input.Keyboard.KeyCodes.Q,
@@ -696,8 +703,8 @@ export default class M_Game extends Phaser.Scene {
             updateFrequency: 100 // How often to update stamina regeneration
         });
 
-		// Set initial animation
-		this.player.play('IDLEHero');
+		// Set initial animation - using the new animation system
+        this.player.play('Idle');
 
         // Initialize and start the match timer
         this.startMatchTimer();
@@ -711,13 +718,17 @@ export default class M_Game extends Phaser.Scene {
             {
                 walkSpeed: this.walkSpeed,
                 runSpeed: this.runSpeed,
-                jumpSpeed: this.jumpSpeed
+                jumpSpeed: this.jumpSpeed,
+                crouchSpeed: this.crouchSpeed
             },
             {
-                idle: 'IDLEHero',
-                walk: 'hero_P1-walkHero',
-                jump: 'jump',
-                run: 'heroRUNHero'
+                idle: '_Idle_Idle',
+                walk: '_Run',
+                jump: '_Jump',
+                fall: "_Fall",
+                run: '_Run',
+                crouch: "_CrouchFull",
+                crouchWalk: "_CrouchWalk",
             },
             this.staminaManager, // Pass the stamina manager
             // Pass the skill icons for visual feedback
@@ -763,8 +774,8 @@ export default class M_Game extends Phaser.Scene {
     // Position the HP and STA text centered above the player's head
     private positionHPTextAbovePlayer() {
         // Calculate position above player (adjust the Y offset as needed)
-        const hpYOffset = -70; // Distance above player's head
-        const staYOffset = -45; // Distance above player's head but below HP text
+        const hpYOffset = -40; // Distance above player's head
+        const staYOffset = -15; // Distance above player's head but below HP text
 
         // Center the texts horizontally on the player
         this.player1HP.setPosition(

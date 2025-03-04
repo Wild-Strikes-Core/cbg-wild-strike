@@ -686,19 +686,24 @@
             "id": "e09f4c9c-6356-4e45-bfa8-f70b70a7502e",
             "label": "player",
             "scope": "CLASS",
+            "hitArea.shape": "RECTANGLE",
+            "hitArea.width": 120,
+            "hitArea.height": 80,
             "texture": {
-                "key": "Hero_P1",
-                "frame": 50
+                "key": "_Idle",
+                "frame": 0
             },
-            "x": 304,
-            "y": 688,
+            "x": 608,
+            "y": 752,
             "scaleX": 3,
             "scaleY": 3,
+            "originX": 0,
+            "originY": 0,
             "body.gravity.y": 10000,
-            "body.width": 18,
-            "body.height": 32,
-            "body.offset.x": 24,
-            "body.offset.y": 14
+            "body.width": 30,
+            "body.height": 40,
+            "body.offset.x": 45,
+            "body.offset.y": 40
         },
         {
             "type": "Text",
