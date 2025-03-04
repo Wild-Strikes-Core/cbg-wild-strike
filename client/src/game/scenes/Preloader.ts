@@ -101,7 +101,7 @@ export default class Preloader extends Phaser.Scene {
 
         // Transition to the main game scene
         // You could add a fade transition or other visual effect here
-        this.scene.start('LandingPage');
+        this.scene.start('M_Game');
     }
     /* END-USER-CODE */
 }

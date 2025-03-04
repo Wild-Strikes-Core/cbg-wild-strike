@@ -1,40 +1,10 @@
-import { createServer } from "http";
-import { Server } from "socket.io";
-
-interface Player {
-  id: string;
-  x: number;
-  y: number;
-  animation: string;
-  flipX?: boolean;
-  velocityX?: number;
-  velocityY?: number;
-}
-
-// Using this interface for playerJoined event parameter
-interface PlayerInfo {
-  x: number;
-  y: number;
-  animation?: string;
-}
-
-interface MovementData {
-  x: number;
-  y: number;
-  animation: string;
-  flipX: boolean;
-  velocityX: number;
-  velocityY: number;
-}
-
-interface Players {
-  [key: string]: Player;
-}
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
 const httpServer = createServer();
 
 // Store player data
-const players: Players = {};
+const players = {};
 
 const io = new Server(httpServer, {
   cors: {
@@ -45,12 +15,14 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
+
   // Send current players to the newly connected client
   socket.emit("currentPlayers", players);
   
+  // Log how many players are currently connected
   console.log(`Total players connected: ${Object.keys(players).length}`);
   console.log("Current players:", Object.keys(players));
-  
+
   // Handle new player joining
   socket.on("playerJoined", (playerInfo) => {
     console.log(`Player ${socket.id} joined at position:`, playerInfo.x, playerInfo.y);
@@ -67,7 +39,10 @@ io.on("connection", (socket) => {
     socket.emit("currentPlayers", players);
     
     // Broadcast the new player to everyone else
-    socket.broadcast.emit("newPlayer", players[socket.id]);
+    socket.broadcast.emit("newPlayer", {
+      id: socket.id,
+      ...players[socket.id]
+    });
     
     console.log(`After join - Total players: ${Object.keys(players).length}`);
   });
@@ -84,7 +59,10 @@ io.on("connection", (socket) => {
       players[socket.id].velocityY = movementData.velocityY;
       
       // Important: emit to ALL clients except sender
-      socket.broadcast.emit("playerMoved", players[socket.id]);
+      socket.broadcast.emit("playerMoved", {
+        id: socket.id,
+        ...players[socket.id]
+      });
     }
   });
 
