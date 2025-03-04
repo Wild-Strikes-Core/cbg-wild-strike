@@ -34,7 +34,7 @@ export function handlePlayerMovement(
             // Running
             player.setVelocityX(-config.runSpeed);
             isRunning = true;
-            staminaManager.useStamina(0.5); // Use stamina while running
+            //staminaManager.useStamina(0.5); // Use stamina while running
         } else {
             // Walking
             player.setVelocityX(-config.walkSpeed);
@@ -51,7 +51,7 @@ export function handlePlayerMovement(
             // Running
             player.setVelocityX(config.runSpeed);
             isRunning = true;
-            staminaManager.useStamina(0.5); // Use stamina while running
+            //staminaManager.useStamina(0.5); // Use stamina while running
         } else {
             // Walking
             player.setVelocityX(config.walkSpeed);
@@ -77,7 +77,7 @@ export function handlePlayerMovement(
         if (staminaManager && staminaManager.hasEnoughStamina(10)) {
             player.setVelocityY(config.jumpSpeed);
             currentAnimation = animationKeys.jump;
-            staminaManager.useStamina(10); // Use stamina for jumping
+            //staminaManager.useStamina(10); // Use stamina for jumping
         } else if (!staminaManager) {
             // If no stamina manager, still allow jumping
             player.setVelocityY(config.jumpSpeed);
