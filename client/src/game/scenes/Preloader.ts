@@ -75,7 +75,9 @@ export default class Preloader extends Phaser.Scene {
         // Match-related assets for the active gameplay
         this.load.pack('matchMaking', 'assets/Match/matchMaking-asset-pack.json'); // Matchmaking UI
         this.load.pack('map', 'assets/Match/map-asset-pack.json');                 // Game map/battlefield
-        this.load.pack('tiles', 'assets/Match/02 - Map/tiles-asset-pack.json');    // Map tiles
+        this.load.pack('tiles', 'assets/Match/02 - Map/tiles-asset-pack.json');    // Map tiles;
+        this.load.pack('matchUI', 'assets/Match/match-skills-assets-pack.json');   
+        this.load.pack('matchUI', 'assets/Match/timerAnim.json');
 
         // CHARACTER ASSETS
         this.load.pack('sprite_heroP1', 'assets/Sprites/Hero_P1-pack.json');   // Player 1 sprite assets

@@ -22,6 +22,15 @@ export interface AnimationKeys {
 }
 
 /**
+ * Interface for skill UI icons that will receive visual feedback
+ */
+export interface SkillUIIcons {
+    skillE?: Phaser.GameObjects.Image;  // UI element for E skill
+    skillQ?: Phaser.GameObjects.Image;  // UI element for Q skill
+    skillR?: Phaser.GameObjects.Image;  // UI element for R skill
+}
+
+/**
  * Handle player movement with stamina integration
  * 
  * This function manages player movement, animations, and stamina consumption
@@ -32,13 +41,15 @@ export interface AnimationKeys {
  * @param config - Movement configuration settings (speeds)
  * @param animationKeys - Keys for the different animation states
  * @param staminaManager - Optional stamina manager to handle stamina consumption
+ * @param skillIcons - Optional skill UI icons for visual feedback
  */
 export function handlePlayerMovement(
     player: Phaser.Physics.Arcade.Sprite,
     cursors: any,
     config: MovementConfig,
     animationKeys: AnimationKeys,
-    staminaManager?: StaminaManager
+    staminaManager?: StaminaManager,
+    skillIcons?: SkillUIIcons
 ) {
     // Check if the player is touching the ground
     const onGround = player.body.touching.down || player.body.blocked.down;
@@ -124,5 +135,36 @@ export function handlePlayerMovement(
     if (currentAnimation && player.anims.currentAnim?.key !== currentAnimation) {
         console.log(`Playing animation: ${currentAnimation}`); // Debug logging
         player.play(currentAnimation, true);
+    }
+
+    // Detect skill key presses and apply visual feedback
+    if (cursors.skillE?.isDown) {
+        console.log("E skill button pressed");
+        if (skillIcons?.skillE) {
+            skillIcons.skillE.setTint(0xffff00); // Apply yellow tint
+        }
+        // Skill E functionality will go here later
+    } else if (skillIcons?.skillE) {
+        skillIcons.skillE.clearTint(); // Clear tint when key is released
+    }
+    
+    if (cursors.skillQ?.isDown) {
+        console.log("Q skill button pressed");
+        if (skillIcons?.skillQ) {
+            skillIcons.skillQ.setTint(0xffff00); // Apply yellow tint
+        }
+        // Skill Q functionality will go here later
+    } else if (skillIcons?.skillQ) {
+        skillIcons.skillQ.clearTint(); // Clear tint when key is released
+    }
+    
+    if (cursors.skillR?.isDown) {
+        console.log("R skill button pressed");
+        if (skillIcons?.skillR) {
+            skillIcons.skillR.setTint(0xffff00); // Apply yellow tint
+        }
+        // Skill R functionality will go here later
+    } else if (skillIcons?.skillR) {
+        skillIcons.skillR.clearTint(); // Clear tint when key is released
     }
 }

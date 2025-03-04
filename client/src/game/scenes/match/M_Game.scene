@@ -41,7 +41,7 @@
                 "frame": 1
             },
             "x": 32,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -67,7 +67,7 @@
                 "frame": 1
             },
             "x": 112,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -93,7 +93,7 @@
                 "frame": 1
             },
             "x": 192,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -119,7 +119,7 @@
                 "frame": 1
             },
             "x": 272,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -145,7 +145,7 @@
                 "frame": 1
             },
             "x": 352,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -171,7 +171,7 @@
                 "frame": 1
             },
             "x": 432,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -197,7 +197,7 @@
                 "frame": 1
             },
             "x": 512,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -223,7 +223,7 @@
                 "frame": 1
             },
             "x": 592,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -240,25 +240,6 @@
             "height": 64
         },
         {
-            "type": "ArcadeSprite",
-            "id": "e09f4c9c-6356-4e45-bfa8-f70b70a7502e",
-            "label": "player",
-            "scope": "CLASS",
-            "texture": {
-                "key": "Hero_P1",
-                "frame": 50
-            },
-            "x": 304,
-            "y": 832,
-            "scaleX": 3,
-            "scaleY": 3,
-            "body.gravity.y": 10000,
-            "body.width": 18,
-            "body.height": 32,
-            "body.offset.x": 24,
-            "body.offset.y": 14
-        },
-        {
             "type": "TileSprite",
             "id": "cabd8f83-d156-455c-8d35-0c5b503d4a9c",
             "label": "tilesprite_8",
@@ -268,7 +249,7 @@
                 "frame": 1
             },
             "x": 672,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -294,7 +275,7 @@
                 "frame": 1
             },
             "x": 752,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -320,7 +301,7 @@
                 "frame": 1
             },
             "x": 832,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -346,7 +327,7 @@
                 "frame": 1
             },
             "x": 912,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -372,7 +353,7 @@
                 "frame": 1
             },
             "x": 992,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -398,7 +379,7 @@
                 "frame": 1
             },
             "x": 1072,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -424,7 +405,7 @@
                 "frame": 1
             },
             "x": 1152,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -450,7 +431,7 @@
                 "frame": 1
             },
             "x": 1232,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -476,7 +457,7 @@
                 "frame": 1
             },
             "x": 1312,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -502,7 +483,7 @@
                 "frame": 1
             },
             "x": 1392,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -528,7 +509,7 @@
                 "frame": 1
             },
             "x": 1472,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -554,7 +535,7 @@
                 "frame": 1
             },
             "x": 1552,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -580,7 +561,7 @@
                 "frame": 1
             },
             "x": 1632,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -606,7 +587,7 @@
                 "frame": 1
             },
             "x": 1712,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -632,7 +613,7 @@
                 "frame": 1
             },
             "x": 1792,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -658,7 +639,7 @@
                 "frame": 1
             },
             "x": 1872,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -684,7 +665,7 @@
                 "frame": 1
             },
             "x": 1952,
-            "y": 1072,
+            "y": 1040,
             "scaleX": 1.3,
             "scaleY": 1.3,
             "ArcadeComponent.active": true,
@@ -699,6 +680,25 @@
             "body.height": 84,
             "width": 64,
             "height": 64
+        },
+        {
+            "type": "ArcadeSprite",
+            "id": "e09f4c9c-6356-4e45-bfa8-f70b70a7502e",
+            "label": "player",
+            "scope": "CLASS",
+            "texture": {
+                "key": "Hero_P1",
+                "frame": 50
+            },
+            "x": 304,
+            "y": 688,
+            "scaleX": 3,
+            "scaleY": 3,
+            "body.gravity.y": 10000,
+            "body.width": 18,
+            "body.height": 32,
+            "body.offset.x": 24,
+            "body.offset.y": 14
         },
         {
             "type": "Text",
@@ -721,6 +721,137 @@
             "text": "Player 1 (100/100 STA)",
             "fontSize": "24px",
             "fontStyle": "bold italic"
+        },
+        {
+            "type": "Image",
+            "id": "138ec158-873a-4e74-a794-03af8d35c2e9",
+            "label": "p1infoContainer",
+            "scope": "CLASS",
+            "texture": {
+                "key": "PlayerStats_Container"
+            },
+            "x": 336,
+            "y": 112,
+            "scaleX": 1.07,
+            "scaleY": 1.07,
+            "alpha": 0.8,
+            "alphaTopLeft": 0.8,
+            "alphaTopRight": 0.8,
+            "alphaBottomLeft": 0.8,
+            "alphaBottomRight": 0.8
+        },
+        {
+            "type": "Image",
+            "id": "e2891aac-8118-4190-818c-fa855e03fa4c",
+            "label": "p2infoContainer",
+            "scope": "CLASS",
+            "texture": {
+                "key": "PlayerStats_Container"
+            },
+            "x": 1584,
+            "y": 112,
+            "scaleX": 1.07,
+            "scaleY": 1.07,
+            "flipX": true,
+            "alpha": 0.8,
+            "alphaTopLeft": 0.8,
+            "alphaTopRight": 0.8,
+            "alphaBottomLeft": 0.8,
+            "alphaBottomRight": 0.8
+        },
+        {
+            "type": "Container",
+            "id": "f0be5525-a667-4de8-801f-14db4ecad19b",
+            "label": "skillContainerCTR",
+            "blendMode": -1,
+            "x": 16,
+            "y": 912,
+            "scaleX": 1.1450674740873885,
+            "scaleY": 1.1450674740873885,
+            "list": [
+                {
+                    "type": "Image",
+                    "id": "d05737e3-cf05-4f23-970f-fe8a2852856c",
+                    "label": "uiSkillContainer",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "Skill_Container"
+                    },
+                    "x": 256,
+                    "y": 80,
+                    "scaleX": 0.5,
+                    "scaleY": 0.5
+                },
+                {
+                    "type": "Image",
+                    "id": "d6f9c174-ecba-4168-a718-6cc0d061df70",
+                    "label": "uiSkillONE",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "E_skill_icon"
+                    },
+                    "x": 293,
+                    "y": 84,
+                    "scaleX": 0.4,
+                    "scaleY": 0.4
+                },
+                {
+                    "type": "Image",
+                    "id": "75d624b3-6825-4261-9e08-efdaa687e296",
+                    "label": "uiSkillTWO",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "Q_Skill_Icon"
+                    },
+                    "x": 182,
+                    "y": 84,
+                    "scaleX": 0.4,
+                    "scaleY": 0.4
+                },
+                {
+                    "type": "Image",
+                    "id": "335b718d-e536-431a-b59a-81cdf090dae4",
+                    "label": "uiSkillTHREE",
+                    "scope": "CLASS",
+                    "texture": {
+                        "key": "R_skill_icon"
+                    },
+                    "x": 405,
+                    "y": 84,
+                    "scaleX": 0.4,
+                    "scaleY": 0.4
+                }
+            ]
+        },
+        {
+            "type": "Sprite",
+            "id": "60dfe314-bd1b-448c-b814-b3095415fb69",
+            "label": "uiTimer",
+            "scope": "CLASS",
+            "texture": {
+                "key": "Timer_Container_Frames",
+                "frame": 0
+            },
+            "x": 1760,
+            "y": 1008,
+            "scaleX": 0.8191303940245613,
+            "scaleY": 0.8191303940245613,
+            "animationPlayMethod": 1,
+            "animationKey": "matchTimerAnimTimer_Container_Frames"
+        },
+        {
+            "type": "Text",
+            "id": "5b2c26d4-d019-412a-8adf-a040fec414d6",
+            "label": "matchTimerText",
+            "scope": "CLASS",
+            "x": 1728,
+            "y": 986,
+            "text": "XX:XX",
+            "align": "center",
+            "fontFamily": "Sans-serif",
+            "fontSize": "42px",
+            "fontStyle": "bold italic",
+            "shadow.stroke": true
         }
     ],
     "plainObjects": [

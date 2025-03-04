@@ -7,27 +7,6 @@ import { handlePlayerMovement } from "../../utils/playerMovement";
 import { StaminaManager } from "../../utils/staminaManager";
 /* END-USER-IMPORTS */
 
-/**
- * Game scene representing the main gameplay area for a 2D platformer.
- * 
- * @class M_Game
- * @extends Phaser.Scene
- * @description This scene handles the core gameplay mechanics including:
- *  - Player character movement and physics
- *  - Terrain collision detection
- *  - Camera controls with dynamic zoom and follow
- *  - Parallax background effects
- *  - Player animations based on movement state
- *  - Stamina management system for running mechanics
- *  - Health and stamina display
- * 
- * The scene is set up with an initial dramatic camera zoom effect and
- * configures the player with movement capabilities including walking,
- * running, and jumping, all affected by stamina consumption.
- * 
- * UI elements such as health and stamina are positioned dynamically
- * to follow above the player character.
- */
 export default class M_Game extends Phaser.Scene {
 
 	constructor() {
@@ -37,6 +16,8 @@ export default class M_Game extends Phaser.Scene {
         // Write your code here.
         this.moveSpeed = 300;  // Define player movement speed
         this.jumpSpeed = -1800; // Define player jump velocity
+        this.matchTime = 90; // 1 minute and 30 seconds in total
+        this.matchTimerEvent = null;
         /* END-USER-CTR-CODE */
 	}
 
@@ -53,7 +34,7 @@ export default class M_Game extends Phaser.Scene {
 		bgIMAGE.alphaBottomRight = 0.3;
 
 		// tilesprite_1
-		const tilesprite_1 = this.add.tileSprite(32, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_1 = this.add.tileSprite(32, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_1.scaleX = 1.3;
 		tilesprite_1.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_1, true);
@@ -66,7 +47,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_1.body.setSize(84, 84, false);
 
 		// tilesprite
-		const tilesprite = this.add.tileSprite(112, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite = this.add.tileSprite(112, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite.scaleX = 1.3;
 		tilesprite.scaleY = 1.3;
 		this.physics.add.existing(tilesprite, true);
@@ -79,7 +60,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite.body.setSize(84, 84, false);
 
 		// tilesprite_2
-		const tilesprite_2 = this.add.tileSprite(192, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_2 = this.add.tileSprite(192, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_2.scaleX = 1.3;
 		tilesprite_2.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_2, true);
@@ -92,7 +73,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_2.body.setSize(84, 84, false);
 
 		// tilesprite_3
-		const tilesprite_3 = this.add.tileSprite(272, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_3 = this.add.tileSprite(272, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_3.scaleX = 1.3;
 		tilesprite_3.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_3, true);
@@ -105,7 +86,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_3.body.setSize(84, 84, false);
 
 		// tilesprite_4
-		const tilesprite_4 = this.add.tileSprite(352, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_4 = this.add.tileSprite(352, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_4.scaleX = 1.3;
 		tilesprite_4.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_4, true);
@@ -118,7 +99,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_4.body.setSize(84, 84, false);
 
 		// tilesprite_5
-		const tilesprite_5 = this.add.tileSprite(432, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_5 = this.add.tileSprite(432, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_5.scaleX = 1.3;
 		tilesprite_5.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_5, true);
@@ -131,7 +112,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_5.body.setSize(84, 84, false);
 
 		// tilesprite_6
-		const tilesprite_6 = this.add.tileSprite(512, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_6 = this.add.tileSprite(512, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_6.scaleX = 1.3;
 		tilesprite_6.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_6, true);
@@ -144,7 +125,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_6.body.setSize(84, 84, false);
 
 		// tilesprite_7
-		const tilesprite_7 = this.add.tileSprite(592, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_7 = this.add.tileSprite(592, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_7.scaleX = 1.3;
 		tilesprite_7.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_7, true);
@@ -156,16 +137,8 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_7.body.immovable = true;
 		tilesprite_7.body.setSize(84, 84, false);
 
-		// player
-		const player = this.physics.add.sprite(304, 832, "Hero_P1", 50);
-		player.scaleX = 3;
-		player.scaleY = 3;
-		player.body.gravity.y = 10000;
-		player.body.setOffset(24, 14);
-		player.body.setSize(18, 32, false);
-
 		// tilesprite_8
-		const tilesprite_8 = this.add.tileSprite(672, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_8 = this.add.tileSprite(672, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_8.scaleX = 1.3;
 		tilesprite_8.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_8, true);
@@ -178,7 +151,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_8.body.setSize(84, 84, false);
 
 		// tilesprite_9
-		const tilesprite_9 = this.add.tileSprite(752, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_9 = this.add.tileSprite(752, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_9.scaleX = 1.3;
 		tilesprite_9.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_9, true);
@@ -191,7 +164,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_9.body.setSize(84, 84, false);
 
 		// tilesprite_10
-		const tilesprite_10 = this.add.tileSprite(832, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_10 = this.add.tileSprite(832, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_10.scaleX = 1.3;
 		tilesprite_10.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_10, true);
@@ -204,7 +177,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_10.body.setSize(84, 84, false);
 
 		// tilesprite_11
-		const tilesprite_11 = this.add.tileSprite(912, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_11 = this.add.tileSprite(912, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_11.scaleX = 1.3;
 		tilesprite_11.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_11, true);
@@ -217,7 +190,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_11.body.setSize(84, 84, false);
 
 		// tilesprite_12
-		const tilesprite_12 = this.add.tileSprite(992, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_12 = this.add.tileSprite(992, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_12.scaleX = 1.3;
 		tilesprite_12.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_12, true);
@@ -230,7 +203,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_12.body.setSize(84, 84, false);
 
 		// tilesprite_13
-		const tilesprite_13 = this.add.tileSprite(1072, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_13 = this.add.tileSprite(1072, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_13.scaleX = 1.3;
 		tilesprite_13.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_13, true);
@@ -243,7 +216,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_13.body.setSize(84, 84, false);
 
 		// tilesprite_14
-		const tilesprite_14 = this.add.tileSprite(1152, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_14 = this.add.tileSprite(1152, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_14.scaleX = 1.3;
 		tilesprite_14.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_14, true);
@@ -256,7 +229,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_14.body.setSize(84, 84, false);
 
 		// tilesprite_15
-		const tilesprite_15 = this.add.tileSprite(1232, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_15 = this.add.tileSprite(1232, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_15.scaleX = 1.3;
 		tilesprite_15.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_15, true);
@@ -269,7 +242,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_15.body.setSize(84, 84, false);
 
 		// tilesprite_16
-		const tilesprite_16 = this.add.tileSprite(1312, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_16 = this.add.tileSprite(1312, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_16.scaleX = 1.3;
 		tilesprite_16.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_16, true);
@@ -282,7 +255,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_16.body.setSize(84, 84, false);
 
 		// tilesprite_17
-		const tilesprite_17 = this.add.tileSprite(1392, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_17 = this.add.tileSprite(1392, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_17.scaleX = 1.3;
 		tilesprite_17.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_17, true);
@@ -295,7 +268,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_17.body.setSize(84, 84, false);
 
 		// tilesprite_18
-		const tilesprite_18 = this.add.tileSprite(1472, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_18 = this.add.tileSprite(1472, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_18.scaleX = 1.3;
 		tilesprite_18.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_18, true);
@@ -308,7 +281,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_18.body.setSize(84, 84, false);
 
 		// tilesprite_19
-		const tilesprite_19 = this.add.tileSprite(1552, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_19 = this.add.tileSprite(1552, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_19.scaleX = 1.3;
 		tilesprite_19.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_19, true);
@@ -321,7 +294,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_19.body.setSize(84, 84, false);
 
 		// tilesprite_20
-		const tilesprite_20 = this.add.tileSprite(1632, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_20 = this.add.tileSprite(1632, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_20.scaleX = 1.3;
 		tilesprite_20.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_20, true);
@@ -334,7 +307,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_20.body.setSize(84, 84, false);
 
 		// tilesprite_21
-		const tilesprite_21 = this.add.tileSprite(1712, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_21 = this.add.tileSprite(1712, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_21.scaleX = 1.3;
 		tilesprite_21.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_21, true);
@@ -347,7 +320,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_21.body.setSize(84, 84, false);
 
 		// tilesprite_22
-		const tilesprite_22 = this.add.tileSprite(1792, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_22 = this.add.tileSprite(1792, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_22.scaleX = 1.3;
 		tilesprite_22.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_22, true);
@@ -360,7 +333,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_22.body.setSize(84, 84, false);
 
 		// tilesprite_23
-		const tilesprite_23 = this.add.tileSprite(1872, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_23 = this.add.tileSprite(1872, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_23.scaleX = 1.3;
 		tilesprite_23.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_23, true);
@@ -373,7 +346,7 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_23.body.setSize(84, 84, false);
 
 		// tilesprite_24
-		const tilesprite_24 = this.add.tileSprite(1952, 1072, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+		const tilesprite_24 = this.add.tileSprite(1952, 1040, 64, 64, "world_tileset", 1) as Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 		tilesprite_24.scaleX = 1.3;
 		tilesprite_24.scaleY = 1.3;
 		this.physics.add.existing(tilesprite_24, true);
@@ -385,6 +358,14 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite_24.body.immovable = true;
 		tilesprite_24.body.setSize(84, 84, false);
 
+		// player
+		const player = this.physics.add.sprite(304, 688, "Hero_P1", 50);
+		player.scaleX = 3;
+		player.scaleY = 3;
+		player.body.gravity.y = 10000;
+		player.body.setOffset(24, 14);
+		player.body.setSize(18, 32, false);
+
 		// player1HP
 		const player1HP = this.add.text(678, 708, "", {});
 		player1HP.text = "Player 1 (100/100 HP)";
@@ -394,6 +375,68 @@ export default class M_Game extends Phaser.Scene {
 		const player1STA = this.add.text(672, 736, "", {});
 		player1STA.text = "Player 1 (100/100 STA)";
 		player1STA.setStyle({ "fontSize": "24px", "fontStyle": "bold italic" });
+
+		// p1infoContainer
+		const p1infoContainer = this.add.image(336, 112, "PlayerStats_Container");
+		p1infoContainer.scaleX = 1.07;
+		p1infoContainer.scaleY = 1.07;
+		p1infoContainer.alpha = 0.8;
+		p1infoContainer.alphaTopLeft = 0.8;
+		p1infoContainer.alphaTopRight = 0.8;
+		p1infoContainer.alphaBottomLeft = 0.8;
+		p1infoContainer.alphaBottomRight = 0.8;
+
+		// p2infoContainer
+		const p2infoContainer = this.add.image(1584, 112, "PlayerStats_Container");
+		p2infoContainer.scaleX = 1.07;
+		p2infoContainer.scaleY = 1.07;
+		p2infoContainer.flipX = true;
+		p2infoContainer.alpha = 0.8;
+		p2infoContainer.alphaTopLeft = 0.8;
+		p2infoContainer.alphaTopRight = 0.8;
+		p2infoContainer.alphaBottomLeft = 0.8;
+		p2infoContainer.alphaBottomRight = 0.8;
+
+		// skillContainerCTR
+		const skillContainerCTR = this.add.container(16, 912);
+		skillContainerCTR.blendMode = Phaser.BlendModes.SKIP_CHECK;
+		skillContainerCTR.scaleX = 1.1450674740873885;
+		skillContainerCTR.scaleY = 1.1450674740873885;
+
+		// uiSkillContainer
+		const uiSkillContainer = this.add.image(256, 80, "Skill_Container");
+		uiSkillContainer.scaleX = 0.5;
+		uiSkillContainer.scaleY = 0.5;
+		skillContainerCTR.add(uiSkillContainer);
+
+		// uiSkillONE
+		const uiSkillONE = this.add.image(293, 84, "E_skill_icon");
+		uiSkillONE.scaleX = 0.4;
+		uiSkillONE.scaleY = 0.4;
+		skillContainerCTR.add(uiSkillONE);
+
+		// uiSkillTWO
+		const uiSkillTWO = this.add.image(182, 84, "Q_Skill_Icon");
+		uiSkillTWO.scaleX = 0.4;
+		uiSkillTWO.scaleY = 0.4;
+		skillContainerCTR.add(uiSkillTWO);
+
+		// uiSkillTHREE
+		const uiSkillTHREE = this.add.image(405, 84, "R_skill_icon");
+		uiSkillTHREE.scaleX = 0.4;
+		uiSkillTHREE.scaleY = 0.4;
+		skillContainerCTR.add(uiSkillTHREE);
+
+		// uiTimer
+		const uiTimer = this.add.sprite(1760, 1008, "Timer_Container_Frames", 0);
+		uiTimer.scaleX = 0.8191303940245613;
+		uiTimer.scaleY = 0.8191303940245613;
+		uiTimer.play("matchTimerAnimTimer_Container_Frames");
+
+		// matchTimerText
+		const matchTimerText = this.add.text(1728, 986, "", {});
+		matchTimerText.text = "XX:XX";
+		matchTimerText.setStyle({ "align": "center", "fontFamily": "Sans-serif", "fontSize": "42px", "fontStyle": "bold italic", "shadow.stroke": true });
 
 		// collider
 		this.physics.add.collider(player, tilesprite_1);
@@ -407,7 +450,6 @@ export default class M_Game extends Phaser.Scene {
 		this.tilesprite_5 = tilesprite_5;
 		this.tilesprite_6 = tilesprite_6;
 		this.tilesprite_7 = tilesprite_7;
-		this.player = player;
 		this.tilesprite_8 = tilesprite_8;
 		this.tilesprite_9 = tilesprite_9;
 		this.tilesprite_10 = tilesprite_10;
@@ -425,8 +467,17 @@ export default class M_Game extends Phaser.Scene {
 		this.tilesprite_22 = tilesprite_22;
 		this.tilesprite_23 = tilesprite_23;
 		this.tilesprite_24 = tilesprite_24;
+		this.player = player;
 		this.player1HP = player1HP;
 		this.player1STA = player1STA;
+		this.p1infoContainer = p1infoContainer;
+		this.p2infoContainer = p2infoContainer;
+		this.uiSkillContainer = uiSkillContainer;
+		this.uiSkillONE = uiSkillONE;
+		this.uiSkillTWO = uiSkillTWO;
+		this.uiSkillTHREE = uiSkillTHREE;
+		this.uiTimer = uiTimer;
+		this.matchTimerText = matchTimerText;
 
 		this.events.emit("scene-awake");
 	}
@@ -440,7 +491,6 @@ export default class M_Game extends Phaser.Scene {
 	private tilesprite_5!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 	private tilesprite_6!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 	private tilesprite_7!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
-	private player!: Phaser.Physics.Arcade.Sprite;
 	private tilesprite_8!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 	private tilesprite_9!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 	private tilesprite_10!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
@@ -458,8 +508,17 @@ export default class M_Game extends Phaser.Scene {
 	private tilesprite_22!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 	private tilesprite_23!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 	private tilesprite_24!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
+	private player!: Phaser.Physics.Arcade.Sprite;
 	private player1HP!: Phaser.GameObjects.Text;
 	private player1STA!: Phaser.GameObjects.Text;
+	private p1infoContainer!: Phaser.GameObjects.Image;
+	private p2infoContainer!: Phaser.GameObjects.Image;
+	private uiSkillContainer!: Phaser.GameObjects.Image;
+	private uiSkillONE!: Phaser.GameObjects.Image;
+	private uiSkillTWO!: Phaser.GameObjects.Image;
+	private uiSkillTHREE!: Phaser.GameObjects.Image;
+	private uiTimer!: Phaser.GameObjects.Sprite;
+	private matchTimerText!: Phaser.GameObjects.Text;
 
 	/* START-USER-CODE */
 
@@ -471,13 +530,84 @@ export default class M_Game extends Phaser.Scene {
     private staminaManager!: StaminaManager;
     private bestZoom = 1.5; // Increased from 0.7 for a closer view of the player
     private parallaxFactor = 0.4; // How much the background moves relative to the camera (0 = fixed, 1 = moves with camera)
+    private uiCamera!: Phaser.Cameras.Scene2D.Camera;
+    private mainCamera!: Phaser.Cameras.Scene2D.Camera;
+    private matchTime: number = 90; // 1 minute and 30 seconds
+    private matchTimerEvent: Phaser.Time.TimerEvent | null = null;
+    private preventDefaultHandler: ((e: KeyboardEvent) => void) | null = null;
 
     // Write your code here
     create() {
         this.editorCreate();
 
+        // Prevent spacebar from scrolling the page
+        const preventDefaultSpacebar = (e: KeyboardEvent) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+            }
+        };
+
+        // Add event listeners to prevent spacebar scrolling
+        window.addEventListener('keydown', preventDefaultSpacebar);
+
+        // Store the event handler for cleanup
+        this.preventDefaultHandler = preventDefaultSpacebar;
+
+        // Store reference to main camera
+        this.mainCamera = this.cameras.main;
+
+        // Create a separate UI camera that doesn't zoom
+        this.uiCamera = this.cameras.add();
+        this.uiCamera.setScroll(0, 0);
+        this.uiCamera.ignore([
+            this.bgIMAGE, this.player,
+            // Ignore all tilesprites
+            this.tilesprite_1, this.tilesprite, this.tilesprite_2, this.tilesprite_3,
+            this.tilesprite_4, this.tilesprite_5, this.tilesprite_6, this.tilesprite_7,
+            this.tilesprite_8, this.tilesprite_9, this.tilesprite_10, this.tilesprite_11,
+            this.tilesprite_12, this.tilesprite_13, this.tilesprite_14, this.tilesprite_15,
+            this.tilesprite_16, this.tilesprite_17, this.tilesprite_18, this.tilesprite_19,
+            this.tilesprite_20, this.tilesprite_21, this.tilesprite_22, this.tilesprite_23,
+            this.tilesprite_24, this.player1HP, this.player1STA
+        ]);
+
+        // Play the match timer animation
+        // Alternative method with options
+        // this.uiTimer.play({
+        //     key: 'matchTimerAnim',
+        //     repeat: -1, // Loop infinitely
+        //     frameRate: 12 // Adjust speed if needed
+        // });
+
+        // Make the uiCamera ignore physics debug graphics
+        this.events.once('postupdate', () => {
+            // Physics debug graphics are created after the first update
+            // Find any physics debug graphics and ignore them in the UI camera
+            this.children.each(child => {
+                // Check if this is a physics debug graphics object
+                if (child instanceof Phaser.GameObjects.Graphics && 
+                    (child.name === '__debugGraphics' || child.getData('isPhysicsDebug'))) {
+                    this.uiCamera.ignore(child);
+                }
+            });
+        });
+
+        // If debug is enabled at any point, make sure UI camera ignores it
+        if (this.physics.world.debugGraphic) {
+            this.uiCamera.ignore(this.physics.world.debugGraphic);
+        }
+
+        // Have main camera ignore UI elements
+        this.mainCamera.ignore([this.p1infoContainer, this.p2infoContainer, this.uiSkillContainer,
+            this.uiSkillONE, this.uiSkillTWO, this.uiSkillTHREE,
+            this.uiTimer, this.matchTimerText
+        ]);
+
+        // Set UI elements to high depth so they're always on top
+        this.p1infoContainer.setDepth(100);
+        this.p2infoContainer.setDepth(100);
+
         // Configure the background for parallax effect
-        // Take it out of the camera's scroll effects
         this.bgIMAGE.setScrollFactor(this.parallaxFactor);
 
         // Optional: add subtle animation to the background
@@ -491,28 +621,28 @@ export default class M_Game extends Phaser.Scene {
         });
 
         // Add a camera zoom effect - starting further out for a dramatic zoom in
-        this.cameras.main.setZoom(0.3);
+        this.mainCamera.setZoom(0.3);
         this.tweens.add({
-            targets: this.cameras.main,
+            targets: this.mainCamera,
             zoom: this.bestZoom, // Now zooming in closer to the player
             duration: 1200, // Slightly longer for more dramatic effect
             ease: 'Power2'
         });
 
         // Set up camera to follow player with adjusted offset for closer zoom
-        this.cameras.main.startFollow(this.player, true);
-        this.cameras.main.setFollowOffset(0, -80); // Adjusted to better frame the player with closer zoom
+        this.mainCamera.startFollow(this.player, true);
+        this.mainCamera.setFollowOffset(0, -80); // Adjusted to better frame the player with closer zoom
 
         // Adjust camera bounds if needed for the closer zoom
-        this.cameras.main.setBounds(0, 0, 1920, 1080);
+        this.mainCamera.setBounds(0, 0, 1920, 1080);
 
         // Add a keyboard shortcut to adjust zoom (optional)
         this.input.keyboard.on('keydown-Z', () => {
-            this.adjustZoom(this.cameras.main.zoom + 0.1);
+            this.adjustZoom(this.mainCamera.zoom + 0.1);
         });
 
         this.input.keyboard.on('keydown-X', () => {
-            this.adjustZoom(this.cameras.main.zoom - 0.1);
+            this.adjustZoom(this.mainCamera.zoom - 0.1);
         });
 
 		// Add colliders for all other tilesprites
@@ -546,12 +676,16 @@ export default class M_Game extends Phaser.Scene {
         // Position the HP text initially above the player
         this.positionHPTextAbovePlayer();
 
-        // Define controls with simplified inputs
+        // Define controls with simplified inputs and skill buttons
         this.cursors = this.input.keyboard.addKeys({
-            up: Phaser.Input.Keyboard.KeyCodes.W,
+            up: Phaser.Input.Keyboard.KeyCodes.SPACE,
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
-            shift: Phaser.Input.Keyboard.KeyCodes.SHIFT
+            shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+            // Add skill keys
+            skillE: Phaser.Input.Keyboard.KeyCodes.E,
+            skillQ: Phaser.Input.Keyboard.KeyCodes.Q,
+            skillR: Phaser.Input.Keyboard.KeyCodes.R
         });
 
         // Initialize the stamina manager
@@ -564,6 +698,9 @@ export default class M_Game extends Phaser.Scene {
 
 		// Set initial animation
 		this.player.play('IDLEHero');
+
+        // Initialize and start the match timer
+        this.startMatchTimer();
 	}
 
 	update() {
@@ -581,9 +718,14 @@ export default class M_Game extends Phaser.Scene {
                 walk: 'hero_P1-walkHero',
                 jump: 'jump',
                 run: 'heroRUNHero'
-                // You could add run: 'runAnimation' if you have a running animation
             },
-            this.staminaManager // Pass the stamina manager
+            this.staminaManager, // Pass the stamina manager
+            // Pass the skill icons for visual feedback
+            {
+                skillE: this.uiSkillONE,  // E skill corresponds to uiSkillONE
+                skillQ: this.uiSkillTWO,  // Q skill corresponds to uiSkillTWO
+                skillR: this.uiSkillTHREE // R skill corresponds to uiSkillTHREE
+            }
         );
 
         // Update HP text position to follow the player
@@ -599,18 +741,18 @@ export default class M_Game extends Phaser.Scene {
         if (playerSpeed > this.runSpeed * 0.8) {
             // Slightly zoom out when running fast
             const runningZoom = this.bestZoom * 0.9;
-            if (Math.abs(this.cameras.main.zoom - runningZoom) > 0.05) {
+            if (Math.abs(this.mainCamera.zoom - runningZoom) > 0.05) {
                 this.tweens.add({
-                    targets: this.cameras.main,
+                    targets: this.mainCamera,
                     zoom: runningZoom,
                     duration: 200,
                     ease: 'Sine.easeOut'
                 });
             }
-        } else if (this.cameras.main.zoom < this.bestZoom) {
+        } else if (this.mainCamera.zoom < this.bestZoom) {
             // Return to normal zoom when not running
             this.tweens.add({
-                targets: this.cameras.main,
+                targets: this.mainCamera,
                 zoom: this.bestZoom,
                 duration: 300,
                 ease: 'Sine.easeOut'
@@ -648,7 +790,7 @@ export default class M_Game extends Phaser.Scene {
         targetZoom = Phaser.Math.Clamp(targetZoom, 0.5, 2.0);
 
         this.tweens.add({
-            targets: this.cameras.main,
+            targets: this.mainCamera,
             zoom: targetZoom,
             duration: 300,
             ease: 'Sine.easeInOut',
@@ -658,11 +800,90 @@ export default class M_Game extends Phaser.Scene {
         });
     }
 
+    // Add timer functionality methods
+    private startMatchTimer(): void {
+        // Set initial time to 1 minute and 30 seconds
+        this.matchTime = 90;
+
+        // Update the display initially
+        this.updateMatchTimerDisplay();
+
+        // Create a timer event that fires every second
+        this.matchTimerEvent = this.time.addEvent({
+            delay: 1000,
+            callback: this.updateMatchTimer,
+            callbackScope: this,
+            loop: true
+        });
+    }
+
+    private updateMatchTimer(): void {
+        // Decrease the remaining time
+        this.matchTime--;
+
+        // Update the display
+        this.updateMatchTimerDisplay();
+
+        // Check if timer has reached zero
+        if (this.matchTime <= 0) {
+            // Stop the timer
+            if (this.matchTimerEvent) {
+                this.matchTimerEvent.remove();
+                this.matchTimerEvent = null;
+            }
+
+            // Handle end of match logic
+            this.handleMatchEnd();
+        }
+    }
+
+    private updateMatchTimerDisplay(): void {
+        // Calculate minutes and seconds
+        const minutes = Math.floor(this.matchTime / 60);
+        const seconds = this.matchTime % 60;
+
+        // Format as XX:XX
+        const formattedTime = 
+            (minutes < 10 ? '0' : '') + minutes + 
+            ':' + 
+            (seconds < 10 ? '0' : '') + seconds;
+
+        // Update the text
+        this.matchTimerText.setText(formattedTime);
+    }
+
+    private handleMatchEnd(): void {
+        // Logic for when the match timer hits zero
+        this.matchTimerText.setText("00:00");
+
+        // You can add additional end-of-match logic here
+        console.log("Match time has ended!");
+
+        // For example, show a match end message, determine winner, etc.
+    }
+
     // Clean up when scene is shut down
     shutdown() {
         // Clean up stamina manager resources
         if (this.staminaManager) {
             this.staminaManager.destroy();
+        }
+
+        // Clean up the UI camera
+        if (this.uiCamera) {
+            this.uiCamera.destroy();
+        }
+
+        // Clean up the timer when the scene is shut down
+        if (this.matchTimerEvent) {
+            this.matchTimerEvent.remove();
+            this.matchTimerEvent = null;
+        }
+
+        // Remove the event listener when the scene is shut down
+        if (this.preventDefaultHandler) {
+            window.removeEventListener('keydown', this.preventDefaultHandler);
+            this.preventDefaultHandler = null;
         }
     }
     /* END-USER-CODE */
