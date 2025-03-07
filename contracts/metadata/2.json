@@ -1,0 +1,24 @@
+{
+    "name": "BabyNFT",
+    "description": "BabyNFT",
+    "symbol": "BBY",
+    "image": "https://imgur.com/jfyAP8b",
+    "attributes": [
+        {
+            "trait_type": "event",
+            "value": "Avalanche Meetup"
+        },
+        {
+            "trait_type": "year",
+            "value": "2025"
+        },
+        {
+            "trait_type": "region",
+            "value": "Luzon"
+        },
+        {
+            "trait_type": "website",
+            "value": "https://lu.ma/bi3sgtvt?tk=rTCXaD"
+        }
+    ]
+}
