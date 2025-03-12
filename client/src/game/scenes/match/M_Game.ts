@@ -4,9 +4,11 @@
 
 /* START-USER-IMPORTS */
 import { SOCKET } from "@/socket";
-import { handlePlayerMovement } from "../../utils/playerMovement";
-import { StaminaManager } from "../../utils/staminaManager";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
+import { PlayerManager } from "../../controllers/PlayerManager";
+import { SceneManager } from "../../controllers/SceneManager";
+import { UIManager } from "../../controllers/UIManager";
+import { MultiplayerManager } from "../../controllers/MultiplayerManager";
 /* END-USER-IMPORTS */
 
 export default class M_Game extends Phaser.Scene {
@@ -56,16 +58,6 @@ export default class M_Game extends Phaser.Scene {
 		tilesprite.body.pushable = false;
 		tilesprite.body.immovable = true;
 		tilesprite.body.setSize(84, 84, false);
-
-		// player
-		const player = this.physics.add.sprite(608, 752, "_Idle", 0);
-		player.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
-		player.scaleX = 3;
-		player.scaleY = 3;
-		player.setOrigin(0, 0);
-		player.body.gravity.y = 10000;
-		player.body.setOffset(45, 40);
-		player.body.setSize(30, 40, false);
 
 		// player1HP
 		const player1HP = this.add.text(678, 708, "", {});
@@ -153,17 +145,14 @@ export default class M_Game extends Phaser.Scene {
 		player2Name.text = "Player 2 Name";
 		player2Name.setStyle({ "align": "center", "fontFamily": "Sans-serif", "fontSize": "42px", "fontStyle": "bold italic", "shadow.stroke": true });
 
-		// collider
-		this.physics.add.collider(player, tilesprite_1);
-
 		this.bgIMAGE = bgIMAGE;
 		this.tilesprite_1 = tilesprite_1;
 		this.tilesprite = tilesprite;
-		this.player = player;
 		this.player1HP = player1HP;
 		this.player1STA = player1STA;
 		this.p1infoContainer = p1infoContainer;
 		this.p2infoContainer = p2infoContainer;
+		this.skillContainerCTR = skillContainerCTR;
 		this.uiSkillContainer = uiSkillContainer;
 		this.uiSkillONE = uiSkillONE;
 		this.uiSkillTWO = uiSkillTWO;
@@ -179,11 +168,11 @@ export default class M_Game extends Phaser.Scene {
 	private bgIMAGE!: Phaser.GameObjects.Image;
 	private tilesprite_1!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
 	private tilesprite!: Phaser.GameObjects.TileSprite & { body: Phaser.Physics.Arcade.StaticBody };
-	private player!: Phaser.Physics.Arcade.Sprite;
 	private player1HP!: Phaser.GameObjects.Text;
 	private player1STA!: Phaser.GameObjects.Text;
 	private p1infoContainer!: Phaser.GameObjects.Image;
 	private p2infoContainer!: Phaser.GameObjects.Image;
+	private skillContainerCTR!: Phaser.GameObjects.Container;
 	private uiSkillContainer!: Phaser.GameObjects.Image;
 	private uiSkillONE!: Phaser.GameObjects.Image;
 	private uiSkillTWO!: Phaser.GameObjects.Image;
@@ -195,824 +184,315 @@ export default class M_Game extends Phaser.Scene {
 
 	/* START-USER-CODE */
 
-    // Define movement speed and jump power
-    private walkSpeed = 200;
-    private runSpeed = 400;
-    private jumpSpeed = -2000;
-    private crouchSpeed = 150;
-    private cursors!: any;
-    private staminaManager!: StaminaManager;
-    private bestZoom = 1.5; // Increased from 0.7 for a closer view of the player
-    private parallaxFactor = 0.4; // How much the background moves relative to the camera (0 = fixed, 1 = moves with camera)
-    private uiCamera!: Phaser.Cameras.Scene2D.Camera;
-    private mainCamera!: Phaser.Cameras.Scene2D.Camera;
-    private matchTime: number = 90; // 1 minute and 30 seconds
-    private matchTimerEvent: Phaser.Time.TimerEvent | null = null;
-    private preventDefaultHandler: ((e: KeyboardEvent) => void) | null = null;
-    private lastSentPosition = { x: 0, y: 0 };
-    private positionUpdateInterval = 50; // ms between position updates
-    private lastPositionUpdate = 0;
+    // Socket connection
+    private socket: Socket = SOCKET;
+    
+    // Player state interfaces to match original implementation
+    private myPlayer: {
+        sprite?: Phaser.Physics.Arcade.Sprite;
+        x?: number;
+        y?: number;
+        health?: number;
+        flipX?: boolean;
+        velocityX?: number;
+        velocityY?: number;
+    } = {};
+    
+    private otherPlayer: {
+        sprite?: Phaser.Physics.Arcade.Sprite;
+        x?: number;
+        y?: number;
+        health?: number;
+        flipX?: boolean;
+        velocityX?: number;
+        velocityY?: number;
+    } = {};
+    
+    // Other players registry
+    private otherPlayers: { [id: string]: Phaser.Physics.Arcade.Sprite } = {};
 
-    // Write your code here
+    // Manager instances
+    private playerManager?: PlayerManager;
+    private sceneManager?: SceneManager;
+    private uiManager?: UIManager;
+    private multiplayerManager?: MultiplayerManager;
+    
     create() {
-        this.myPlayer.sprite = this.physics.add.sprite(608, 752, "_Idle", 0);
-        this.myPlayer.sprite.setInteractive(
-            new Phaser.Geom.Rectangle(0, 0, 120, 80),
-            Phaser.Geom.Rectangle.Contains
-        );
-        this.myPlayer.sprite.scaleX = 3;
-        this.myPlayer.sprite.scaleY = 3;
-        this.myPlayer.sprite.setOrigin(0, 0);
-        this.myPlayer.sprite.body!.gravity.y = 10000;
-        this.myPlayer.sprite.body!.setOffset(45, 40);
-        this.myPlayer.sprite.body!.setSize(30, 40, false);
-
-        this.otherPlayer.sprite = this.physics.add.sprite(608, 752, "_Idle", 0);
-        this.otherPlayer.sprite.setInteractive(
-            new Phaser.Geom.Rectangle(0, 0, 120, 80),
-            Phaser.Geom.Rectangle.Contains
-        );
-        this.otherPlayer.sprite.scaleX = 3;
-        this.otherPlayer.sprite.scaleY = 3;
-        this.otherPlayer.sprite.setOrigin(0, 0);
-        this.otherPlayer.sprite.body!.gravity.y = 10000;
-        this.otherPlayer.sprite.body!.setOffset(45, 40);
-        this.otherPlayer.sprite.body!.setSize(30, 40, false);
+        // Initialize the scene content
         this.editorCreate();
-
-        // Initialize all player animations
-        // Prevent spacebar and ctrl from scrolling the page and other default behaviors
-        const preventDefaultKeys = (e: KeyboardEvent) => {
-            if (e.code === "Space" || e.ctrlKey) {
-                e.preventDefault();
-            }
-        };
-
-        // Add event listeners to prevent spacebar and ctrl default behavior
-        window.addEventListener("keydown", preventDefaultKeys);
-
-        // Store the event handler for cleanup
-        this.preventDefaultHandler = preventDefaultKeys;
-
-        // Store reference to main camera
-        this.mainCamera = this.cameras.main;
-
-        // Create a separate UI camera that doesn't zoom
-        this.uiCamera = this.cameras.add();
-        this.uiCamera.setScroll(0, 0);
-        this.uiCamera.ignore([
-            this.bgIMAGE,
-            this.player,
-            // Ignore all tilesprites
-            this.tilesprite_1,
-            this.tilesprite,
-            this.player1HP,
-            this.player1STA,
-        ]);
-
-        // Play the match timer animation
-        // Alternative method with options
-        // this.uiTimer.play({
-        //     key: 'matchTimerAnim',
-        //     repeat: -1, // Loop infinitely
-        //     frameRate: 12 // Adjust speed if needed
-        // });
-
-        // Make the uiCamera ignore physics debug graphics
-        this.events.once("postupdate", () => {
-            // Physics debug graphics are created after the first update
-            // Find any physics debug graphics and ignore them in the UI camera
-            this.children.each((child) => {
-                // Check if this is a physics debug graphics object
-                if (
-                    child instanceof Phaser.GameObjects.Graphics &&
-                    (child.name === "__debugGraphics" ||
-                        child.getData("isPhysicsDebug"))
-                ) {
-                    this.uiCamera.ignore(child);
-                }
-            });
-        });
-
-        // If debug is enabled at any point, make sure UI camera ignores it
-        if (this.physics.world.debugGraphic) {
-            this.uiCamera.ignore(this.physics.world.debugGraphic);
-        }
-
-        // Have main camera ignore UI elements
-        this.mainCamera.ignore([
-            this.p1infoContainer,
-            this.p2infoContainer,
-            this.uiSkillContainer,
-            this.uiSkillONE,
-            this.uiSkillTWO,
-            this.uiSkillTHREE,
-            this.uiTimer,
-            this.matchTimerText,
-            this.player1Name,
-            this.player2Name,
-        ]);
-
-        // Set UI elements to high depth so they're always on top
-        this.p1infoContainer.setDepth(100);
-        this.p2infoContainer.setDepth(100);
-
-        // Configure the background for parallax effect
-        this.bgIMAGE.setScrollFactor(this.parallaxFactor);
-
-        // Optional: add subtle animation to the background
-        this.tweens.add({
-            targets: this.bgIMAGE,
-            y: "+=5",
-            duration: 3000,
-            yoyo: true,
-            repeat: -1,
-            ease: "Sine.easeInOut",
-        });
-
-        // Add a camera zoom effect - starting further out for a dramatic zoom in
-        this.mainCamera.setZoom(0.3);
-        this.tweens.add({
-            targets: this.mainCamera,
-            zoom: this.bestZoom, // Now zooming in closer to the player
-            duration: 1200, // Slightly longer for more dramatic effect
-            ease: "Power2",
-        });
-
-        // Set up camera to follow player with adjusted offset for closer zoom
-        this.mainCamera.startFollow(this.player, true);
-        this.mainCamera.setFollowOffset(0, -80); // Adjusted to better frame the player with closer zoom
-
-        // Adjust camera bounds if needed for the closer zoom
-        this.mainCamera.setBounds(0, 0, 1920, 1080);
-
-        // Create an array of all tilesprites
-        const tileSprites = [
-            this.tilesprite,
-            this.tilesprite_1,
-        ];
-
-        // Add colliders for all tilesprites in a single loop
-        tileSprites.forEach((tile) => {
-            this.physics.add.collider(this.player, tile);
-        });
-
-        // Position the HP text initially above the player
-        this.positionHPTextAbovePlayer();
-
-        // Define controls with simplified inputs and skill buttons
-        this.cursors = this.input.keyboard!.addKeys({
-            up: Phaser.Input.Keyboard.KeyCodes.SPACE,
-            left: Phaser.Input.Keyboard.KeyCodes.A,
-            right: Phaser.Input.Keyboard.KeyCodes.D,
-            shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
-            ctrl: Phaser.Input.Keyboard.KeyCodes.CTRL,
-            // Add skill keys
-            skillE: Phaser.Input.Keyboard.KeyCodes.E,
-            skillQ: Phaser.Input.Keyboard.KeyCodes.Q,
-            skillR: Phaser.Input.Keyboard.KeyCodes.R,
-        });
-
-        // Initialize the stamina manager
-        this.staminaManager = new StaminaManager(this, this.player1STA, {
-            maxStamina: 100,
-            regenRate: 0.5, // Amount to regenerate per tick
-            regenDelay: 1000, // Delay before stamina starts regenerating
-            updateFrequency: 100, // How often to update stamina regeneration
-        });
-
-        // Set initial animation - using the new animation system
-        this.myPlayer.sprite.play("Idle");
-
-        // Initialize and start the match timer
-        this.startMatchTimer();
-
-        // Set initial position to send to server
-        this.lastSentPosition = {
+        
+        // Connect to the server
+        this.socket.connect();
+        
+        // Create initial player sprites (will be managed by controllers)
+        // This ensures compatibility with existing code
+        this.myPlayer.sprite = this.physics.add.sprite(608, 752, "_Idle", 0);
+        this.configurePlayerSprite(this.myPlayer.sprite);
+        
+        this.otherPlayer.sprite = this.physics.add.sprite(900, 752, "_Idle", 0); 
+        this.configurePlayerSprite(this.otherPlayer.sprite);
+        this.otherPlayer.sprite.setTint(0xAAAAAA); // Light gray tint for opponent
+        
+        // Initialize the managers
+        this.initializeManagers();
+        
+        // Set up socket event handlers
+        this.setupSocketHandlers();
+        
+        // Emit 'playerJoined' event to the server with initial player position
+        this.socket.emit("playerJoined", {
             x: this.myPlayer.sprite.x,
             y: this.myPlayer.sprite.y,
-        };
-
-        // ======== MULTIPLAYER SECTION ========
-
-        // Remove any previous listeners to prevent duplicates
-        // this.socket.off("currentPlayers");
-        // this.socket.off("newPlayer");
-        // this.socket.off("playerDisconnected");
-        // this.socket.off("playerMoved");
-
-        // Register player with server
-        // this.socket.emit("playerJoined", {
-        //     x: this.myPlayer.sprite.x,
-        //     y: this.myPlayer.sprite.y,
-        //     animation: "Idle",
-        // });
-
-        this.socket.on("arenaStateChanged", (data) => {
-            console.log(data);
-            console.log(SOCKET.id);
-
-            // const otherPlayer = this.otherPlayers[id];
-            // if (!otherPlayer) {
-            // 	console.log(`Player ${id} not found in otherPlayers!`);
-            // 	return;
-            // }
-
-            // console.log(
-            // 	`Updating player ${id} position to (${playerInfo.x.toFixed(
-            // 		2
-            // 	)}, ${playerInfo.y.toFixed(2)})`
-            // );
-
-            // // Update flip X based on velocity
-            // if (playerInfo.flipX !== undefined) {
-            // 	otherPlayer.setFlipX(playerInfo.flipX);
-            // } else if (playerInfo.velocityX !== undefined) {
-            // 	// If flipX not provided, infer from velocity
-            // 	if (playerInfo.velocityX < 0) {
-            // 		otherPlayer.setFlipX(true);
-            // 	} else if (playerInfo.velocityX > 0) {
-            // 		otherPlayer.setFlipX(false);
-            // 	}
-            // }
-
-            // // Directly set position for immediate feedback (optional, can remove if too jittery)
-            // otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-
-            // // Smoothly move the player to the new position
-            // this.tweens.add({
-            // 	targets: otherPlayer,
-            // 	x: playerInfo.x,
-            // 	y: playerInfo.y,
-            // 	duration: 80, // Even shorter duration for smoother movement
-            // 	ease: "Linear",
-            // });
-
-            // // Update animation state if provided
-            // if (
-            // 	playerInfo.animation &&
-            // 	otherPlayer.anims.currentAnim?.key !== playerInfo.animation
-            // ) {
-            // 	otherPlayer.play(playerInfo.animation);
-            // }
-
-            // // Update the name tag position
-            // const nameTag = otherPlayer.getData("nameTag");
-            // if (nameTag) {
-            // 	nameTag.setPosition(
-            // 		playerInfo.x + otherPlayer.displayWidth / 2,
-            // 		playerInfo.y - 20
-            // 	);
-            // }
-            // console.log("Current players:", players);
-
-            // // Create sprites for existing players, excluding this client
-            // Object.keys(players).forEach((id) => {
-            //     if (id !== this.socket.id && !this.otherPlayers[id]) {
-            //         this.addOtherPlayer(id, players[id]);
-            //     }
-            // });
-        });
-
-        // Handle current players already in the game
-        // this.socket.on("currentPlayers", (players) => {
-        //     console.log("Current players:", players);
-
-        //     // Create sprites for existing players, excluding this client
-        //     Object.keys(players).forEach((id) => {
-        //         if (id !== this.socket.id && !this.otherPlayers[id]) {
-        //             this.addOtherPlayer(id, players[id]);
-        //         }
-        //     });
-        // });
-
-        // Handle new player connections
-        // this.socket.on("newPlayer", (playerInfo) => {
-        //     console.log("New player joined:", playerInfo.id);
-        //     // Only add if this isn't our player and doesn't already exist
-        //     if (
-        //         playerInfo.id !== this.socket.id &&
-        //         !this.otherPlayers[playerInfo.id]
-        //     ) {
-        //         this.addOtherPlayer(playerInfo.id, playerInfo);
-        //         // Refresh UI camera ignore settings
-        //         this.refreshUICameraIgnoreList();
-        //     }
-        // });
-
-        // Handle player disconnection
-        this.socket.on("playerDisconnected", (id) => {
-            console.log("Player disconnected:", id);
-            if (this.otherPlayers[id]) {
-                this.otherPlayers[id].destroy();
-                delete this.otherPlayers[id];
-            }
-        });
-
-        // Handle player movements
-        this.socket.on("playerMoved", (playerInfo) => {
-            if (
-                playerInfo.id !== this.socket.id &&
-                this.otherPlayers[playerInfo.id]
-            ) {
-                this.updateOtherPlayer(playerInfo.id, playerInfo);
-            }
-        });
-
-        this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-            if (pointer.leftButtonDown()) {
-                this.handleAttack("left");
-            } else if (pointer.rightButtonDown()) {
-                this.handleAttack("right");
-            }
-        });
-
-        this.game.canvas.addEventListener("contextmenu", (e) => {
-            e.preventDefault();
+            animation: "_Idle_Idle"
         });
     }
-    private handleAttack(attackType: "left" | "right"): void {
-        // Don't allow attacks if already attacking
-        if (
-            this.player.anims.currentAnim?.key.includes("_Attack") ||
-            this.player.getData("isAttacking")
-        ) {
-            console.log("Attack canceled - already attacking");
-            return;
-        }
-
-        // Play appropriate animation based on attack type
-        const animationKey = attackType === "left" ? "_Attack" : "_Attack2";
-
-        // console.log("Attempting to play animation:", animationKey);
-
-        this.player.setData("isAttacking", true);
-
-        if (attackType === "right") {
-            this.player.setVelocityY(0);
-        }
-
-        this.player.play({
-            key: animationKey,
-            frameRate: attackType === "left" ? 10 : 8, // Slower for heavy attack
-            repeat: 0,
-        });
-
-        if (attackType === "right") {
-            this.player.setVelocityX(0);
-        }
-
-        // Send attack to server for multiplayer
-        this.socket.emit("playerMovement", {
-            x: this.player.x,
-            y: this.player.y,
-            animation: animationKey,
-            flipX: this.player.flipX,
-            isAttacking: true,
-        });
-
-        // Return to idle state ONLY when animation is fully complete
-        this.player.once("animationcomplete", () => {
-            console.log("Attack animation complete, returning to idle");
-            this.player.setData("isAttacking", false);
-            // Use the correct idle animation
-            this.player.play("_Idle_Idle");
-
-            // IMPORTANT: Tell other players that we're done attacking
-            this.socket.emit("playerMovement", {
-                x: this.player.x,
-                y: this.player.y,
-                animation: "_Idle_Idle",
-                flipX: this.player.flipX,
-                isAttacking: false,
-            });
-        });
+    
+    /**
+     * Configure a player sprite with standard physics settings
+     */
+    private configurePlayerSprite(sprite: Phaser.Physics.Arcade.Sprite): void {
+        sprite.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
+        sprite.scaleX = 3;
+        sprite.scaleY = 3;
+        sprite.setOrigin(0, 0);
+        sprite.body.gravity.y = 10000;
+        sprite.body.setOffset(45, 40);
+        sprite.body.setSize(30, 40, false);
+        sprite.play('_Idle_Idle');
     }
 
-    update(time: number, delta: number) {
-        // Check if player is currently attacking
-        if (this.player.getData("isAttacking")) {
-            // Only handle gravity and position HP text while attacking
-            this.positionHPTextAbovePlayer();
-            return; // Skip normal movement handling during attack animation
-        }
-
-        // Use the simplified movement system with stamina integration
-        // Handle player 1 movement with WASD controls
-        const movementResult = handlePlayerMovement(
-            this.player,
-            this.cursors,
+    /**
+     * Initialize all manager classes
+     */
+    private initializeManagers(): void {
+        // Setup ground tiles array
+        const groundTiles = [this.tilesprite, this.tilesprite_1];
+        
+        // Create the scene manager
+        this.sceneManager = new SceneManager(
+            this,
+            this.bgIMAGE,
+            groundTiles,
             {
-                walkSpeed: this.walkSpeed,
-                runSpeed: this.runSpeed,
-                jumpSpeed: this.jumpSpeed,
-                crouchSpeed: this.crouchSpeed,
-            },
+                bestZoom: 1.5,
+                parallaxFactor: 0.4
+            }
+        );
+        
+        // Create the player manager
+        this.playerManager = new PlayerManager(
+            this,
+            this.socket,
             {
-                idle: "_Idle_Idle",
-                walk: "_Run",
-                jump: "_Jump",
-                fall: "_Fall",
-                run: "_Run",
-                crouch: "_CrouchFull",
-                crouchWalk: "_CrouchWalk",
-            },
-            this.staminaManager,
-            {
+                walkSpeed: 200,
+                runSpeed: 400,
+                jumpSpeed: -2000,
+                crouchSpeed: 150,
                 skillE: this.uiSkillONE,
                 skillQ: this.uiSkillTWO,
-                skillR: this.uiSkillTHREE,
+                skillR: this.uiSkillTHREE
             }
         );
-
-        // Update HP text position to follow the player
-        this.positionHPTextAbovePlayer();
-
-        // ===== MULTIPLAYER: Send position updates to server =====
-        // Always send position updates if there's any movement
-        const positionChanged =
-            Math.abs(this.myPlayer.sprite.x - this.lastSentPosition.x) > 0.5 ||
-            Math.abs(this.myPlayer.sprite.y - this.lastSentPosition.y) > 0.5;
-
-        if (
-            positionChanged &&
-            time - this.lastPositionUpdate > this.positionUpdateInterval
-        ) {
-            // Store current position
-            this.lastSentPosition.x = this.myPlayer.sprite.x;
-            this.lastSentPosition.y = this.myPlayer.sprite.y;
-            this.lastPositionUpdate = time;
-
-            // Debug: log that we're sending position
-            console.log(
-                `Sending position: (${this.myPlayer.sprite.x.toFixed(
-                    2
-                )}, ${this.myPlayer.sprite.y.toFixed(2)})`
-            );
-
-            // Send position and animation state to server
-            this.socket.emit("playerMoved", {
-                x: this.myPlayer.sprite.x,
-                y: this.myPlayer.sprite.y,
-                flipX: this.myPlayer.sprite.flipX,
-                velocityX: this.myPlayer.sprite.body!.velocity.x,
-                velocityY: this.myPlayer.sprite.body!.velocity.y,
-            });
-            // this.socket.emit("playerMovement", {
-            //     x: this.myPlayer.sprite.x,
-            //     y: this.myPlayer.sprite.y,
-            //     animation: this.myPlayer.sprite.anims.currentAnim?.key || "Idle",
-            //     flipX: this.myPlayer.sprite.flipX,
-            //     velocityX: this.myPlayer.sprite.body.velocity.x,
-            //     velocityY: this.myPlayer.sprite.body.velocity.y,
-            // });
-        }
-
-        const playerSpeed = Math.abs(this.myPlayer.sprite.body!.velocity.x);
-        if (playerSpeed > this.runSpeed * 0.8) {
-            // Slightly zoom out when running fast
-            const runningZoom = this.bestZoom * 0.9;
-            if (Math.abs(this.mainCamera.zoom - runningZoom) > 0.05) {
-                this.tweens.add({
-                    targets: this.mainCamera,
-                    zoom: runningZoom,
-                    duration: 200,
-                    ease: "Sine.easeOut",
-                });
-            }
-        } else if (this.mainCamera.zoom < this.bestZoom) {
-            // Return to normal zoom when not running
-            this.tweens.add({
-                targets: this.mainCamera,
-                zoom: this.bestZoom,
-                duration: 300,
-                ease: "Sine.easeOut",
-            });
-        }
-    }
-
-    // Position the HP and STA text centered above the player's head
-    private positionHPTextAbovePlayer() {
-        // Calculate position above player (adjust the Y offset as needed)
-        const hpYOffset = -40; // Distance above player's head
-        const staYOffset = -15; // Distance above player's head but below HP text
-
-        // Center the texts horizontally on the player
-        this.player1HP.setPosition(
-            this.myPlayer.sprite.x - this.player1HP.width / 2,
-            this.myPlayer.sprite.y + hpYOffset
-        );
-
-        this.player1STA.setPosition(
-            this.myPlayer.sprite.x - this.player1STA.width / 2,
-            this.myPlayer.sprite.y + staYOffset
-        );
-    }
-
-    // Add a method to dynamically adjust parallax factor (optional)
-    setParallaxFactor(factor: number) {
-        this.parallaxFactor = factor;
-        this.bgIMAGE.setScrollFactor(factor);
-    }
-
-    // Add a method to smoothly adjust zoom
-    adjustZoom(targetZoom: number) {
-        // Clamp the value to reasonable limits
-        targetZoom = Phaser.Math.Clamp(targetZoom, 0.5, 2.0);
-
-        this.tweens.add({
-            targets: this.mainCamera,
-            zoom: targetZoom,
-            duration: 300,
-            ease: "Sine.easeInOut",
-            onComplete: () => {
-                this.bestZoom = targetZoom; // Update the best zoom value
-            },
-        });
-    }
-
-    // Add timer functionality methods
-    private startMatchTimer(): void {
-        // Set initial time to 1 minute and 30 seconds
-        this.matchTime = 90;
-
-        // Update the display initially
-        this.updateMatchTimerDisplay();
-
-        // Create a timer event that fires every second
-        this.matchTimerEvent = this.time.addEvent({
-            delay: 1000,
-            callback: this.updateMatchTimer,
-            callbackScope: this,
-            loop: true,
-        });
-    }
-
-    private updateMatchTimer(): void {
-        // Decrease the remaining time
-        this.matchTime--;
-
-        // Update the display
-        this.updateMatchTimerDisplay();
-
-        // Check if timer has reached zero
-        if (this.matchTime <= 0) {
-            // Stop the timer
-            if (this.matchTimerEvent) {
-                this.matchTimerEvent.remove();
-                this.matchTimerEvent = null;
-            }
-
-            // Handle end of match logic
-            this.handleMatchEnd();
-        }
-    }
-
-    private updateMatchTimerDisplay(): void {
-        // Calculate minutes and seconds
-        const minutes = Math.floor(this.matchTime / 60);
-        const seconds = this.matchTime % 60;
-
-        // Format as XX:XX
-        const formattedTime =
-            (minutes < 10 ? "0" : "") +
-            minutes +
-            ":" +
-            (seconds < 10 ? "0" : "") +
-            seconds;
-
-        // Update the text
-        this.matchTimerText.setText(formattedTime);
-    }
-
-    private handleMatchEnd(): void {
-        // Logic for when the match timer hits zero
-        this.matchTimerText.setText("00:00");
-
-        // You can add additional end-of-match logic here
-        console.log("Match time has ended!");
-
-        // For example, show a match end message, determine winner, etc.
-    }
-
-    // ===== MULTIPLAYER HELPER METHODS =====
-
-    // Create a new player sprite for other connected players
-    private addOtherPlayer(id: string, playerInfo: any) {
-        // Create a new sprite for the other player
-        const otherPlayer = this.physics.add.sprite(
-            playerInfo.x,
-            playerInfo.y,
-            "_Idle",
-            0
-        );
-
-        // Configure other player sprite similar to local player
-        otherPlayer.setInteractive(
-            new Phaser.Geom.Rectangle(0, 0, 120, 80),
-            Phaser.Geom.Rectangle.Contains
-        );
-        otherPlayer.scaleX = 3;
-        otherPlayer.scaleY = 3;
-        otherPlayer.setOrigin(0, 0);
-        otherPlayer.body.gravity.y = 10000;
-        otherPlayer.body.setOffset(45, 40);
-        otherPlayer.body.setSize(30, 40, false);
-
-        // Set player color tint to differentiate from local player
-        otherPlayer.setTint(0xaaaaaa); // Light grey tint
-
-        // Store the player in our registry
-        this.otherPlayers[id] = otherPlayer;
-
-        // Create floating name tag above other player
-        const nameTag = this.add.text(
-            otherPlayer.x,
-            otherPlayer.y - 60,
-            `Player ${id.substring(0, 4)}`, // Show part of the ID as name
+        
+        // Create the UI manager
+        this.uiManager = new UIManager(
+            this,
             {
-                fontSize: "16px",
-                color: "#FFFFFF",
-                stroke: "#000000",
-                strokeThickness: 3,
+                p1infoContainer: this.p1infoContainer,
+                p2infoContainer: this.p2infoContainer,
+                player1Name: this.player1Name,
+                player2Name: this.player2Name,
+                uiTimer: this.uiTimer,
+                matchTimerText: this.matchTimerText,
+                skillContainer: this.skillContainerCTR,
+                uiSkillContainer: this.uiSkillContainer,
+                uiSkillONE: this.uiSkillONE,
+                uiSkillTWO: this.uiSkillTWO,
+                uiSkillTHREE: this.uiSkillTHREE
             }
         );
-        nameTag.setOrigin(0.5, 1);
-        nameTag.setDepth(100);
-
-        // Store the name tag as a property of the player
-        otherPlayer.setData("nameTag", nameTag);
-
-        // Make UI camera ignore other players' elements
-        if (this.uiCamera) {
-            this.uiCamera.ignore([otherPlayer, nameTag]);
-        }
-
-        // Add colliders with the tilesprites
-        const tileSprites = [
-            this.tilesprite,
-            this.tilesprite_1,
+        
+        // Initialize the player manager with the local player sprite
+        this.playerManager.initialize(
+            this.myPlayer.sprite!.x, 
+            this.myPlayer.sprite!.y, 
+            this.player1HP, 
+            this.player1STA
+        );
+        
+        // Update myPlayer reference to the managed sprite
+        this.myPlayer.sprite = this.playerManager.getPlayer();
+        
+        // Initialize multiplayer manager
+        this.multiplayerManager = new MultiplayerManager(
+            this,
+            this.socket,
+            this.myPlayer.sprite,
+            { positionUpdateInterval: 50 }
+        );
+        
+        // Connect the multiplayer manager with scene manager
+        this.multiplayerManager.setSceneManager(this.sceneManager);
+        
+        // Set cameras to follow player
+        this.sceneManager.setupCameraFollow(this.myPlayer.sprite);
+        
+        // Configure camera ignore lists
+        const uiElements = this.uiManager.getUIElements();
+        this.sceneManager.setMainIgnoreUI(uiElements);
+        
+        // Create array of gameplay elements to be ignored by UI camera
+        const gameplayElements = [
+            this.bgIMAGE,
+            this.myPlayer.sprite,
+            this.otherPlayer.sprite,
+            ...groundTiles,
+            this.player1HP,
+            this.player1STA
         ];
-
-        tileSprites.forEach((tile) => {
-            this.physics.add.collider(otherPlayer, tile);
+        this.sceneManager.setUIIgnoreGameplay(gameplayElements);
+        
+        // Add colliders between both players and ground
+        this.playerManager.addColliders(groundTiles);
+        groundTiles.forEach(tile => {
+            this.physics.add.collider(this.otherPlayer.sprite!, tile);
         });
-
-        // Set initial animation if provided
-        if (playerInfo.animation) {
-            otherPlayer.play(playerInfo.animation);
-        } else {
-            otherPlayer.play("Idle");
-        }
-
-        return otherPlayer;
+        
+        // Start the match timer
+        this.uiManager.startMatchTimer();
+        
+        // Listen for match end event from the UI manager
+        this.events.on('matchEnded', this.handleMatchEnd, this);
     }
 
-    // Update other player's position and animation
-    private updateOtherPlayer(id: string, playerInfo: any): void {
-        const otherPlayer = this.otherPlayers[id];
-        if (!otherPlayer) {
-            console.log(`Player ${id} not found in otherPlayers!`);
-            return;
-        }
-
-        // Update position
-        otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-
+    /**
+     * Set up socket event handlers for multiplayer
+     */
+    private setupSocketHandlers(): void {
+        // Listen for arena state updates (for 1v1 matches)
+        this.socket.on("arenaStateChanged", (data) => {
+            console.log("Arena state changed:", data);
+            
+            // Determine if we're player 1 or player 2
+            const isPlayer1 = data.player1?.id === this.socket.id;
+            
+            // Update the other player's position based on arena state
+            if (isPlayer1 && data.player2) {
+                // We are player 1, so update the position of the other player (player 2)
+                this.updateOtherPlayerPosition(data.player2.x, data.player2.y);
+            } else if (!isPlayer1 && data.player1) {
+                // We are player 2, so update the position of the other player (player 1)
+                this.updateOtherPlayerPosition(data.player1.x, data.player1.y);
+            }
+        });
+    }
+    
+    /**
+     * Update the other player's position (for 1v1 matches)
+     */
+    private updateOtherPlayerPosition(x: number, y: number): void {
+        if (!this.otherPlayer.sprite) return;
+        
+        // Record current position
+        const prevX = this.otherPlayer.sprite.x;
+        
         // Smoothly move the player to the new position
         this.tweens.add({
-            targets: otherPlayer,
-            x: playerInfo.x,
-            y: playerInfo.y,
+            targets: this.otherPlayer.sprite,
+            x: x,
+            y: y,
             duration: 80,
-            ease: "Linear",
+            ease: 'Linear'
         });
-
-        // Update flip X based on velocity or provided flipX
-        if (playerInfo.flipX !== undefined) {
-            otherPlayer.setFlipX(playerInfo.flipX);
-        } else if (
-            playerInfo.velocityX !== undefined &&
-            playerInfo.velocityX !== 0
-        ) {
-            otherPlayer.setFlipX(playerInfo.velocityX < 0);
-        }
-
-        // Handle attack state
-        const wasAttacking = otherPlayer.getData("isAttacking") === true;
-
-        // Update attack state data if provided
-        if (playerInfo.isAttacking !== undefined) {
-            otherPlayer.setData("isAttacking", playerInfo.isAttacking);
-        }
-
-        // Handle animation changes
-        if (playerInfo.animation) {
-            const currentAnim = otherPlayer.anims.currentAnim?.key || "";
-            const newAnim = playerInfo.animation;
-
-            // Detect animation changes
-            const isNewAttack = newAnim.includes("_Attack");
-            const isNewIdle = newAnim.includes("_Idle");
-            const isCurrentAttack = currentAnim.includes("_Attack");
-
-            // Special case: Always force exit from attack to idle
-            if (wasAttacking && playerInfo.isAttacking === false) {
-                // If we were attacking but now we're not, immediately go to idle
-                otherPlayer.play("_Idle_Idle");
-                console.log(`Player ${id} forced to idle after attack ended`);
-            }
-            // Case 1: Starting a new attack - always allow this
-            else if (isNewAttack && !isCurrentAttack) {
-                otherPlayer.play(newAnim);
-
-                // Set up auto-transition to idle when attack animation completes
-                otherPlayer.once("animationcomplete", () => {
-                    // Only transition to idle if we're still in the same attack animation
-                    if (otherPlayer.anims.currentAnim?.key === newAnim) {
-                        otherPlayer.play("_Idle_Idle");
-                        console.log(
-                            `Attack animation completed for player ${id}, auto-transitioning to idle`
-                        );
-                    }
-                });
-            }
-            // Case 2: Regular animation transitions (not attacks)
-            else if (!isCurrentAttack && currentAnim !== newAnim) {
-                // Only change non-attack animations if we're not in the middle of an attack
-                otherPlayer.play(newAnim);
-            }
-        }
-
-        // Update the name tag position
-        const nameTag = otherPlayer.getData("nameTag");
-        if (nameTag) {
-            nameTag.setPosition(
-                playerInfo.x + otherPlayer.displayWidth / 2,
-                playerInfo.y - 20
-            );
+        
+        // Update flip direction based on movement
+        if (x < prevX) {
+            this.otherPlayer.sprite.setFlipX(true);
+        } else if (x > prevX) {
+            this.otherPlayer.sprite.setFlipX(false);
         }
     }
-
-    // NEW: Add a helper method to refresh the UI camera ignore list
-    private refreshUICameraIgnoreList(): void {
-        if (!this.uiCamera) return;
-
-        // Make sure UI camera ignores all other player sprites and their name tags
-        Object.values(this.otherPlayers).forEach((otherPlayer) => {
-            this.uiCamera.ignore(otherPlayer);
-
-            const nameTag = otherPlayer.getData("nameTag");
-            if (nameTag) {
-                this.uiCamera.ignore(nameTag);
-            }
-        });
+    
+    /**
+     * Handle end of match
+     */
+    private handleMatchEnd(): void {
+        // Add additional logic for match end here
+        console.log("Match has ended!");
+        
+        // Example: Show victory/defeat message, go to result screen, etc.
     }
-
-    // Clean up when scene is shut down
-    shutdown() {
-        // Clean up stamina manager resources
-        if (this.staminaManager) {
-            this.staminaManager.destroy();
+    
+    /**
+     * Update method called each frame
+     */
+    update(time: number, delta: number): void {
+        // Update player manager
+        if (this.playerManager) {
+            this.playerManager.update(time, delta);
+            
+            // Update camera zoom based on player speed
+            if (this.sceneManager) {
+                this.sceneManager.updateCameraZoom(
+                    this.playerManager.getSpeed(),
+                    this.playerManager.getRunSpeedThreshold()
+                );
+            }
         }
-
-        // Clean up the UI camera
-        if (this.uiCamera) {
-            this.uiCamera.destroy();
+        
+        // Update multiplayer manager
+        if (this.multiplayerManager) {
+            this.multiplayerManager.update(time, delta);
         }
-
-        // Clean up the timer when the scene is shut down
-        if (this.matchTimerEvent) {
-            this.matchTimerEvent.remove();
-            this.matchTimerEvent = null;
+    }
+    
+    /**
+     * Clean up when scene is shut down
+     */
+    shutdown(): void {
+        // Clean up all managers
+        if (this.playerManager) {
+            this.playerManager.destroy();
         }
-
-        // Remove the event listener when the scene is shut down
-        if (this.preventDefaultHandler) {
-            window.removeEventListener("keydown", this.preventDefaultHandler);
-            this.preventDefaultHandler = null;
+        
+        if (this.sceneManager) {
+            this.sceneManager.destroy();
         }
-
+        
+        if (this.uiManager) {
+            this.uiManager.destroy();
+        }
+        
+        if (this.multiplayerManager) {
+            this.multiplayerManager.cleanup();
+        }
+        
         // Disconnect from socket server
         if (this.socket && this.socket.connected) {
             this.socket.disconnect();
         }
-
+        
         // Clean up socket event listeners
         this.socket.off("currentPlayers");
         this.socket.off("newPlayer");
         this.socket.off("playerDisconnected");
         this.socket.off("playerMoved");
-
+        this.socket.off("arenaStateChanged");
+        
+        // Clean up event listeners
+        this.events.off('matchEnded', this.handleMatchEnd, this);
+        
         // Clean up all other player sprites
-        Object.values(this.otherPlayers).forEach((player) => {
+        Object.values(this.otherPlayers).forEach(player => {
             const nameTag = player.getData("nameTag");
             if (nameTag) nameTag.destroy();
             player.destroy();
         });
+        
         this.otherPlayers = {};
     }
-    /* END-USER-CODE */
+
+	/* END-USER-CODE */
 }
 
 /* END OF COMPILED CODE */
