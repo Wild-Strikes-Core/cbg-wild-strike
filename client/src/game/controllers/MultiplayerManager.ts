@@ -28,6 +28,9 @@ export class MultiplayerManager {
     private lastPositionUpdate: number = 0;
     private lastSentPosition = { x: 0, y: 0 };
     
+    // Platform reference
+    private platform?: Phaser.Physics.Arcade.Image | Phaser.Physics.Arcade.StaticImage;
+    
     /**
      * Create a multiplayer manager
      * 
@@ -42,6 +45,7 @@ export class MultiplayerManager {
         localPlayer: Phaser.Physics.Arcade.Sprite,
         config: {
             positionUpdateInterval?: number;
+            platform?: Phaser.Physics.Arcade.Image | Phaser.Physics.Arcade.StaticImage;
         } = {}
     ) {
         this.scene = scene;
@@ -50,6 +54,7 @@ export class MultiplayerManager {
         
         // Apply configuration
         this.positionUpdateInterval = config.positionUpdateInterval || this.positionUpdateInterval;
+        this.platform = config.platform;
         
         // Initialize last sent position
         this.lastSentPosition = {
@@ -73,6 +78,20 @@ export class MultiplayerManager {
      */
     setSceneManager(sceneManager: SceneManager): void {
         this.sceneManager = sceneManager;
+    }
+    
+    /**
+     * Set platform reference for collision detection
+     */
+    setPlatform(platform: Phaser.Physics.Arcade.Image | Phaser.Physics.Arcade.StaticImage): void {
+        this.platform = platform;
+        
+        // Add colliders for any existing players
+        if (this.platform) {
+            Object.values(this.otherPlayers).forEach(player => {
+                this.addPlatformCollider(player);
+            });
+        }
     }
     
     /**
@@ -193,6 +212,28 @@ export class MultiplayerManager {
     }
     
     /**
+     * Add platform collider to a sprite
+     */
+    private addPlatformCollider(sprite: Phaser.Physics.Arcade.Sprite): void {
+        if (!this.platform || !sprite || !sprite.body) return;
+        
+        // Remove any existing colliders first to prevent duplicates
+        this.scene.physics.world.colliders.getActive()
+            .filter(collider => 
+                (collider.object1 === sprite && collider.object2 === this.platform) || 
+                (collider.object1 === this.platform && collider.object2 === sprite))
+            .forEach(collider => collider.destroy());
+        
+        // Create new collider
+        const collider = this.scene.physics.add.collider(sprite, this.platform);
+        
+        // Store reference to the collider
+        sprite.setData('platformCollider', collider);
+        
+        console.log(`Platform collider added to multiplayer player at (${sprite.x}, ${sprite.y})`);
+    }
+    
+    /**
      * Create a new player sprite for other connected players
      */
     private addOtherPlayer(id: string, playerInfo: any): void {
@@ -253,6 +294,11 @@ export class MultiplayerManager {
                 groundTiles.forEach(tile => {
                     this.scene.physics.add.collider(otherPlayer, tile);
                 });
+            }
+            
+            // Add collider with platform
+            if (this.platform) {
+                this.addPlatformCollider(otherPlayer);
             }
             
             // Set initial animation - always use the animation key specified in the atlas
@@ -402,6 +448,24 @@ export class MultiplayerManager {
                 velocityX: this.localPlayer.body?.velocity.x || 0,
                 velocityY: this.localPlayer.body?.velocity.y || 0
             });
+        }
+        
+        // Check if any player needs platform colliders (every 2 seconds)
+        if (this.platform && time % 2000 < 20) {
+            let needsColliderRefresh = false;
+            
+            Object.values(this.otherPlayers).forEach(player => {
+                if (!player.getData('platformCollider')) {
+                    needsColliderRefresh = true;
+                }
+            });
+            
+            if (needsColliderRefresh) {
+                console.log("Refreshing platform colliders for multiplayer players");
+                Object.values(this.otherPlayers).forEach(player => {
+                    this.addPlatformCollider(player);
+                });
+            }
         }
     }
     

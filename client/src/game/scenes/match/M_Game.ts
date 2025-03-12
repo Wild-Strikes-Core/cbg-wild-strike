@@ -357,7 +357,10 @@ export default class M_Game extends Phaser.Scene {
             this,
             this.socket,
             this.myPlayer.sprite,
-            { positionUpdateInterval: 50 }
+            { 
+                positionUpdateInterval: 50,
+                platform: this.platform  // Pass the platform directly
+            }
         );
 
         // Connect the multiplayer manager with scene manager
@@ -387,20 +390,18 @@ export default class M_Game extends Phaser.Scene {
         this.sceneManager.setUIIgnoreGameplay(gameplayElements);
 
         // Add platform colliders to player
-        if (this.platform) {
-            this.physics.add.collider(this.playerManager.getPlayer(), this.platform);
+        if (this.platform && this.myPlayer.sprite) {
+            this.addPlatformCollider(this.myPlayer.sprite);
         }
 
         // Add platform colliders between other player and ground only if it exists
         if (this.otherPlayer.sprite && this.platform) {
-            this.physics.add.collider(this.otherPlayer.sprite, this.platform);
+            this.addPlatformCollider(this.otherPlayer.sprite);
         }
 
         // Also add platform colliders for all otherPlayers
         Object.values(this.otherPlayers).forEach(otherPlayerSprite => {
-            if (this.platform) {
-                this.physics.add.collider(otherPlayerSprite, this.platform);
-            }
+            this.addPlatformCollider(otherPlayerSprite);
         });
 
         // Start the match timer
@@ -408,6 +409,9 @@ export default class M_Game extends Phaser.Scene {
 
         // Listen for match end event from the UI manager
         this.events.on('matchEnded', this.handleMatchEnd, this);
+
+        // Refresh platform colliders - force execution after initialization
+        this.time.delayedCall(100, () => this.refreshAllPlatformColliders());
     }
 
     /**
@@ -660,6 +664,9 @@ export default class M_Game extends Phaser.Scene {
         // Create the player sprites
         this.myPlayer.sprite = this.physics.add.sprite(608, 752, "_Idle_Idle", 0);
         this.configurePlayerSprite(this.myPlayer.sprite);
+        
+        // Add platform collider to local player
+        this.addPlatformCollider(this.myPlayer.sprite);
 
         // Setup socket handlers for other players
         this.setupPlayerSpawning();
@@ -790,10 +797,13 @@ export default class M_Game extends Phaser.Scene {
 
             console.log(`Other player sprite created for ID: ${id}`);
 
-            // Add collider with platform for new player
-            if (this.platform) {
-                this.physics.add.collider(otherPlayerSprite, this.platform);
-            }
+            // Add platform collider with a slight delay to ensure physics body is ready
+            this.time.delayedCall(50, () => {
+                this.addPlatformCollider(otherPlayerSprite);
+                console.log(`Platform collider added to player ${id} with delay`);
+            });
+            
+            console.log(`Other player sprite created for ID: ${id} with platform collider`);
         } catch (error) {
             console.error("Error creating other player sprite:", error);
         }
@@ -888,6 +898,26 @@ export default class M_Game extends Phaser.Scene {
         if (this.multiplayerManager) {
             this.multiplayerManager.update(time, delta);
         }
+
+        // Debug - Periodically check platform colliders every 2 seconds
+        if (time % 2000 < 20) {
+            // Check if any player is missing a platform collider
+            let needsColliderRefresh = false;
+            
+            if (this.myPlayer.sprite && !this.myPlayer.sprite.getData('platformCollider')) {
+                needsColliderRefresh = true;
+            }
+            
+            if (this.otherPlayer.sprite && !this.otherPlayer.sprite.getData('platformCollider')) {
+                needsColliderRefresh = true;
+            }
+            
+            // Refresh colliders if needed
+            if (needsColliderRefresh) {
+                console.log("Missing platform colliders detected, refreshing...");
+                this.refreshAllPlatformColliders();
+            }
+        }
     }
 
     /**
@@ -966,24 +996,6 @@ export default class M_Game extends Phaser.Scene {
      * @param remainingTime The remaining time in seconds
      */
     updateMatchTimer(remainingTime: number): void {
-
-        this.otherPlayers = {};
-    }
-
-    /**
-     * Update the match timer display
-     */
-    private updateTimer(remainingTime: number): void {
-        const minutes = Math.floor(remainingTime / 60);
-        const seconds = remainingTime % 60;
-        this.matchTimerText.setText(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
-    }
-
-    /**
-     * Updates the match timer display
-     * @param remainingTime The remaining time in seconds
-     */
-    updateMatchTimer(remainingTime: number): void {
         if (!this.matchTimerText) return;
 
         // Safely handle the timer calculation
@@ -1033,33 +1045,83 @@ export default class M_Game extends Phaser.Scene {
             this.platform.setOrigin(0.5, 0); // Center origin horizontally
             this.platform.setImmovable(true);
             
-            // Adjust platform to match camera width
+            // Adjust platform to match camera width with extra safety margin
             const cameraWidth = this.cameras.main.width;
-            this.platform.displayWidth = cameraWidth;
-            this.platform.body?.setSize(cameraWidth, this.platform.body?.height, false);
+            const safetyMargin = 400; // Extra width on each side
+            const totalWidth = cameraWidth + (safetyMargin * 2);
+            
+            // Update both display width and physics body size
+            this.platform.displayWidth = totalWidth;
+            if (this.platform.body) {
+                this.platform.body.width = totalWidth;
+                this.platform.body.setSize(totalWidth, this.platform.body.height, false);
+            }
             
             // Position platform in the center of the camera view
             this.platform.x = cameraWidth / 2;
             
-            // Make sure the platform extends beyond screen edges
-            const safetyMargin = 200; // Extra width on each side
-            this.platform.displayWidth = cameraWidth + (safetyMargin * 2);
-
-            // Add collider to existing player if already created
+            // Ensure platform is enabled for physics
+            this.platform.body.enable = true;
+            
+            console.log(`Platform configured: width=${totalWidth}, position=(${this.platform.x}, ${this.platform.y})`);
+            
+            // Add collider to the player managed by PlayerManager
             if (this.playerManager && this.playerManager.getPlayer()) {
                 this.physics.add.collider(this.playerManager.getPlayer(), this.platform);
             }
             
-            // Add collider to otherPlayer if it exists
-            if (this.otherPlayer.sprite) {
-                this.physics.add.collider(this.otherPlayer.sprite, this.platform);
+            // Update platform reference in the multiplayer manager
+            if (this.multiplayerManager) {
+                this.multiplayerManager.setPlatform(this.platform);
             }
-            
-            // Add colliders for all other players
-            Object.values(this.otherPlayers).forEach(otherPlayerSprite => {
-                this.physics.add.collider(otherPlayerSprite, this.platform);
-            });
         }
+    }
+
+    /**
+     * Add platform collider to a player sprite
+     * @param sprite - The player sprite to add collider to
+     */
+    private addPlatformCollider(sprite: Phaser.Physics.Arcade.Sprite): void {
+        if (this.platform && sprite && sprite.body) {
+            // Remove any existing colliders first to prevent duplicates
+            this.physics.world.colliders.getActive()
+                .filter(collider => 
+                    (collider.object1 === sprite && collider.object2 === this.platform) || 
+                    (collider.object1 === this.platform && collider.object2 === sprite))
+                .forEach(collider => collider.destroy());
+            
+            // Add a fresh collider
+            const collider = this.physics.add.collider(sprite, this.platform);
+            
+            // Store reference to help with debugging
+            sprite.setData('platformCollider', collider);
+            
+            console.log(`Platform collider added to player at (${sprite.x}, ${sprite.y})`);
+        } else {
+            console.warn("Could not add platform collider - sprite, platform, or body is missing");
+        }
+    }
+
+    /**
+     * Refresh all platform colliders for all players
+     */
+    private refreshAllPlatformColliders(): void {
+        // Check local player
+        if (this.myPlayer.sprite) {
+            this.addPlatformCollider(this.myPlayer.sprite);
+        }
+        
+        // Check main opponent
+        if (this.otherPlayer.sprite) {
+            this.addPlatformCollider(this.otherPlayer.sprite);
+        }
+        
+        // Check all other players
+        Object.values(this.otherPlayers).forEach(player => {
+            this.addPlatformCollider(player);
+        });
+        
+        console.log("All platform colliders refreshed");
     }
 
 	/* END-USER-CODE */
