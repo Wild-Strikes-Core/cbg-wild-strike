@@ -399,8 +399,8 @@ export class MultiplayerManager {
                 y: this.localPlayer.y,
                 animation: this.localPlayer.anims.currentAnim?.key || '_Idle_Idle', // Use correct idle animation key
                 flipX: this.localPlayer.flipX,
-                velocityX: this.localPlayer.body.velocity.x,
-                velocityY: this.localPlayer.body.velocity.y
+                velocityX: this.localPlayer.body?.velocity.x || 0,
+                velocityY: this.localPlayer.body?.velocity.y || 0
             });
         }
     }

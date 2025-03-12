@@ -100,9 +100,11 @@ export class PlayerManager {
         this.player.scaleX = 3;
         this.player.scaleY = 3;
         this.player.setOrigin(0, 0);
-        this.player.body.gravity.y = 10000;
-        this.player.body.setOffset(45, 40);
-        this.player.body.setSize(30, 40, false);
+        if (this.player.body) {
+            this.player.body.gravity.y = 10000;
+            this.player.body.setOffset(45, 40);
+            this.player.body.setSize(30, 40, false);
+        }
         
         // Store text elements
         this.hpText = hpText;
@@ -133,7 +135,7 @@ export class PlayerManager {
      * Set up keyboard controls for player movement
      */
     private setupControls(): void {
-        this.cursors = this.scene.input.keyboard.addKeys({
+        this.cursors = this.scene.input.keyboard?.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.SPACE,
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
@@ -245,7 +247,7 @@ export class PlayerManager {
             this.player.setData('lastSentAnim', currentAnim);
             
             // Detect player state
-            const onGround = this.player.body.touching.down;
+            const onGround = this.player.body?.touching.down;
             const isCrouching = currentAnim.includes('Crouch');
             const isAttacking = this.player.getData('isAttacking') === true;
             
@@ -255,8 +257,8 @@ export class PlayerManager {
                 y: this.player.y,
                 animation: currentAnim,
                 flipX: this.player.flipX,
-                velocityX: this.player.body.velocity.x,
-                velocityY: this.player.body.velocity.y,
+                velocityX: this.player.body?.velocity.x,
+                velocityY: this.player.body?.velocity.y,
                 // Include explicit state info to help with animation
                 animState: {
                     onGround: onGround,
@@ -364,7 +366,7 @@ export class PlayerManager {
      * Get player's horizontal velocity magnitude (for camera effects)
      */
     getSpeed(): number {
-        return Math.abs(this.player.body.velocity.x);
+        return Math.abs(this.player.body?.velocity.x ? this.player.body.velocity.x : 0);
     }
     
     /**

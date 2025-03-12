@@ -163,8 +163,10 @@ export default class M_Game extends Phaser.Scene {
 	private platform!: Phaser.Physics.Arcade.Image;
 	private bgIMAGE!: Phaser.GameObjects.Image;
 	private player!: Phaser.Physics.Arcade.Sprite;
-	private player1HP!: Phaser.GameObjects.Text;
-	private player1STA!: Phaser.GameObjects.Text;
+    private player1HP!: Phaser.GameObjects.Text;
+    private player1STA!: Phaser.GameObjects.Text;
+    private playerHPText!: Phaser.GameObjects.Text;
+    private playerStaminaText!: Phaser.GameObjects.Text;
 	private p1infoContainer!: Phaser.GameObjects.Image;
 	private p2infoContainer!: Phaser.GameObjects.Image;
 	private uiSkillContainer!: Phaser.GameObjects.Image;
@@ -180,6 +182,10 @@ export default class M_Game extends Phaser.Scene {
 
     // Socket connection
     private socket: Socket = SOCKET;
+
+    // Position update tracking for the server
+    private lastPositionUpdate: number = 0;
+    private positionUpdateInterval: number = 50; // ms between updates
 
     // Player state interfaces to match original implementation
     private myPlayer: {
@@ -272,9 +278,12 @@ export default class M_Game extends Phaser.Scene {
         sprite.scaleX = 3;
         sprite.scaleY = 3;
         sprite.setOrigin(0, 0);
-        sprite.body.gravity.y = 10000;
-        sprite.body.setOffset(45, 40);
-        sprite.body.setSize(30, 40, false);
+        
+        if (sprite.body) {
+            sprite.body.gravity.y = 10000;
+            sprite.body.setOffset(45, 40);
+            sprite.body.setSize(30, 40, false);
+        }
 
         // Important for attack animations: disable automatic animation complete callbacks
         // that would force a return to idle - we'll handle this specifically for attacks
@@ -292,14 +301,11 @@ export default class M_Game extends Phaser.Scene {
      * Initialize all manager classes
      */
     private initializeManagers(): void {
-        // Setup ground tiles array
-        const groundTiles = [this.tilesprite, this.tilesprite_1];
-
         // Create the scene manager
         this.sceneManager = new SceneManager(
             this,
             this.bgIMAGE,
-            groundTiles,
+            [],
             {
                 bestZoom: 1.5,
                 parallaxFactor: 0.4
@@ -331,7 +337,6 @@ export default class M_Game extends Phaser.Scene {
                 player2Name: this.player2Name,
                 uiTimer: this.uiTimer,
                 matchTimerText: this.matchTimerText,
-                skillContainer: this.skillContainerCTR,
                 uiSkillContainer: this.uiSkillContainer,
                 uiSkillONE: this.uiSkillONE,
                 uiSkillTWO: this.uiSkillTWO,
@@ -373,7 +378,6 @@ export default class M_Game extends Phaser.Scene {
         const gameplayElements = [
             this.bgIMAGE,
             this.myPlayer.sprite,
-            ...groundTiles,
             this.player1HP,
             this.player1STA
         ].filter(element => element !== undefined);
@@ -385,37 +389,22 @@ export default class M_Game extends Phaser.Scene {
 
         this.sceneManager.setUIIgnoreGameplay(gameplayElements);
 
-        // Add colliders between local player and ground
-        this.playerManager.addColliders(groundTiles);
-
-        // Add colliders between other player and ground only if it exists
-        if (this.otherPlayer.sprite) {
-            groundTiles.forEach(tile => {
-                this.physics.add.collider(this.otherPlayer.sprite!, tile);
-            });
-            
-            // Add platform collider to otherPlayer
-            if (this.platform) {
-                this.physics.add.collider(this.otherPlayer.sprite, this.platform);
-            }
-        }
-
-        // Also add colliders for all otherPlayers
-        Object.values(this.otherPlayers).forEach(otherPlayerSprite => {
-            groundTiles.forEach(tile => {
-                this.physics.add.collider(otherPlayerSprite, tile);
-            });
-            
-            // Add platform collider for each other player
-            if (this.platform) {
-                this.physics.add.collider(otherPlayerSprite, this.platform);
-            }
-        });
-
         // Add platform colliders to player
         if (this.platform) {
             this.physics.add.collider(this.playerManager.getPlayer(), this.platform);
         }
+
+        // Add platform colliders between other player and ground only if it exists
+        if (this.otherPlayer.sprite && this.platform) {
+            this.physics.add.collider(this.otherPlayer.sprite, this.platform);
+        }
+
+        // Also add platform colliders for all otherPlayers
+        Object.values(this.otherPlayers).forEach(otherPlayerSprite => {
+            if (this.platform) {
+                this.physics.add.collider(otherPlayerSprite, this.platform);
+            }
+        });
 
         // Start the match timer
         this.uiManager.startMatchTimer();
@@ -875,13 +864,13 @@ export default class M_Game extends Phaser.Scene {
         const currentAnim = this.myPlayer.sprite.anims.currentAnim?.key || '_Idle_Idle';
 
         // Get player state information
-        const isJumping = !this.myPlayer.sprite.body.touching.down;
-        const isMoving = Math.abs(this.myPlayer.sprite.body.velocity.x) > 0.5;
+        const isJumping = !this.myPlayer.sprite.body?.touching.down;
+        const isMoving = Math.abs(this.myPlayer.sprite.body?.velocity.x ?? 0) > 0.5;
         const animState = {
             idle: !isMoving && !isJumping,
             running: isMoving && !isJumping,
-            jumping: isJumping && this.myPlayer.sprite.body.velocity.y < 0,
-            falling: isJumping && this.myPlayer.sprite.body.velocity.y > 0,
+            jumping: isJumping && this.myPlayer.sprite.body && this.myPlayer.sprite.body.velocity.y < 0,
+            falling: isJumping && this.myPlayer.sprite.body && this.myPlayer.sprite.body.velocity.y > 0,
             attacking: currentAnim.includes('Attack'),
             crouching: currentAnim.includes('Crouch')
         };
@@ -896,8 +885,8 @@ export default class M_Game extends Phaser.Scene {
             y: this.myPlayer.sprite.y,
             animation: currentAnim,
             flipX: this.myPlayer.sprite.flipX,
-            velocityX: this.myPlayer.sprite.body.velocity.x,
-            velocityY: this.myPlayer.sprite.body.velocity.y,
+            velocityX: this.myPlayer.sprite.body?.velocity.x,
+            velocityY: this.myPlayer.sprite.body?.velocity.y,
             animState: animState
         });
     }
@@ -912,7 +901,7 @@ export default class M_Game extends Phaser.Scene {
 
             // Update camera zoom based on speed
             if (this.sceneManager && this.myPlayer.sprite) {
-                const speed = Math.abs(this.myPlayer.sprite.body.velocity.x);
+                const speed = this.myPlayer.sprite && this.myPlayer.sprite.body ? Math.abs(this.myPlayer.sprite.body.velocity.x) : 0;
                 this.sceneManager.updateCameraZoom(
                     speed,
                     this.playerManager.getRunSpeedThreshold()
@@ -1017,9 +1006,9 @@ export default class M_Game extends Phaser.Scene {
                 runSpeed: 400,
                 jumpSpeed: -2000,
                 crouchSpeed: 150,
-                skillE: this.skillIconE,
-                skillQ: this.skillIconQ,
-                skillR: this.skillIconR
+                skillE: this.uiSkillONE,
+                skillQ: this.uiSkillTWO,
+                skillR: this.uiSkillTHREE
             }
         );
 
@@ -1048,7 +1037,7 @@ export default class M_Game extends Phaser.Scene {
             // Adjust platform to match camera width
             const cameraWidth = this.cameras.main.width;
             this.platform.displayWidth = cameraWidth;
-            this.platform.body.setSize(cameraWidth, this.platform.body.height, false);
+            this.platform.body?.setSize(cameraWidth, this.platform.body?.height, false);
             
             // Position platform in the center of the camera view
             this.platform.x = cameraWidth / 2;

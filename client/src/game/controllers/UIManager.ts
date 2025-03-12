@@ -98,7 +98,13 @@ export class UIManager {
         ];
         
         // Add skill UI elements if they exist
-        if (this.skillContainer) elements.push(this.skillContainer);
+        if (this.skillContainer) {
+            this.skillContainer.list.forEach(child => {
+                if (child instanceof Phaser.GameObjects.Sprite || child instanceof Phaser.GameObjects.Text || child instanceof Phaser.GameObjects.Image) {
+                    elements.push(child);
+                }
+            });
+        }
         if (this.uiSkillContainer) elements.push(this.uiSkillContainer);
         if (this.uiSkillONE) elements.push(this.uiSkillONE);
         if (this.uiSkillTWO) elements.push(this.uiSkillTWO);
