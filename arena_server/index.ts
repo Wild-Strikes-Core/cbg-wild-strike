@@ -18,6 +18,7 @@ interface Player {
   flipX?: boolean;     // Whether sprite is flipped horizontally
   velocityX?: number;  // Horizontal movement speed
   velocityY?: number;  // Vertical movement speed
+  isAttacking?: boolean; // Whether player is currently attacking
 }
 
 /**
@@ -37,8 +38,9 @@ interface MovementData {
   y: number;
   animation: string;
   flipX: boolean;
-  velocityX: number;
-  velocityY: number;
+  velocityX?: number;
+  velocityY?: number;
+  isAttacking?: boolean; // Added to track attack state
 }
 
 /**
@@ -81,7 +83,8 @@ io.on("connection", (socket) => {
       id: socket.id,
       x: playerInfo.x,
       y: playerInfo.y,
-      animation: playerInfo.animation || 'Idle' // Default to Idle animation if not specified
+      animation: playerInfo.animation || 'Idle', // Default to Idle animation if not specified
+      isAttacking: false // Initialize attack state to false
     };
     
     // Initialize the new player with the complete game state
@@ -102,8 +105,20 @@ io.on("connection", (socket) => {
       players[socket.id].y = movementData.y;
       players[socket.id].animation = movementData.animation;
       players[socket.id].flipX = movementData.flipX;
-      players[socket.id].velocityX = movementData.velocityX;
-      players[socket.id].velocityY = movementData.velocityY;
+      
+      // Update velocities if provided
+      if (movementData.velocityX !== undefined) {
+        players[socket.id].velocityX = movementData.velocityX;
+      }
+      if (movementData.velocityY !== undefined) {
+        players[socket.id].velocityY = movementData.velocityY;
+      }
+      
+      // Update the attack state if provided
+      if (movementData.isAttacking !== undefined) {
+        players[socket.id].isAttacking = movementData.isAttacking;
+        console.log(`Player ${socket.id} attack state: ${movementData.isAttacking}`);
+      }
       
       // Broadcast the updated position to all other players
       socket.broadcast.emit("playerMoved", players[socket.id]);
