@@ -1,0 +1,22 @@
+{
+  "name": "cbg-wild-strike-arena-server",
+  "version": "1.0.0",
+  "description": "Arena server for Wild Strike game",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "dev": "nodemon --exec ts-node index.ts",
+    "build": "tsc index.ts",
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "nodemon": "^3.0.1"
+  }
+}
