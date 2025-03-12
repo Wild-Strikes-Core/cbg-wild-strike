@@ -1,5 +1,6 @@
 import { Socket } from "socket.io-client";
 import { SceneManager } from "./SceneManager";
+import { createPlayerSprite } from '../utils/spriteUtils';
 
 /**
  * MultiplayerManager - Handles all network-related functionality including:
@@ -29,7 +30,7 @@ export class MultiplayerManager {
     private lastSentPosition = { x: 0, y: 0 };
     
     // Platform reference
-    private platform?: Phaser.Physics.Arcade.Image | Phaser.Physics.Arcade.StaticImage;
+    private platform?: Phaser.Physics.Arcade.Image;
     
     /**
      * Create a multiplayer manager
@@ -45,7 +46,7 @@ export class MultiplayerManager {
         localPlayer: Phaser.Physics.Arcade.Sprite,
         config: {
             positionUpdateInterval?: number;
-            platform?: Phaser.Physics.Arcade.Image | Phaser.Physics.Arcade.StaticImage;
+            platform?: Phaser.Physics.Arcade.Image;
         } = {}
     ) {
         this.scene = scene;
@@ -83,7 +84,7 @@ export class MultiplayerManager {
     /**
      * Set platform reference for collision detection
      */
-    setPlatform(platform: Phaser.Physics.Arcade.Image | Phaser.Physics.Arcade.StaticImage): void {
+    setPlatform(platform: Phaser.Physics.Arcade.Image): void {
         this.platform = platform;
         
         // Add colliders for any existing players
@@ -245,21 +246,18 @@ export class MultiplayerManager {
         
         try {
             // Create a new sprite for the other player using the correct texture key
-            const otherPlayer = this.scene.physics.add.sprite(
-                playerInfo.x,
-                playerInfo.y,
-                "_Idle_Idle", // Use the correct texture key - same as the animation key
-                0
-            );
+            const otherPlayer = createPlayerSprite(this.scene, playerInfo.x, playerInfo.y);
 
             // Configure other player sprite
             otherPlayer.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
             otherPlayer.scaleX = 3;
             otherPlayer.scaleY = 3;
             otherPlayer.setOrigin(0, 0);
-            otherPlayer.body.gravity.y = 10000;
-            otherPlayer.body.setOffset(45, 40);
-            otherPlayer.body.setSize(30, 40, false);
+            if (otherPlayer.body) {
+                otherPlayer.body.gravity.y = 10000;
+                otherPlayer.body.setOffset(45, 40);
+                otherPlayer.body.setSize(30, 40, false);
+            }
             
             // Debug logging for animation keyframes
             console.log("Animation frames for _Idle_Idle:", 

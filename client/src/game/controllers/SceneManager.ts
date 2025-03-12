@@ -230,4 +230,50 @@ export class SceneManager {
             this.preventDefaultHandler = null;
         }
     }
+
+    /**
+     * Add additional elements to the UI ignore list for the main camera
+     * @param elements - Elements to add to the UI elements list
+     */
+    addToUIElements(elements: Phaser.GameObjects.GameObject | Phaser.GameObjects.GameObject[]): void {
+        const mainCamera = this.scene.cameras.main;
+        const elementsArray = Array.isArray(elements) ? elements : [elements];
+        
+        elementsArray.forEach(element => {
+            if (element) {
+                // Only add if not already ignored
+                if (!mainCamera.ignore.includes(element)) {
+                    mainCamera.ignore.push(element);
+                }
+            }
+        });
+    }
+
+    /**
+     * Add additional elements to the gameplay ignore list for the UI camera
+     * @param elements - Elements to add to the gameplay elements list
+     */
+    addToGameplayElements(elements: Phaser.GameObjects.GameObject | Phaser.GameObjects.GameObject[]): void {
+        if (!this.uiCamera) return;
+        
+        const elementsArray = Array.isArray(elements) ? elements : [elements];
+        
+        elementsArray.forEach(element => {
+            if (element) {
+                // Only add if not already ignored
+                if (!this.uiCamera.ignore.includes(element)) {
+                    this.uiCamera.ignore.push(element);
+                }
+            }
+        });
+    }
+
+    /**
+     * Get list of ground tiles for collision setup
+     * This helps multiplayer manager add colliders
+     */
+    getGroundTiles(): Phaser.GameObjects.GameObject[] {
+        // Return platform or other ground elements
+        return this.groundTiles || [];
+    }
 }

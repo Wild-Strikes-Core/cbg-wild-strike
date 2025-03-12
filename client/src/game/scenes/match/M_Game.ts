@@ -10,6 +10,7 @@ import { SceneManager } from "../../controllers/SceneManager";
 import { UIManager } from "../../controllers/UIManager";
 import { MultiplayerManager } from "../../controllers/MultiplayerManager";
 import { AnimationManager } from "../../controllers/AnimationManager";
+import { createPlayerSprite } from '../../utils/spriteUtils';
 /* END-USER-IMPORTS */
 
 export default class M_Game extends Phaser.Scene {
@@ -178,6 +179,10 @@ export default class M_Game extends Phaser.Scene {
 	private matchTimerText!: Phaser.GameObjects.Text;
 	private player1Name!: Phaser.GameObjects.Text;
 	private player2Name!: Phaser.GameObjects.Text;
+    private sceneManager!: SceneManager;
+    private playerManager!: PlayerManager;
+    private uiManager!: UIManager;
+    private multiplayerManager!: MultiplayerManager;
 
 	/* START-USER-CODE */
 
@@ -214,10 +219,27 @@ export default class M_Game extends Phaser.Scene {
     private otherPlayers: { [id: string]: Phaser.Physics.Arcade.Sprite } = {};
     private otherPlayerAnims: { [id: string]: AnimationManager } = {};
 
+    // Match data from previous scene
+    private matchData: { players?: { player1: { id: string; name: string; }; player2: { id: string; name: string; }; }; } = {};
+
     create() {
         // Initialize the scene content from the scene editor
         this.editorCreate();
         
+        // Get match data from scene parameters
+        this.matchData = this.scene.settings.data?.matchData || {};
+        
+        // Set player names if we have match data
+        if (this.matchData && this.matchData.players) {
+            const isPlayer1 = this.socket.id === this.matchData.players.player1.id;
+            const localPlayerData = isPlayer1 ? this.matchData.players.player1 : this.matchData.players.player2;
+            const opponentData = isPlayer1 ? this.matchData.players.player2 : this.matchData.players.player1;
+            
+            // Update UI with player names
+            this.player1Name.setText(localPlayerData.name);
+            this.player2Name.setText(opponentData.name);
+        }
+
         // Adjust platform to fit camera width
         this.createPlatforms();
 
@@ -228,9 +250,6 @@ export default class M_Game extends Phaser.Scene {
 
         // Create player sprites
         this.createPlayerSprites();
-
-        // Set up socket event handlers
-        this.setupSocketHandlers();
 
         // Initialize the managers
         this.initializeManagers();
@@ -265,6 +284,259 @@ export default class M_Game extends Phaser.Scene {
         this.socket.on("matchEnded", () => {
             this.handleMatchEnd();
         });
+        
+        // Play entrance animation
+        this.createEntranceAnimation();
+    }
+
+    /**
+     * Create an entrance animation for the match
+     */
+    private createEntranceAnimation(): void {
+        // Store original positions of players for reference
+        const myPlayerOriginalX = this.myPlayer.sprite!.x;
+        const myPlayerOriginalY = this.myPlayer.sprite!.y;
+        
+        // Set initial game state
+        // Pause physics to prevent early movement
+        this.physics.pause();
+        
+        // Hide UI elements initially
+        this.p1infoContainer.setAlpha(0);
+        this.p2infoContainer.setAlpha(0);
+        this.player1Name.setAlpha(0);
+        this.player2Name.setAlpha(0);
+        
+        // Hide skill container
+        const skillContainer = this.children.getByName('skillContainerCTR') as Phaser.GameObjects.Container;
+        if (skillContainer) {
+            skillContainer.setAlpha(0);
+        }
+        
+        // Hide timer
+        this.uiTimer.setAlpha(0);
+        this.matchTimerText.setAlpha(0);
+        
+        // Start with a camera flash
+        this.cameras.main.flash(500, 0, 0, 0);
+        
+        // Create a "FIGHT!" text that starts big and animates down
+        const fightText = this.add.text(
+            this.cameras.main.width / 2,
+            this.cameras.main.height / 2,
+            "FIGHT!",
+            {
+                fontFamily: 'Arial',
+                fontSize: '120px',
+                color: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 8,
+                shadow: {
+                    offsetX: 2,
+                    offsetY: 2,
+                    color: '#000',
+                    blur: 5,
+                    stroke: true,
+                    fill: true
+                }
+            }
+        );
+        fightText.setOrigin(0.5);
+        fightText.setAlpha(0);
+        fightText.setScale(2);
+        
+        // Make sure the FIGHT text appears in both cameras
+        // (We want it to be seen regardless of camera setup)
+        fightText.setScrollFactor(0);
+        
+        // Create a sequence of animations
+        
+        // 1. Fade in player info containers
+        this.time.delayedCall(300, () => {
+            this.tweens.add({
+                targets: [this.p1infoContainer, this.p2infoContainer],
+                alpha: 0.8,
+                duration: 400,
+                ease: 'Power2'
+            });
+            
+            // Fade in player names with a slight delay
+            this.time.delayedCall(200, () => {
+                this.tweens.add({
+                    targets: [this.player1Name, this.player2Name],
+                    alpha: 1,
+                    duration: 300,
+                    ease: 'Power2'
+                });
+            });
+        });
+        
+        // 2. Animate in the FIGHT! text
+        this.time.delayedCall(800, () => {
+            // Play a whoosh sound
+            // this.sound.play('whoosh');
+            
+            // Zoom in and fade in the fight text
+            this.tweens.add({
+                targets: fightText,
+                scale: 1,
+                alpha: 1,
+                duration: 300,
+                ease: 'Back.out(1.5)',
+                onComplete: () => {
+                    // Shake the camera for emphasis
+                    this.cameras.main.shake(200, 0.02);
+                    
+                    // Add a pulsing effect
+                    this.tweens.add({
+                        targets: fightText,
+                        scale: 1.1,
+                        yoyo: true,
+                        repeat: 1,
+                        duration: 150,
+                        ease: 'Sine.easeInOut'
+                    });
+                    
+                    // After a short delay, fade out the fight text
+                    this.time.delayedCall(800, () => {
+                        this.tweens.add({
+                            targets: fightText,
+                            alpha: 0,
+                            scale: 1.5,
+                            duration: 300,
+                            ease: 'Power2',
+                            onComplete: () => {
+                                fightText.destroy();
+                            }
+                        });
+                    });
+                }
+            });
+        });
+        
+        // 3. Fade in the UI elements
+        this.time.delayedCall(1500, () => {
+            // Skill icons
+            if (skillContainer) {
+                this.tweens.add({
+                    targets: skillContainer,
+                    alpha: 1,
+                    duration: 500,
+                    ease: 'Power2'
+                });
+            }
+            
+            // Timer
+            this.tweens.add({
+                targets: [this.uiTimer, this.matchTimerText],
+                alpha: 1,
+                duration: 500,
+                ease: 'Power2'
+            });
+        });
+        
+        // 4. Resume game after all animations
+        this.time.delayedCall(2000, () => {
+            // Resume physics
+            this.physics.resume();
+            
+            // Make sure players are in their starting positions
+            if (this.myPlayer.sprite) {
+                this.myPlayer.sprite.x = myPlayerOriginalX;
+                this.myPlayer.sprite.y = myPlayerOriginalY;
+            }
+        });
+    }
+
+    /**
+     * Create a sprite for another player
+     */
+    private createOtherPlayerSprite(id: string, playerInfo: any): void {
+        console.log(`Creating other player sprite for ID: ${id}`, playerInfo);
+
+        try {
+            // Create a new sprite for the other player
+            const otherPlayerSprite = this.physics.add.sprite(
+                playerInfo.x || 900,
+                playerInfo.y || 752,
+                "_Idle_Idle",
+                0
+            );
+
+            // Configure the sprite with physics settings
+            this.configurePlayerSprite(otherPlayerSprite);
+
+            // Set player color tint to differentiate from local player
+            otherPlayerSprite.setTint(0xAAAAAA); // Light gray tint
+
+            // Create animation manager for this player
+            const animManager = new AnimationManager(
+                this,
+                otherPlayerSprite,
+                {
+                    idle: '_Idle_Idle',
+                    walk: '_Run',
+                    run: '_Run',
+                    jump: '_Jump',
+                    fall: '_Fall',
+                    crouch: '_CrouchFull',
+                    crouchWalk: '_CrouchWalk',
+                    attack: '_Attack',
+                    attack2: '_Attack2'
+                },
+                { debug: false }
+            );
+
+            // Store the player in our registry with socket ID as key
+            this.otherPlayers[id] = otherPlayerSprite;
+            this.otherPlayerAnims[id] = animManager;
+
+            // If this is the first other player, also store in the otherPlayer reference 
+            // for compatibility with existing code
+            if (!this.otherPlayer.sprite) {
+                this.otherPlayer.sprite = otherPlayerSprite;
+                this.otherPlayer.animationManager = animManager;
+            }
+
+            // Create floating name tag above player
+            const nameTag = this.add.text(
+                otherPlayerSprite.x,
+                otherPlayerSprite.y - 60,
+                `Player ${id.substring(0, 4)}`, // Show part of the ID as name
+                { fontSize: '16px', color: '#FFFFFF', stroke: '#000000', strokeThickness: 3 }
+            );
+            nameTag.setOrigin(0.5, 1);
+            nameTag.setDepth(100);
+
+            // Store the name tag with the player sprite
+            otherPlayerSprite.setData('nameTag', nameTag);
+
+            // Make sure the name tag is properly handled by cameras
+            // Name tags should follow the player but be visible even during camera effects
+            nameTag.setScrollFactor(1); // Follow the world (same as player)
+
+            // Add to appropriate camera lists if scene manager exists
+            if (this.sceneManager) {
+                // Add sprite to gameplay elements (ignored by UI camera)
+                this.sceneManager.addToGameplayElements(otherPlayerSprite);
+
+                // Add name tag to UI elements (ignored by main camera)
+                // Comment this line if you want name tags to move with the gameplay camera
+                // this.sceneManager.addToUIElements(nameTag);
+            }
+
+            console.log(`Other player sprite created for ID: ${id}`);
+
+            // Add platform collider with a slight delay to ensure physics body is ready
+            this.time.delayedCall(50, () => {
+                this.addPlatformCollider(otherPlayerSprite);
+                console.log(`Platform collider added to player ${id} with delay`);
+            });
+            
+            console.log(`Other player sprite created for ID: ${id} with platform collider`);
+        } catch (error) {
+            console.error("Error creating other player sprite:", error);
+        }
     }
 
     /**
@@ -370,24 +642,44 @@ export default class M_Game extends Phaser.Scene {
         // Set cameras to follow player
         this.sceneManager.setupCameraFollow(this.myPlayer.sprite);
 
-        // Configure camera ignore lists
-        const uiElements = this.uiManager.getUIElements();
+        // Configure camera ignore lists - collect ALL UI elements
+        const uiElements = [
+            this.p1infoContainer,
+            this.p2infoContainer,
+            this.player1Name, 
+            this.player2Name,
+            this.uiTimer,
+            this.matchTimerText,
+            ...this.uiManager.getUIElements() // Get any additional UI elements from the manager
+        ];
+        
+        // Add the entire skill container to UI elements
+        const skillContainer = this.children.getByName('skillContainerCTR');
+        if (skillContainer) {
+            uiElements.push(skillContainer);
+        }
+
+        // Make main camera ignore ALL UI elements
         this.sceneManager.setMainIgnoreUI(uiElements);
 
         // Create array of gameplay elements to be ignored by UI camera
-        // Filter out any undefined elements to prevent errors
         const gameplayElements = [
             this.bgIMAGE,
             this.myPlayer.sprite,
-            this.player1HP,
-            this.player1STA
-        ].filter(element => element !== undefined);
-
-        // Only add otherPlayer.sprite if it exists
-        if (this.otherPlayer.sprite) {
-            gameplayElements.push(this.otherPlayer.sprite);
-        }
-
+            this.platform,
+            ...Object.values(this.otherPlayers) // Add all other player sprites
+        ];
+        
+        // Add other player's name tags
+        Object.values(this.otherPlayers).forEach(player => {
+            const nameTag = player.getData('nameTag');
+            if (nameTag) {
+                // Name tags should be seen by the UI camera, not ignored
+                uiElements.push(nameTag);
+            }
+        });
+        
+        // Make UI camera ignore ALL gameplay elements
         this.sceneManager.setUIIgnoreGameplay(gameplayElements);
 
         // Add platform colliders to player
@@ -413,26 +705,6 @@ export default class M_Game extends Phaser.Scene {
 
         // Refresh platform colliders - force execution after initialization
         this.time.delayedCall(100, () => this.refreshAllPlatformColliders());
-    }
-
-    /**
-     * Create initial player sprites (will be managed by controllers)
-     * This ensures compatibility with existing code
-     */
-    private createPlayerSprites(): void {
-        console.log("Creating player sprites");
-
-        // Create the player sprites
-        this.myPlayer.sprite = this.physics.add.sprite(608, 752, "_Idle_Idle", 0);
-        this.configurePlayerSprite(this.myPlayer.sprite);
-        
-        // Add platform collider to local player
-        this.addPlatformCollider(this.myPlayer.sprite);
-
-        // Setup socket handlers for other players
-        this.setupPlayerSpawning();
-
-        console.log("Player sprites created");
     }
 
     /**
@@ -495,88 +767,11 @@ export default class M_Game extends Phaser.Scene {
     }
 
     /**
-     * Create a sprite for another player
-     */
-    private createOtherPlayerSprite(id: string, playerInfo: any): void {
-        console.log(`Creating other player sprite for ID: ${id}`, playerInfo);
-
-        try {
-            // Create a new sprite for the other player
-            const otherPlayerSprite = this.physics.add.sprite(
-                playerInfo.x || 900,
-                playerInfo.y || 752,
-                "_Idle_Idle",
-                0
-            );
-
-            // Configure the sprite with physics settings
-            this.configurePlayerSprite(otherPlayerSprite);
-
-            // Set player color tint to differentiate from local player
-            otherPlayerSprite.setTint(0xAAAAAA); // Light gray tint
-
-            // Create animation manager for this player
-            const animManager = new AnimationManager(
-                this,
-                otherPlayerSprite,
-                {
-                    idle: '_Idle_Idle',
-                    walk: '_Run',
-                    run: '_Run',
-                    jump: '_Jump',
-                    fall: '_Fall',
-                    crouch: '_CrouchFull',
-                    crouchWalk: '_CrouchWalk',
-                    attack: '_Attack',
-                    attack2: '_Attack2'
-                },
-                { debug: false }
-            );
-
-            // Store the player in our registry with socket ID as key
-            this.otherPlayers[id] = otherPlayerSprite;
-            this.otherPlayerAnims[id] = animManager;
-
-            // If this is the first other player, also store in the otherPlayer reference 
-            // for compatibility with existing code
-            if (!this.otherPlayer.sprite) {
-                this.otherPlayer.sprite = otherPlayerSprite;
-                this.otherPlayer.animationManager = animManager;
-            }
-
-            // Create floating name tag above player
-            const nameTag = this.add.text(
-                otherPlayerSprite.x,
-                otherPlayerSprite.y - 60,
-                `Player ${id.substring(0, 4)}`, // Show part of the ID as name
-                { fontSize: '16px', color: '#FFFFFF', stroke: '#000000', strokeThickness: 3 }
-            );
-            nameTag.setOrigin(0.5, 1);
-            nameTag.setDepth(100);
-
-            // Store the name tag with the player sprite
-            otherPlayerSprite.setData('nameTag', nameTag);
-
-            console.log(`Other player sprite created for ID: ${id}`);
-
-            // Add platform collider with a slight delay to ensure physics body is ready
-            this.time.delayedCall(50, () => {
-                this.addPlatformCollider(otherPlayerSprite);
-                console.log(`Platform collider added to player ${id} with delay`);
-            });
-            
-            console.log(`Other player sprite created for ID: ${id} with platform collider`);
-        } catch (error) {
-            console.error("Error creating other player sprite:", error);
-        }
-    }
-
-    /**
      * List all available animations for debugging
      */
     private listAnimations(): void {
         console.log("=== AVAILABLE ANIMATIONS ===");
-        const animKeys = Object.keys(this.anims.anims.entries);
+        const animKeys = Object.keys((this.anims as any).anims.entries);
         animKeys.forEach(key => console.log(`Animation: ${key}`));
         console.log("===========================");
     }
@@ -815,7 +1010,7 @@ export default class M_Game extends Phaser.Scene {
             // Update both display width and physics body size
             this.platform.displayWidth = totalWidth;
             if (this.platform.body) {
-                this.platform.body.width = totalWidth;
+                (this.platform.body as Phaser.Physics.Arcade.StaticBody).width = totalWidth;
                 this.platform.body.setSize(totalWidth, this.platform.body.height, false);
             }
             
@@ -823,7 +1018,9 @@ export default class M_Game extends Phaser.Scene {
             this.platform.x = cameraWidth / 2;
             
             // Ensure platform is enabled for physics
-            this.platform.body.enable = true;
+            if (this.platform.body) {
+                this.platform.body.enable = true;
+            }
             
             console.log(`Platform configured: width=${totalWidth}, position=(${this.platform.x}, ${this.platform.y})`);
             
@@ -884,6 +1081,28 @@ export default class M_Game extends Phaser.Scene {
         });
         
         console.log("All platform colliders refreshed");
+    }
+
+    /**
+     * Create initial player sprites (will be managed by controllers)
+     * This ensures compatibility with existing code
+     */
+    private createPlayerSprites(): void {
+        console.log("Creating player sprites");
+
+        // Create the local player sprite
+        this.myPlayer.sprite = createPlayerSprite(this, 608, 752);
+        this.configurePlayerSprite(this.myPlayer.sprite);
+        
+        // Add platform collider to local player
+        if (this.platform) {
+            this.addPlatformCollider(this.myPlayer.sprite);
+        }
+
+        // Setup socket handlers for other players
+        this.setupPlayerSpawning();
+
+        console.log("Player sprites created");
     }
 
 	/* END-USER-CODE */

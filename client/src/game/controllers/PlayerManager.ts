@@ -2,6 +2,7 @@ import { StaminaManager } from "../utils/staminaManager";
 import { handlePlayerMovement } from "../utils/playerMovement";
 import { Socket } from "socket.io-client";
 import { AnimationManager } from "./AnimationManager";
+import { createPlayerSprite } from '../utils/spriteUtils';
 
 /**
  * PlayerManager - Manages player-specific functionality, including:
@@ -99,16 +100,7 @@ export class PlayerManager {
      */
     initialize(x: number, y: number, hpText: Phaser.GameObjects.Text, staminaText: Phaser.GameObjects.Text): void {
         // Create player sprite
-        this.player = this.scene.physics.add.sprite(x, y, "_Idle_Idle", 0);
-        this.player.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
-        this.player.scaleX = 3;
-        this.player.scaleY = 3;
-        this.player.setOrigin(0, 0);
-        if (this.player.body) {
-            this.player.body.gravity.y = 10000;
-            this.player.body.setOffset(45, 40);
-            this.player.body.setSize(30, 40, false);
-        }
+        this.player = createPlayerSprite(this.scene, x, y);
         
         // Store text elements
         this.hpText = hpText;
@@ -214,7 +206,7 @@ export class PlayerManager {
             return;
         }
         
-        // Handle player movement
+        // Fix the movement type
         const movement = handlePlayerMovement(
             this.player,
             this.cursors,
@@ -237,14 +229,18 @@ export class PlayerManager {
             this.skillIcons
         );
         
+        // Fix the movement properties
+        const isRunning = (movement as any)?.isRunning || false;
+        const isCrouching = (movement as any)?.isCrouching || false;
+
         // Update animation based on movement result
         if (this.animationManager) {
             this.animationManager.update(
                 this.player.body?.velocity.x || 0,
                 this.player.body?.velocity.y || 0,
                 this.player.body?.touching.down || false,
-                movement?.isRunning || false,
-                movement?.isCrouching || false,
+                isRunning,
+                isCrouching,
                 time
             );
         }

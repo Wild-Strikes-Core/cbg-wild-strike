@@ -3,6 +3,8 @@
 /* START OF COMPILED CODE */
 
 /* START-USER-IMPORTS */
+import { SOCKET } from "@/socket";
+import { Socket } from "socket.io-client";
 /* END-USER-IMPORTS */
 
 export default class M_MatchFound extends Phaser.Scene {
@@ -83,10 +85,41 @@ export default class M_MatchFound extends Phaser.Scene {
 
     /* START-USER-CODE */
 
-    // Write your code here
+    // Socket connection
+    private socket: Socket = SOCKET;
+
+    // Match data from server
+    private matchData: any = null;
+    
+    // Is player on left or right side
+    private playerPosition: 'left' | 'right' = 'left';
+
+    // Track if we've received match data
+    private matchDataReceived: boolean = false;
+
+    // Initialize the scene before it's created
+    init(data: any) {
+        console.log("M_MatchFound init with data:", data);
+        
+        // If match data was passed from another scene
+        if (data && data.matchData) {
+            this.matchData = data.matchData;
+            this.matchDataReceived = true;
+        }
+        
+        // Set up socket listeners immediately
+        this.setupSocketListeners();
+    }
 
     create() {
         this.editorCreate();
+
+        console.log("M_MatchFound created, matchDataReceived:", this.matchDataReceived);
+        
+        // Update player names if we already have match data
+        if (this.matchDataReceived) {
+            this.updatePlayerNames();
+        }
 
         // Set up initial states for elements
         this.setupInitialStates();
@@ -98,6 +131,59 @@ export default class M_MatchFound extends Phaser.Scene {
         this.time.delayedCall(3500, () => {
             this.transitionToBattle();
         });
+    }
+
+    /**
+     * Set up socket listeners for match data
+     */
+    setupSocketListeners() {
+        console.log("Setting up match found socket listeners");
+        
+        // Remove any existing listeners to avoid duplicates
+        this.socket.off("matchFound");
+        
+        // Listen for match found event
+        this.socket.on("matchFound", (data) => {
+            console.log("Match found data received:", data);
+            this.matchData = data;
+            this.matchDataReceived = true;
+            
+            // Update the player names if the scene is already created
+            if (this.playerName && this.playerName_1) {
+                this.updatePlayerNames();
+            }
+        });
+    }
+
+    /**
+     * Update the player name displays with data from the server
+     */
+    updatePlayerNames() {
+        if (!this.matchData || !this.matchData.players) {
+            console.error("Cannot update player names: No match data available");
+            return;
+        }
+        
+        console.log("Updating player names with match data:", this.matchData);
+        
+        // Determine which player this client is
+        const isPlayer1 = this.socket.id === this.matchData.players.player1.id;
+        this.playerPosition = isPlayer1 ? 'left' : 'right';
+        
+        // Set player names based on data from server
+        const localPlayerData = isPlayer1 ? this.matchData.players.player1 : this.matchData.players.player2;
+        const opponentData = isPlayer1 ? this.matchData.players.player2 : this.matchData.players.player1;
+        
+        console.log(`Local player: ${localPlayerData.name}, Opponent: ${opponentData.name}`);
+        
+        // Update UI with player names - ensure text elements exist
+        if (this.playerName && this.playerName_1) {
+            this.playerName.setText(localPlayerData.name || "Player 1");
+            this.playerName_1.setText(opponentData.name || "Player 2");
+            console.log("Player name texts updated:", this.playerName.text, this.playerName_1.text);
+        } else {
+            console.error("Player name text elements not initialized yet");
+        }
     }
 
     setupInitialStates() {
@@ -256,12 +342,15 @@ export default class M_MatchFound extends Phaser.Scene {
         // Camera flash
         this.cameras.main.flash(300, 255, 255, 255);
 
-        // Fade out to the next scene
         this.cameras.main.once("cameraflashcomplete", () => {
             this.cameras.main.fadeOut(400);
 
             this.cameras.main.once("camerafadeoutcomplete", () => {
-                this.scene.start("M_Game"); // Replace with your actual battle scene key
+                // Pass match data to the game scene
+                this.scene.start("M_Game", { matchData: this.matchData }); 
+                
+                // Clean up socket listeners when leaving this scene
+                this.socket.off("matchFound");
             });
         });
     }
