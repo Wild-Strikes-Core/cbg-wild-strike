@@ -28,16 +28,18 @@ export default class LandingPage extends Phaser.Scene {
 		playBtn.scaleY = 0.8596074937886975;
 
 		// wildstrikeLogo
-		const wildstrikeLogo = this.add.image(960, 480, "WildStrike-Logo-trans");
-		wildstrikeLogo.scaleX = 0.41564372224194734;
-		wildstrikeLogo.scaleY = 0.41564372224194734;
+		const wildstrikeLogo = this.add.image(992, 480, "newLogo");
+		wildstrikeLogo.scaleX = 1.7396297304984527;
+		wildstrikeLogo.scaleY = 1.7396297304984527;
 
 		this.playBtn = playBtn;
+		this.wildstrikeLogo = wildstrikeLogo;
 
 		this.events.emit("scene-awake");
 	}
 
 	private playBtn!: Phaser.GameObjects.Image;
+	private wildstrikeLogo!: Phaser.GameObjects.Image;
 
 	/* START-USER-CODE */
 
@@ -73,16 +75,16 @@ export default class LandingPage extends Phaser.Scene {
 
 		const playBtn = this.playBtn; 
 		playBtn.setInteractive({ cursor: 'pointer' });
-        
+
         // Create a continuous pulsing/floating animation for the play button
         // to draw attention to it
         this.createPlayButtonIdleAnimation(playBtn);
-        
+
         // Handle button interactions
 		playBtn.on("pointerdown", () => {
-            // Stop the idle animation
+            // Stop the idle animation for a clean click effect
             this.tweens.killTweensOf(playBtn);
-            
+
             // Play an explosive click effect
             this.createClickEffect(playBtn, () => {
                 // Fade out camera
@@ -94,61 +96,42 @@ export default class LandingPage extends Phaser.Scene {
 		});
 
 		playBtn.on("pointerover", () => {
-            // Stop the idle animation
-            this.tweens.killTweensOf(playBtn);
-            
-            // Play enhanced hover animation
+            // Remove the killTweensOf to keep idle animation
             this.tweens.add({
                 targets: playBtn,
-                scaleX: playBtn.scaleX * 1.15,
-                scaleY: playBtn.scaleY * 1.15,
-                rotation: 0.05, // slight rotation
+                scaleX: playBtn.scaleX * 1.1,
+                scaleY: playBtn.scaleY * 1.1,
                 duration: 300,
-                ease: 'Sine.easeOut',
-                onComplete: () => {
-                    // Add a subtle wiggle effect
-                    this.tweens.add({
-                        targets: playBtn,
-                        rotation: -0.05,
-                        duration: 600,
-                        yoyo: true,
-                        repeat: -1,
-                        ease: 'Sine.easeInOut'
-                    });
-                }
+                yoyo: false,
+                ease: 'Sine.easeOut'
             });
-            
+
             // Add a shimmering effect with tint
             this.createShimmerEffect(playBtn);
 		});
 
 		playBtn.on("pointerout", () => {
             // Clear all tweens and effects
-            this.tweens.killTweensOf(playBtn);
             playBtn.clearTint();
-            playBtn.rotation = 0;
-            
+
             // Smooth transition back to normal size
             this.tweens.add({
                 targets: playBtn,
                 scaleX: 0.86, // Original scale
                 scaleY: 0.86, // Original scale
-                rotation: 0,
                 duration: 300,
-                ease: 'Sine.easeOut',
-                onComplete: () => {
-                    // Restart the idle animation
-                    this.createPlayButtonIdleAnimation(playBtn);
-                }
+                ease: 'Sine.easeOut'
             });
 		});
+
+		this.createLogoIdleAnimation(this.wildstrikeLogo);
 	}
-    
+
     // Creates a subtle floating/pulsing idle animation
     createPlayButtonIdleAnimation(button: Phaser.GameObjects.Image) {
         // Store the original position
         const originalY = button.y;
-        
+
         // Create a subtle floating effect
         this.tweens.add({
             targets: button,
@@ -158,7 +141,7 @@ export default class LandingPage extends Phaser.Scene {
             repeat: -1,
             ease: 'Sine.easeInOut'
         });
-        
+
         // Add a subtle pulsing effect
         this.tweens.add({
             targets: button,
@@ -170,7 +153,7 @@ export default class LandingPage extends Phaser.Scene {
             ease: 'Sine.easeInOut',
             delay: 400 // Offset from the float animation for more organic movement
         });
-        
+
         // Add a subtle glow effect by periodically changing alpha
         this.tweens.add({
             targets: button,
@@ -182,13 +165,13 @@ export default class LandingPage extends Phaser.Scene {
             delay: 600 // Further offset
         });
     }
-    
+
     // Creates a shimmering effect using tint transitions
     createShimmerEffect(button: Phaser.GameObjects.Image) {
         // Array of highlight colors to cycle through
         const colors = [0xffff66, 0xffffff, 0xffe066, 0xffffcc];
         let colorIndex = 0;
-        
+
         // Create a timer to cycle colors
         this.time.addEvent({
             delay: 150,
@@ -201,7 +184,7 @@ export default class LandingPage extends Phaser.Scene {
             callbackScope: this
         });
     }
-    
+
     // Creates an explosive click effect
     createClickEffect(button: Phaser.GameObjects.Image, callback: Function) {
         // First, quick shrink effect
@@ -228,9 +211,9 @@ export default class LandingPage extends Phaser.Scene {
                                 blendMode: 'ADD',
                                 emitting: false
                             });
-                            
+
                             particles.explode(30);
-                            
+
                             // Clean up particles after they're done
                             this.time.delayedCall(800, () => {
                                 particles.destroy();
@@ -245,6 +228,17 @@ export default class LandingPage extends Phaser.Scene {
             }
         });
     }
+
+	createLogoIdleAnimation(logo: Phaser.GameObjects.Image) {
+		this.tweens.add({
+			targets: logo,
+			scale: logo.scaleX * 1.02,
+			duration: 3000,
+			yoyo: true,
+			repeat: -1,
+			ease: 'Sine.easeInOut'
+		});
+	}
 
     update() {
 

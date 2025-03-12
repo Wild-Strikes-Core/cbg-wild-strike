@@ -290,12 +290,4 @@ export class SceneManager {
         }
     }
 
-    /**
-     * Get list of ground tiles for collision setup
-     * This helps multiplayer manager add colliders
-     */
-    getGroundTiles(): Phaser.GameObjects.GameObject[] {
-        // Return platform or other ground elements
-        return this.groundTiles || [];
-    }
 }

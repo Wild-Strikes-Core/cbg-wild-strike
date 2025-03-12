@@ -22,7 +22,7 @@ export default class M_MatchFound extends Phaser.Scene {
 
         // playerName
         const playerName = this.add.text(18, 184, "", {});
-        playerName.text = "Player Naem";
+        playerName.text = "";
         playerName.setStyle({
             align: "center",
             fontFamily: "Arial",
@@ -35,7 +35,7 @@ export default class M_MatchFound extends Phaser.Scene {
 
         // playerName_1
         const playerName_1 = this.add.text(1521, 184, "", {});
-        playerName_1.text = "Player Naem";
+        playerName_1.text = "";
         playerName_1.setStyle({
             align: "center",
             fontFamily: "Arial",
@@ -112,6 +112,7 @@ export default class M_MatchFound extends Phaser.Scene {
     }
 
     create() {
+            this.init({});
         this.editorCreate();
 
         console.log("M_MatchFound created, matchDataReceived:", this.matchDataReceived);
@@ -178,8 +179,8 @@ export default class M_MatchFound extends Phaser.Scene {
         
         // Update UI with player names - ensure text elements exist
         if (this.playerName && this.playerName_1) {
-            this.playerName.setText(localPlayerData.name || "Player 1");
-            this.playerName_1.setText(opponentData.name || "Player 2");
+            this.playerName.setText(this.matchData.players.player1.id);
+            this.playerName_1.setText(this.matchData.players.player2.id);
             console.log("Player name texts updated:", this.playerName.text, this.playerName_1.text);
         } else {
             console.error("Player name text elements not initialized yet");

@@ -61,7 +61,7 @@ export function handlePlayerMovement(
     // Check if the player is touching the ground
     const onGround = player.body.touching.down || player.body.blocked.down;
     let isRunning = false;
-    let isCrouching = cursors.ctrl?.isDown || false;
+    let isCrouching = cursors.down?.isDown || false;
     let currentAnimation = '';
     
     // Detect crouch state change (for animation triggering)

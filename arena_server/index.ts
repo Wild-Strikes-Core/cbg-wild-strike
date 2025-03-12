@@ -179,15 +179,10 @@ function startMatchTimer(match: Match): void {
   
   // Set up interval for timer updates
   match.timer = setInterval(() => {
-    match.remainingTime--;
-    
-    // Send timer update to clients
-    io.to(match.roomId).emit("timerUpdate", { 
-      remainingTime: match.remainingTime 
-    });
-    
-    // End match when timer reaches zero
-    if (match.remainingTime <= 0) {
+    if (match.remainingTime > 0) {
+      match.remainingTime--;
+      io.to(match.roomId).emit("timerUpdate", { remainingTime: match.remainingTime });
+    } else {
       endMatch(match);
     }
   }, 1000);

@@ -282,6 +282,8 @@ export default class M_Game extends Phaser.Scene {
 
         // Play entrance animation
         this.createEntranceAnimation();
+
+        this.sound.play("in-match", { loop: true });
     }
 
     /**
@@ -708,7 +710,7 @@ export default class M_Game extends Phaser.Scene {
         });
 
         // Start the match timer
-        this.uiManager.startMatchTimer();
+        // this.uiManager.startMatchTimer();
 
         // Listen for match end event from the UI manager
         this.events.on('matchEnded', this.handleMatchEnd, this);
@@ -935,6 +937,8 @@ export default class M_Game extends Phaser.Scene {
             player.destroy();
         });
         this.otherPlayers = {};
+
+        this.sound.stopByKey("in-match");
     }
 
     /**
@@ -943,19 +947,6 @@ export default class M_Game extends Phaser.Scene {
     private updateTimer(remainingTime: number): void {
         const minutes = Math.floor(remainingTime / 60);
         const seconds = remainingTime % 60;
-        this.matchTimerText.setText(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
-    }
-
-    /**
-     * Updates the match timer display
-     * @param remainingTime The remaining time in seconds
-     */
-    updateMatchTimer(remainingTime: number): void {
-        if (!this.matchTimerText) return;
-
-        // Safely handle the timer calculation
-        const minutes = Math.floor(Number(remainingTime) / 60);
-        const seconds = Math.floor(Number(remainingTime) % 60);
         this.matchTimerText.setText(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
     }
 

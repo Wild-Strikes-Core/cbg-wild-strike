@@ -82,10 +82,13 @@ export default class M_Matchmaking extends Phaser.Scene {
 
         this.editorCreate();
 
+        this.animateEntrance();
+
         // Set up camera fade-in entrance transition
         this.setupEntranceTransition();
 
         this.btnCancel.setInteractive();
+        this.fakeLoad(10);
         this.btnCancel.on("pointerdown", () => {
             this.cameras.main.fadeOut(180, 0, 0, 0);
 
@@ -119,16 +122,9 @@ export default class M_Matchmaking extends Phaser.Scene {
             });
         });
 
-        let dots = [".", "..", "..."];
-        let index = 0;
+        this.sound.play("waiting-music", { loop: true });
 
-        this.time.addEvent({
-            delay: 250, // Update every 200ms
-            callback: () => {
-                this.loader.text = dots[index];
-                index = (index + 1) % dots.length;
-            },
-        });
+        this.events.on("shutdown", this.onShutdown, this);
 
         // this.fakeLoad(5);
     }
@@ -141,6 +137,16 @@ export default class M_Matchmaking extends Phaser.Scene {
             // This applies a cubic ease-in curve to the default linear camera fade
             const easedProgress = Math.pow(progress, 3);
             this.cameras.main.setAlpha(easedProgress);
+        });
+    }
+
+    animateEntrance() {
+        this.tweens.add({
+            targets: this.playerCharSprite,
+            angle: 360,
+            duration: 1000,
+            ease: 'Sine.easeInOut',
+            repeat: 0
         });
     }
 
@@ -164,6 +170,10 @@ export default class M_Matchmaking extends Phaser.Scene {
                 this.scene.start("M_MatchFound");
             });
         });
+    }
+
+    onShutdown() {
+        this.sound.stopByKey("waiting-music");
     }
 
     /* END-USER-CODE */

@@ -26,6 +26,11 @@
                 "normalMap": ""
             },
             {
+                "url": "assets/01 - Landing Page/newLogo.png",
+                "type": "image",
+                "key": "newLogo"
+            },
+            {
                 "url": "assets/01 - Landing Page/Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview.png",
                 "type": "image",
                 "key": "Purple_Green_Pixel_Illustration_Game_Presentation__2_-removebg-preview",

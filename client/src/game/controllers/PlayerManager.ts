@@ -170,7 +170,7 @@ export class PlayerManager {
             left: Phaser.Input.Keyboard.KeyCodes.A,
             right: Phaser.Input.Keyboard.KeyCodes.D,
             shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
-            ctrl: Phaser.Input.Keyboard.KeyCodes.CTRL,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
             // Add skill keys
             skillE: Phaser.Input.Keyboard.KeyCodes.E,
             skillQ: Phaser.Input.Keyboard.KeyCodes.Q,

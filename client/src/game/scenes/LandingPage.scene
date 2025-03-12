@@ -36,13 +36,14 @@
             "type": "Image",
             "id": "980ea427-8ec9-4c1d-8183-d64ae3a99cf1",
             "label": "wildstrikeLogo",
+            "scope": "CLASS",
             "texture": {
-                "key": "WildStrike-Logo-trans"
+                "key": "newLogo"
             },
-            "x": 960,
+            "x": 992,
             "y": 480,
-            "scaleX": 0.41564372224194734,
-            "scaleY": 0.41564372224194734
+            "scaleX": 1.7396297304984527,
+            "scaleY": 1.7396297304984527
         }
     ],
     "plainObjects": [],

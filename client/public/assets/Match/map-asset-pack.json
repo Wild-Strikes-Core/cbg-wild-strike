@@ -17,6 +17,13 @@
                 "key": "ButtonMenu"
             },
             {
+                "url": [
+                    "assets/Match/02 - Map/in-match.mp3"
+                ],
+                "type": "audio",
+                "key": "in-match"
+            },
+            {
                 "url": "assets/Match/03- UI/InGameCard.png",
                 "type": "image",
                 "key": "InGameCard"
