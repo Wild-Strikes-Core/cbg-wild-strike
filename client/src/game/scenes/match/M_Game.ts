@@ -296,6 +296,7 @@ export default class M_Game extends Phaser.Scene {
 
     /**
      * Initialize all manager classes
+     * This is where we connect all managers to each other
      */
     private initializeManagers(): void {
         // Create the scene manager
@@ -415,246 +416,6 @@ export default class M_Game extends Phaser.Scene {
     }
 
     /**
-     * Set up socket event handlers for multiplayer
-     */
-    private setupSocketHandlers(): void {
-        console.log("Setting up socket handlers");
-
-        // Explicitly unsubscribe from events to prevent duplicate handlers
-        this.socket.off("arenaStateChanged");
-        this.socket.off("playerAttack");
-        this.socket.off("playerMoved");
-
-        // Listen for player movement updates
-        this.socket.on("playerMoved", (playerInfo) => {
-            // Skip our own movement updates
-            if (playerInfo.id === this.socket.id) return;
-
-            // Update the player if we have their sprite
-            if (this.otherPlayers[playerInfo.id]) {
-                this.updateOtherPlayerMovement(playerInfo.id, playerInfo);
-            }
-        });
-
-        // Track the last received animation to prevent flickering
-        let lastReceivedAnimation = '_Idle_Idle';
-
-        // Listen for arena state updates (for 1v1 matches)
-        this.socket.on("arenaStateChanged", (data) => {
-            // Only process if opponent sprite exists
-            if (!this.otherPlayer.sprite) {
-                console.error("Opponent sprite not initialized");
-                return;
-            }
-
-            // Get opponent data based on our player ID
-            const isPlayer1 = data.player1?.id === this.socket.id;
-            const opponentData = isPlayer1 ? data.player2 : data.player1;
-
-            if (!opponentData) {
-                console.error("Opponent data missing in arena state");
-                return;
-            }
-
-            // Store current and previous positions
-            const prevX = this.otherPlayer.sprite.x;
-            const prevY = this.otherPlayer.sprite.y;
-
-            // Directly update position without tweens to avoid conflicts
-            this.otherPlayer.sprite.x = opponentData.x;
-            this.otherPlayer.sprite.y = opponentData.y;
-
-            // Calculate movement deltas
-            const deltaX = opponentData.x - prevX;
-            const deltaY = opponentData.y - prevY;
-
-            // Don't change animation if attacking
-            if (this.otherPlayer.sprite.getData('isAttacking')) {
-                console.log("Skipping animation update - player is attacking");
-                return;
-            }
-
-            // Update flip direction based on movement or provided flipX
-            if (opponentData.flipX !== undefined) {
-                this.otherPlayer.sprite.setFlipX(opponentData.flipX);
-            } else if (Math.abs(deltaX) > 2) {
-                this.otherPlayer.sprite.setFlipX(deltaX < 0);
-            }
-
-            // Use provided animation if available
-            let newAnimation = '_Idle_Idle';
-
-            // If the server provides an explicit animation, use it
-            if (opponentData.animation) {
-                newAnimation = opponentData.animation;
-            } 
-            // Otherwise, determine animation based on movement
-            else {
-                if (Math.abs(deltaX) > 3) {
-                    newAnimation = '_Run';
-                } else if (deltaY < -3) {
-                    newAnimation = '_Jump';
-                } else if (deltaY > 3) {
-                    newAnimation = '_Fall';
-                } else if (opponentData.animState?.crouching) {
-                    newAnimation = opponentData.animState.isMoving ? '_CrouchWalk' : '_CrouchFull';
-                }
-            }
-
-            // Prevent animation flickering by requiring either:
-            // 1. A significant amount of time between animation changes (~300ms)
-            // 2. A definitive animation change that's not just a transition to idle
-            const shouldUpdateAnimation = 
-                (newAnimation !== lastReceivedAnimation) &&
-                (newAnimation !== '_Idle_Idle' || !this.otherPlayer.sprite.anims.isPlaying);
-
-            if (shouldUpdateAnimation) {
-                // Store the new animation as the last received
-                lastReceivedAnimation = newAnimation;
-
-                console.log(`Playing animation for other player: ${newAnimation}`);
-                try {
-                    // Use stop() before play() to reset animation and prevent issues
-                    this.otherPlayer.sprite.anims.stop();
-
-                    // Force the animation to play from the start
-                    this.otherPlayer.sprite.anims.play(newAnimation, true);
-
-                    // Don't let animation complete handlers interrupt
-                    if (newAnimation !== '_Idle_Idle' && !newAnimation.includes('_Attack')) {
-                        // Remove any existing complete listeners to prevent interruptions
-                    }
-                } catch (error) {
-                    console.error(`Failed to play animation ${newAnimation}:`, error);
-                }
-            }
-
-            // Ensure otherPlayer has platform collider
-            if (this.platform && !this.otherPlayer.sprite.getData('platformCollider')) {
-                this.physics.add.collider(this.otherPlayer.sprite, this.platform);
-                this.otherPlayer.sprite.setData('platformCollider', true);
-            }
-        });
-
-        // Handle attack events
-        this.socket.on("playerAttack", (data) => {
-            console.log("Attack event received:", data);
-
-            // Skip our own attacks
-            if (data.id === this.socket.id) {
-                return;
-            }
-
-            // Get the player sprite
-            const targetSprite = this.otherPlayers[data.id];
-            if (!targetSprite) {
-                console.error("No sprite found for attacking player:", data.id);
-                return;
-            }
-
-            // Get attack type
-            const attackType = data.attackType || 'left';
-            const animKey = attackType === 'left' ? '_Attack' : '_Attack2';
-
-            console.log(`Playing attack animation: ${animKey} for player ${data.id}`);
-
-            // Set up attack state
-            targetSprite.setData('isAttacking', true);
-
-            // Stop any current animation properly
-            targetSprite.anims.stop();
-
-            try {
-                // Play attack animation
-                targetSprite.anims.play({
-                    key: animKey,
-                    frameRate: attackType === 'left' ? 10 : 8,
-                    repeat: 0
-                });
-
-                // Remove any existing animation complete listeners first
-                targetSprite.off('animationcomplete');
-
-                // Add animation complete handler
-                targetSprite.once('animationcomplete', () => {
-                    console.log("Attack animation complete, going to idle");
-                    targetSprite.setData('isAttacking', false);
-                    targetSprite.anims.play('_Idle_Idle', true);
-                });
-
-                // Safety timer: if animation complete doesn't fire, reset after a delay
-                this.time.delayedCall(1200, () => {
-                    if (targetSprite.getData('isAttacking')) {
-                        console.log("Safety timer: resetting attack state");
-                        targetSprite.setData('isAttacking', false);
-                        // Only reset if still in attack animation
-                        if (targetSprite.anims.currentAnim?.key.includes('_Attack')) {
-                            targetSprite.anims.play('_Idle_Idle', true);
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error("Error playing attack animation:", error);
-            }
-        });
-    }
-
-    /**
-     * Update other player's movement and animation
-     */
-    private updateOtherPlayerMovement(id: string, playerInfo: any): void {
-        const otherPlayer = this.otherPlayers[id];
-        const animManager = this.otherPlayerAnims[id];
-        
-        if (!otherPlayer || !animManager) return;
-
-        // Store current and previous positions
-        const prevX = otherPlayer.x;
-        const prevY = otherPlayer.y;
-
-        // Update position
-        otherPlayer.x = playerInfo.x;
-        otherPlayer.y = playerInfo.y;
-
-        // Calculate movement deltas
-        const deltaX = playerInfo.x - prevX;
-        const deltaY = playerInfo.y - prevY;
-
-        // Update name tag position if it exists
-        const nameTag = otherPlayer.getData('nameTag');
-        if (nameTag) {
-            nameTag.setPosition(
-                otherPlayer.x + otherPlayer.displayWidth / 2,
-                otherPlayer.y - 20
-            );
-        }
-
-        // If the player is attacking, let the animation manager handle it
-        if (playerInfo.isAttacking) {
-            if (!animManager.isAttacking()) {
-                const attackType = playerInfo.animation?.includes('Attack2') ? 'right' : 'left';
-                animManager.playAttack(attackType === 'right');
-            }
-            return;
-        }
-
-        // If we have a specific animation provided, use that
-        if (playerInfo.animation) {
-            animManager.forceAnimation(playerInfo.animation);
-            return;
-        }
-
-        // Otherwise update based on movement physics
-        animManager.update(
-            playerInfo.velocityX || deltaX,
-            playerInfo.velocityY || deltaY,
-            playerInfo.animState?.onGround !== false, // Default to true if not specified
-            Math.abs(playerInfo.velocityX || 0) > 300, // Running if velocity high
-            playerInfo.animState?.isCrouching || false
-        );
-    }
-
-    /**
      * Create initial player sprites (will be managed by controllers)
      * This ensures compatibility with existing code
      */
@@ -676,6 +437,7 @@ export default class M_Game extends Phaser.Scene {
 
     /**
      * Setup socket handlers to handle player spawning from server
+     * Keep only the handlers that don't overlap with MultiplayerManager
      */
     private setupPlayerSpawning(): void {
         // Remove any previous listeners to prevent duplicates
@@ -1040,7 +802,7 @@ export default class M_Game extends Phaser.Scene {
      * Create platforms and level geometry
      */
     createPlatforms(): void {
-        // Set up platform physics
+        // Set up platform physics for the main platform
         if (this.platform) {
             this.platform.setOrigin(0.5, 0); // Center origin horizontally
             this.platform.setImmovable(true);

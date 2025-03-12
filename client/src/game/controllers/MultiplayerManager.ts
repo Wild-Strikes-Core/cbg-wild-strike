@@ -96,6 +96,7 @@ export class MultiplayerManager {
     
     /**
      * Set up socket event handlers
+     * This is the primary responsibility of the MultiplayerManager
      */
     private setupSocketHandlers(): void {
         // Remove any previous listeners to prevent duplicates
@@ -326,6 +327,7 @@ export class MultiplayerManager {
     
     /**
      * Update other player's position and animation
+     * This should be the only place handling remote player updates
      */
     private updateOtherPlayer(id: string, playerInfo: any): void {
         const otherPlayer = this.otherPlayers[id];
