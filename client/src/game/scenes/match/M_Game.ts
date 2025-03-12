@@ -227,7 +227,7 @@ export default class M_Game extends Phaser.Scene {
         this.editorCreate();
         
         // Get match data from scene parameters
-        this.matchData = this.scene.settings.data?.matchData || {};
+        this.matchData = (this.scene.settings.data as any)?.matchData || {};
         
         // Set player names if we have match data
         if (this.matchData && this.matchData.players) {
@@ -243,7 +243,7 @@ export default class M_Game extends Phaser.Scene {
         // Adjust platform to fit camera width
         this.createPlatforms();
 
-        console.log("Scene created, connecting to server");
+        // console.log("Scene created, connecting to server");
 
         // Connect to the server
         this.socket.connect();
@@ -265,7 +265,7 @@ export default class M_Game extends Phaser.Scene {
             animation: "_Idle_Idle"
         });
 
-        console.log("Player joined event emitted");
+        // console.log("Player joined event emitted");
 
         // Make sure we constantly emit our position for multiplayer
         this.time.addEvent({
@@ -452,7 +452,7 @@ export default class M_Game extends Phaser.Scene {
      * Create a sprite for another player
      */
     private createOtherPlayerSprite(id: string, playerInfo: any): void {
-        console.log(`Creating other player sprite for ID: ${id}`, playerInfo);
+        // console.log(`Creating other player sprite for ID: ${id}`, playerInfo);
 
         try {
             // Create a new sprite for the other player
@@ -525,7 +525,7 @@ export default class M_Game extends Phaser.Scene {
                 // this.sceneManager.addToUIElements(nameTag);
             }
 
-            console.log(`Other player sprite created for ID: ${id}`);
+            // console.log(`Other player sprite created for ID: ${id}`);
 
             // Add platform collider with a slight delay to ensure physics body is ready
             this.time.delayedCall(50, () => {
@@ -718,16 +718,16 @@ export default class M_Game extends Phaser.Scene {
         this.socket.off("playerDisconnected");
 
         // Handle current players already in the game
-        this.socket.on("currentPlayers", (players) => {
-            console.log("Received current players:", players);
+        // this.socket.on("currentPlayers", (players) => {
+        //     console.log("Received current players:", players);
 
-            // Create sprites for existing players, excluding this client
-            Object.keys(players).forEach(id => {
-                if (id !== this.socket.id) {
-                    this.createOtherPlayerSprite(id, players[id]);
-                }
-            });
-        });
+        //     // Create sprites for existing players, excluding this client
+        //     Object.keys(players).forEach(id => {
+        //         if (id !== this.socket.id) {
+        //             this.createOtherPlayerSprite(id, players[id]);
+        //         }
+        //     });
+        // });
 
         // Handle new player connections
         this.socket.on("newPlayer", (playerInfo) => {
@@ -741,6 +741,7 @@ export default class M_Game extends Phaser.Scene {
                     this.physics.add.collider(this.otherPlayer.sprite, this.platform);
                 }
             }
+            console.log(`Number of player sprites: ${Object.keys(this.otherPlayers).length + 1}`); // +1 for the local player
         });
 
         // Handle player disconnection
