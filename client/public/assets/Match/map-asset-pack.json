@@ -12,6 +12,21 @@
                 "key": "2M_mapBG"
             },
             {
+                "url": "assets/Match/03- UI/ButtonMenu.png",
+                "type": "image",
+                "key": "ButtonMenu"
+            },
+            {
+                "url": "assets/Match/03- UI/InGameCard.png",
+                "type": "image",
+                "key": "InGameCard"
+            },
+            {
+                "url": "assets/Match/03- UI/inGameExit.png",
+                "type": "image",
+                "key": "inGameExit"
+            },
+            {
                 "url": "assets/Match/02 - Map/newMap.png",
                 "frameConfig": {
                     "frameWidth": 32,
