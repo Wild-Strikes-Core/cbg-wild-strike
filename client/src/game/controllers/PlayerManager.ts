@@ -230,19 +230,39 @@ export class PlayerManager {
             Math.abs(this.player.x - this.lastSentPosition.x) > 0.5 || 
             Math.abs(this.player.y - this.lastSentPosition.y) > 0.5;
             
-        // Only send updates at the configured interval
-        if (positionChanged && (time - this.lastPositionUpdate > this.positionUpdateInterval)) {
+        // Get current animation information
+        const currentAnim = this.player.anims.currentAnim?.key || '_Idle_Idle';
+        
+        // Only send updates at the configured interval or when animation changes
+        const animChanged = this.player.getData('lastSentAnim') !== currentAnim;
+        
+        if ((positionChanged || animChanged) && 
+            (time - this.lastPositionUpdate > this.positionUpdateInterval)) {
+            // Update timestamps and cached values
             this.lastPositionUpdate = time;
             this.lastSentPosition.x = this.player.x;
             this.lastSentPosition.y = this.player.y;
+            this.player.setData('lastSentAnim', currentAnim);
             
-            // Send position and animation state to server
+            // Detect player state
+            const onGround = this.player.body.touching.down;
+            const isCrouching = currentAnim.includes('Crouch');
+            const isAttacking = this.player.getData('isAttacking') === true;
+            
+            // Send detailed state to server
             this.socket.emit("playerMoved", {
                 x: this.player.x,
                 y: this.player.y,
+                animation: currentAnim,
                 flipX: this.player.flipX,
                 velocityX: this.player.body.velocity.x,
-                velocityY: this.player.body.velocity.y
+                velocityY: this.player.body.velocity.y,
+                // Include explicit state info to help with animation
+                animState: {
+                    onGround: onGround,
+                    isCrouching: isCrouching,
+                    isAttacking: isAttacking
+                }
             });
         }
     }
@@ -278,13 +298,21 @@ export class PlayerManager {
             this.player.setVelocityX(0);
         }
         
-        // Send attack to server for multiplayer
+        // Send attack to server for multiplayer - MOVEMENT DATA
         this.socket.emit("playerMovement", {
             x: this.player.x,
             y: this.player.y,
             animation: animationKey,
             flipX: this.player.flipX,
             isAttacking: true
+        });
+        
+        // Also emit a dedicated attack event with more details
+        this.socket.emit("playerAttack", {
+            x: this.player.x,
+            y: this.player.y,
+            attackType: attackType, 
+            direction: this.player.flipX ? 'left' : 'right'
         });
         
         // Return to idle state when animation is fully complete

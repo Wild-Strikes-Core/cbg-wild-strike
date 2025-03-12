@@ -1,150 +1,3 @@
-// /**
-//  * Arena Server - Real-time multiplayer game server using Socket.io
-//  * Handles player connections, movements, and game state synchronization
-//  */
-
-// import { createServer } from "http";
-// import { Server } from "socket.io";
-
-// /**
-//  * Represents a player in the game world
-//  * Contains position, animation state and movement data
-//  */
-// interface Player {
-//   id: string;          // Unique socket ID
-//   x: number;           // X position in the game world
-//   y: number;           // Y position in the game world
-//   animation: string;   // Current animation state (e.g., 'Idle', 'Walk')
-//   flipX?: boolean;     // Whether sprite is flipped horizontally
-//   velocityX?: number;  // Horizontal movement speed
-//   velocityY?: number;  // Vertical movement speed
-//   isAttacking?: boolean; // Whether player is currently attacking
-// }
-
-// /**
-//  * Initial player information received when a player joins the game
-//  */
-// interface PlayerInfo {
-//   x: number;           // Initial X position
-//   y: number;           // Initial Y position
-//   animation?: string;  // Optional initial animation state
-// }
-
-// /**
-//  * Data structure for player movement updates
-//  */
-// interface MovementData {
-//   x: number;
-//   y: number;
-//   animation: string;
-//   flipX: boolean;
-//   velocityX?: number;
-//   velocityY?: number;
-//   isAttacking?: boolean; // Added to track attack state
-// }
-
-// /**
-//  * Collection of all active players indexed by their socket ID
-//  */
-// interface Players {
-//   [key: string]: Player;
-// }
-
-// // Create HTTP server
-// const httpServer = createServer();
-
-// // In-memory store for all connected players
-// const players: Players = {};
-
-// // Initialize Socket.io with CORS configuration
-// const io = new Server(httpServer, {
-//   cors: {
-//     origin: "*", // Allow connections from any origin (consider restricting in production)
-//     methods: ["GET", "POST"],
-//   },
-// });
-
-// // Handle new socket connections
-// io.on("connection", (socket) => {
-//   console.log("A user connected:", socket.id);
-
-//   // Send current game state to the newly connected client
-//   socket.emit("currentPlayers", players);
-
-//   console.log(`Total players connected: ${Object.keys(players).length}`);
-//   console.log("Current players:", Object.keys(players));
-
-//   // Handle new player joining the game
-//   socket.on("playerJoined", (playerInfo) => {
-//     console.log(`Player ${socket.id} joined at position:`, playerInfo.x, playerInfo.y);
-
-//     // Create and store new player data
-//     players[socket.id] = {
-//       id: socket.id,
-//       x: playerInfo.x,
-//       y: playerInfo.y,
-//       animation: playerInfo.animation || 'Idle', // Default to Idle animation if not specified
-//       isAttacking: false // Initialize attack state to false
-//     };
-
-//     // Initialize the new player with the complete game state
-//     socket.emit("currentPlayers", players);
-
-//     // Notify all other players about the new player
-//     socket.broadcast.emit("newPlayer", players[socket.id]);
-
-//     console.log(`After join - Total players: ${Object.keys(players).length}`);
-//   });
-
-//   // Process player movement updates
-//   socket.on("playerMovement", (movementData) => {
-//     // Only update if the player exists
-//     if (players[socket.id]) {
-//       // Update the player's state with the latest data
-//       players[socket.id].x = movementData.x;
-//       players[socket.id].y = movementData.y;
-//       players[socket.id].animation = movementData.animation;
-//       players[socket.id].flipX = movementData.flipX;
-
-//       // Update velocities if provided
-//       if (movementData.velocityX !== undefined) {
-//         players[socket.id].velocityX = movementData.velocityX;
-//       }
-//       if (movementData.velocityY !== undefined) {
-//         players[socket.id].velocityY = movementData.velocityY;
-//       }
-
-//       // Update the attack state if provided
-//       if (movementData.isAttacking !== undefined) {
-//         players[socket.id].isAttacking = movementData.isAttacking;
-//         console.log(`Player ${socket.id} attack state: ${movementData.isAttacking}`);
-//       }
-
-//       // Broadcast the updated position to all other players
-//       socket.broadcast.emit("playerMoved", players[socket.id]);
-//     }
-//   });
-
-//   // Clean up when a player disconnects
-//   socket.on("disconnect", () => {
-//     console.log("A user disconnected:", socket.id);
-
-//     // Remove the player from the game state
-//     delete players[socket.id];
-
-//     // Notify all clients (including new connections) about the disconnected player
-//     io.emit("playerDisconnected", socket.id);
-
-//     console.log(`After disconnect - Total players: ${Object.keys(players).length}`);
-//   });
-// });
-
-// // Start the server
-// const PORT = 3001;
-// httpServer.listen(PORT, () => {
-//   console.log(`Arena server running on port ${PORT}`);
-// });
-
 import { createServer } from "http";
 import { Server } from "socket.io";
 
@@ -162,11 +15,23 @@ interface Match {
     id: string;
     x: number;
     y: number;
+    animation?: string;
+    flipX?: boolean;
+    velocityX?: number;
+    velocityY?: number;
+    isAttacking?: boolean;
+    animState?: string;
   };
   player2: {
     id: string;
     x: number;
     y: number;
+    animation?: string;
+    flipX?: boolean;
+    velocityX?: number;
+    velocityY?: number;
+    isAttacking?: boolean;
+    animState?: string;
   };
   roomId: string;
 }
@@ -182,28 +47,125 @@ let waitingsUsers: string[] = [];
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
+  // Process player movement updates
   socket.on("playerMoved", (data) => {
     const currentRoomId = [...socket.rooms][1];
-    const currentMatch = matches[Number(currentRoomId.split("_")[1])];
+    if (!currentRoomId) {
+      return;
+    }
+    
+    const matchId = Number(currentRoomId.split("_")[1]);
+    const currentMatch = matches[matchId];
+    
+    if (!currentMatch) {
+      return;
+    }
 
     const currentPlayer = socket.id;
+    
+    // Validate incoming data has at least x and y coordinates
+    if (typeof data !== 'object' || typeof data.x !== 'number' || typeof data.y !== 'number') {
+      console.log("Invalid movement data received from", currentPlayer);
+      return;
+    }
 
-    if (currentMatch.player1.id == currentPlayer) {
+    // Handle animation state carefully to prevent flickering
+    if (currentMatch.player1.id === currentPlayer) {
+      // Update player 1 position
       currentMatch.player1.x = data.x;
       currentMatch.player1.y = data.y;
-      console.log("p1");
-      console.log(data);
+      
+      // Always update these properties if provided
+      if (data.flipX !== undefined) currentMatch.player1.flipX = data.flipX;
+      if (data.velocityX !== undefined) currentMatch.player1.velocityX = data.velocityX;
+      if (data.velocityY !== undefined) currentMatch.player1.velocityY = data.velocityY;
+      
+      // Special handling for animation and attack state
+      // Only update animation if explicitly provided or if player is not attacking
+      if (data.animation) {
+        // If this is an attack animation, set isAttacking to true
+        if (data.animation.includes('_Attack')) {
+          currentMatch.player1.isAttacking = true;
+          currentMatch.player1.animation = data.animation;
+        } 
+        // If previously attacking and now not, allow animation update
+        else if (currentMatch.player1.isAttacking && data.isAttacking === false) {
+          currentMatch.player1.isAttacking = false;
+          currentMatch.player1.animation = data.animation;
+        }
+        // If not attacking or was not attacking before, update animation
+        else if (!currentMatch.player1.isAttacking) {
+          currentMatch.player1.animation = data.animation;
+        }
+      }
+      
+      // Update animState if provided
+      if (data.animState) {
+        currentMatch.player1.animState = data.animState;
+      }
     }
 
-    if (currentMatch.player2.id == currentPlayer) {
+    if (currentMatch.player2.id === currentPlayer) {
+      // Update player 2 position with the same logic as player 1
       currentMatch.player2.x = data.x;
       currentMatch.player2.y = data.y;
-      console.log("p2");
-      console.log(data);
+      
+      if (data.flipX !== undefined) currentMatch.player2.flipX = data.flipX;
+      if (data.velocityX !== undefined) currentMatch.player2.velocityX = data.velocityX;
+      if (data.velocityY !== undefined) currentMatch.player2.velocityY = data.velocityY;
+      
+      // Same special handling for animation and attack state
+      if (data.animation) {
+        if (data.animation.includes('_Attack')) {
+          currentMatch.player2.isAttacking = true;
+          currentMatch.player2.animation = data.animation;
+        } 
+        else if (currentMatch.player2.isAttacking && data.isAttacking === false) {
+          currentMatch.player2.isAttacking = false;
+          currentMatch.player2.animation = data.animation;
+        }
+        else if (!currentMatch.player2.isAttacking) {
+          currentMatch.player2.animation = data.animation;
+        }
+      }
+      
+      if (data.animState) {
+        currentMatch.player2.animState = data.animState;
+      }
     }
 
-    console.log(currentRoomId);
+    // Broadcast updated match state to both players
+    // Include full animation state in updates
     io.to(currentRoomId).emit("arenaStateChanged", { ...currentMatch });
+  });
+
+  // Handle direct attack notifications
+  socket.on("playerAttack", (data) => {
+    const currentRoomId = [...socket.rooms][1];
+    if (!currentRoomId) {
+      // Player not in a room, ignore
+      return;
+    }
+    
+    const matchId = Number(currentRoomId.split("_")[1]);
+    const currentMatch = matches[matchId];
+    
+    if (!currentMatch) {
+      // Match not found, ignore
+      return;
+    }
+    
+    // Add the socket ID and match info to the data
+    const attackData = {
+      ...data,
+      id: socket.id,
+      matchId
+    };
+    
+    // Broadcast the attack to the other player in the room
+    socket.to(currentRoomId).emit("playerAttack", attackData);
+    
+    console.log(`Player ${socket.id} attacked with type: ${data.attackType || 'unknown'}`);
   });
 
   socket.on("findMatch", (data) => {
