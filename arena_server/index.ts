@@ -34,6 +34,8 @@ interface Match {
     animState?: string;
   };
   roomId: string;
+  timer: NodeJS.Timeout | null;
+  remainingTime: number;
 }
 
 interface Matches {
@@ -195,6 +197,8 @@ io.on("connection", (socket) => {
           id: player2,
         },
         roomId: room,
+        timer: null,
+        remainingTime: 120 // 2 minutes in seconds
       };
 
       if (player1 && player2) {
@@ -205,6 +209,21 @@ io.on("connection", (socket) => {
       console.log("Player 1", player1);
       console.log("Player 2", player2);
       console.log(`Match #${numberOfMatches} has started`);
+
+      // Start match timer
+      const matchId = numberOfMatches;
+      matches[matchId].timer = setInterval(() => {
+        if (matches[matchId]) {
+          matches[matchId].remainingTime--;
+          io.to(room).emit("timerUpdate", { remainingTime: matches[matchId].remainingTime });
+
+          if (matches[matchId].remainingTime <= 0) {
+            clearInterval(matches[matchId].timer!);
+            io.to(room).emit("matchEnded");
+            delete matches[matchId];
+          }
+        }
+      }, 1000);
 
       numberOfMatches++;
 
@@ -237,17 +256,11 @@ io.on("connection", (socket) => {
       console.log(currentMatchState.player1);
       console.log(currentMatchState.player2);
 
-      if (socket.id == currentMatchState.player1) {
-        console.log("Player 2 Won");
-
+      if (socket.id == currentMatchState.player1 || socket.id == currentMatchState.player2) {
+        clearInterval(currentMatchState.timer);
         delete matches[currentMatchId];
+        console.log(`Match #${currentMatchId} has ended`);
       }
-
-      if (socket.id == currentMatchState.player2) {
-        console.log("Player 1 Won");
-        delete matches[currentMatchId];
-      }
-      console.log(`Match #${currentMatchId} has ended`);
     }
   });
 });

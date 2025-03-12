@@ -66,9 +66,6 @@ export class MultiplayerManager {
             y: localPlayer.y,
             animation: "_Idle_Idle"
         });
-
-        // Set up attack input handlers
-        this.setupAttackHandlers();
     }
     
     /**
@@ -87,6 +84,7 @@ export class MultiplayerManager {
         this.socket.off("newPlayer");
         this.socket.off("playerDisconnected");
         this.socket.off("playerMoved");
+        this.socket.off("playerAttack");
         
         // Handle current players already in the game
         this.socket.on("currentPlayers", (players) => {
@@ -124,6 +122,65 @@ export class MultiplayerManager {
         this.socket.on("playerMoved", (playerInfo) => {
             if (playerInfo.id !== this.socket.id && this.otherPlayers[playerInfo.id]) {
                 this.updateOtherPlayer(playerInfo.id, playerInfo);
+            }
+        });
+
+        // Handle attack events
+        this.socket.on("playerAttack", (data) => {
+            console.log("Attack event received:", data);
+            
+            // Skip our own attacks
+            if (data.id === this.socket.id || !this.otherPlayers[data.id]) {
+                return;
+            }
+            
+            const otherPlayer = this.otherPlayers[data.id];
+            
+            // Get attack type
+            const attackType = data.attackType || 'left';
+            const animKey = attackType === 'left' ? '_Attack' : '_Attack2';
+            
+            console.log(`Playing attack animation: ${animKey}`);
+            
+            // Set up attack state
+            otherPlayer.setData('isAttacking', true);
+            
+            // Stop any current animation properly
+            otherPlayer.anims.stop();
+            
+            try {
+                // Play attack animation
+                otherPlayer.anims.play({
+                    key: animKey,
+                    frameRate: attackType === 'left' ? 10 : 8,
+                    repeat: 0
+                });
+                
+                // Remove any existing animation complete listeners first
+                otherPlayer.off('animationcomplete');
+                
+                // Add animation complete handler
+                otherPlayer.once('animationcomplete', () => {
+                    console.log("Attack animation complete, going to idle");
+                    if (otherPlayer) {
+                        otherPlayer.setData('isAttacking', false);
+                        otherPlayer.anims.play('_Idle_Idle', true);
+                    }
+                });
+                
+                // Safety timer: if animation complete doesn't fire, reset after a delay
+                this.scene.time.delayedCall(1200, () => {
+                    if (otherPlayer && otherPlayer.getData('isAttacking')) {
+                        console.log("Safety timer: resetting attack state");
+                        otherPlayer.setData('isAttacking', false);
+                        // Only reset if still in attack animation
+                        if (otherPlayer.anims.currentAnim?.key.includes('_Attack')) {
+                            otherPlayer.anims.play('_Idle_Idle', true);
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error playing attack animation:", error);
             }
         });
     }
@@ -327,6 +384,7 @@ export class MultiplayerManager {
         this.socket.off("newPlayer");
         this.socket.off("playerDisconnected");
         this.socket.off("playerMoved");
+        this.socket.off("playerAttack");
         
         // Clean up all other player sprites
         Object.values(this.otherPlayers).forEach(player => {
@@ -336,89 +394,5 @@ export class MultiplayerManager {
         });
         
         this.otherPlayers = {};
-    }
-
-    /**
-     * Set up mouse input handlers for attacks
-     */
-    private setupAttackHandlers(): void {
-        this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            if (pointer.leftButtonDown()) {
-                this.handleAttack('left');
-            } else if (pointer.rightButtonDown()) {
-                this.handleAttack('right');
-            }
-        });
-        
-        // Prevent context menu on right click
-        this.scene.game.canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
-    }
-
-    /**
-     * Handle player attack actions
-     * 
-     * @param attackType - Type of attack ('left' for normal, 'right' for heavy)
-     */
-    private handleAttack(attackType: 'left' | 'right'): void {
-        // Don't allow attacks if already attacking
-        if (this.localPlayer.anims.currentAnim?.key.includes('_Attack') || this.localPlayer.getData('isAttacking')) {
-            console.log("Attack canceled - already attacking");
-            return;
-        }
-        
-        // Play appropriate animation based on attack type
-        const animationKey = attackType === 'left' ? '_Attack' : '_Attack2';
-        
-        this.localPlayer.setData('isAttacking', true);
-        
-        if (attackType === 'right') {
-            this.localPlayer.setVelocityY(0);
-        }
-
-        this.localPlayer.play({
-            key: animationKey,
-            frameRate: attackType === 'left' ? 10 : 8, // Slower for heavy attack
-            repeat: 0
-        });
-        
-        if (attackType === 'right') {
-            this.localPlayer.setVelocityX(0);
-        }
-        
-        // Send attack to server for multiplayer - MOVEMENT DATA
-        this.socket.emit("playerMovement", {
-            x: this.localPlayer.x,
-            y: this.localPlayer.y,
-            animation: animationKey,
-            flipX: this.localPlayer.flipX,
-            isAttacking: true
-        });
-        
-        // Also emit a dedicated attack event with more details
-        this.socket.emit("playerAttack", {
-            x: this.localPlayer.x,
-            y: this.localPlayer.y,
-            attackType: attackType, 
-            direction: this.localPlayer.flipX ? 'left' : 'right'
-        });
-        
-        // Return to idle state when animation is fully complete
-        this.localPlayer.once('animationcomplete', () => {
-            console.log("Attack animation complete, returning to idle");
-            this.localPlayer.setData('isAttacking', false);
-            // Use the correct idle animation
-            this.localPlayer.play('_Idle_Idle');
-            
-            // IMPORTANT: Tell other players that we're done attacking
-            this.socket.emit("playerMovement", {
-                x: this.localPlayer.x,
-                y: this.localPlayer.y,
-                animation: "_Idle_Idle",
-                flipX: this.localPlayer.flipX,
-                isAttacking: false
-            });
-        });
     }
 }

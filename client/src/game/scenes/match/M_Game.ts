@@ -255,6 +255,16 @@ export default class M_Game extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+
+        // Listen for timer updates from the server
+        this.socket.on("timerUpdate", (data) => {
+            this.updateTimer(data.remainingTime);
+        });
+
+        // Listen for match end event
+        this.socket.on("matchEnded", () => {
+            this.handleMatchEnd();
+        });
     }
     
     /**
@@ -718,6 +728,15 @@ export default class M_Game extends Phaser.Scene {
         });
         
         this.otherPlayers = {};
+    }
+
+    /**
+     * Update the match timer display
+     */
+    private updateTimer(remainingTime: number): void {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        this.matchTimerText.setText(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
     }
 
 	/* END-USER-CODE */
