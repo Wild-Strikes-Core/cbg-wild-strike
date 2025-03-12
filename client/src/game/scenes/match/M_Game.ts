@@ -283,7 +283,7 @@ export default class M_Game extends Phaser.Scene {
         // Play entrance animation
         this.createEntranceAnimation();
 
-        this.sound.play("in-match", { loop: true });
+        this.sound.play("in-match", { loop: true, volume: 0.2 });
     }
 
     /**

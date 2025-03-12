@@ -12,9 +12,23 @@
                 "key": "2M_mapBG"
             },
             {
+                "url": [
+                    "assets/Match/02 - Map/Attack.wav"
+                ],
+                "type": "audio",
+                "key": "Attack"
+            },
+            {
                 "url": "assets/Match/03- UI/ButtonMenu.png",
                 "type": "image",
                 "key": "ButtonMenu"
+            },
+            {
+                "url": [
+                    "assets/Match/02 - Map/Footstep.wav"
+                ],
+                "type": "audio",
+                "key": "Footstep"
             },
             {
                 "url": [

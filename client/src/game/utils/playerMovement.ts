@@ -60,9 +60,39 @@ export function handlePlayerMovement(
 ) {
     // Check if the player is touching the ground
     const onGround = player.body.touching.down || player.body.blocked.down;
+    let doubleJumpUsed = player.getData('doubleJumpUsed') || false;
     let isRunning = false;
     let isCrouching = cursors.down?.isDown || false;
+    let isDodging = cursors.ctrl?.isDown || false; // Track dodge state
     let currentAnimation = '';
+    let justDoubleJumped = false;
+    
+    // Apply white tint when dodging
+    if (isDodging) {
+        player.setTint(0xffffff);
+        console.log("Player is dodging!");
+    } else {
+        // Clear tint if not dodging and not using double jump
+        if (!player.getData('doubleJumpUsed')) {
+            player.clearTint();
+        }
+    }
+    
+    // Add footstep sound handling
+    const isMoving = player.body.velocity.x !== 0;
+    const lastFootstep = player.getData('lastFootstep') || 0;
+    const currentTime = player.scene.time.now;
+    // Different intervals for different movement types
+    const footstepInterval = isRunning ? 300 : 450; // Faster footsteps when running
+    
+    // Play footstep sounds only when moving on the ground
+    if (isMoving && onGround && currentTime - lastFootstep > footstepInterval) {
+        player.scene.sound.play('Footstep', { volume: 0.4 });
+        player.setData('lastFootstep', currentTime);
+        
+        // Return footstep event for network broadcasting
+        return { isRunning, isCrouching, justDoubleJumped, isDodging, playSound: 'Footstep' };
+    }
     
     // Detect crouch state change (for animation triggering)
     const crouchStateChanged = isCrouching !== prevCrouchState;
@@ -158,17 +188,41 @@ export function handlePlayerMovement(
         player.x = prevX;
     }
     
+    if (onGround) {
+        doubleJumpUsed = false;
+        player.setData('doubleJumpUsed', false);
+    }
+    
     // JUMP HANDLING - Only allow when not crouching
     if (cursors.up.isDown && onGround && !isCrouching) {
         // Jump with extra stamina cost if stamina system is active
         if (staminaManager && staminaManager.hasEnoughStamina(10)) {
             // Apply vertical velocity for jump
             player.setVelocityY(config.jumpSpeed);
+            // Leap forward based on the direction the player is facing
+            player.setVelocityX(player.flipX ? -config.walkSpeed * 2 : config.walkSpeed * 2);
             currentAnimation = animationKeys.jump;
             //staminaManager.useStamina(10);
         } else if (!staminaManager) {
             // If no stamina system is used, player can always jump
             player.setVelocityY(config.jumpSpeed);
+            // Leap forward based on the direction the player is facing
+            player.setVelocityX(player.flipX ? -config.walkSpeed * 2 : config.walkSpeed * 2);
+            currentAnimation = animationKeys.jump;
+        }
+        player.setData('lastJumpTime', player.scene.time.now);
+    } else if (cursors.up.isDown && !onGround && !isCrouching && !doubleJumpUsed) {
+        const now = player.scene.time.now;
+        const lastJumpTime = player.getData('lastJumpTime') || 0;
+        if (now - lastJumpTime > 200) {
+            justDoubleJumped = true;
+            player.setVelocityY(config.jumpSpeed);
+            player.setData('doubleJumpUsed', true);
+            player.setData('lastJumpTime', now);
+            player.setTint(0x99ff99);
+            player.scene.time.delayedCall(200, () => {
+                player.clearTint();
+            });
             currentAnimation = animationKeys.jump;
         }
     }
@@ -222,4 +276,6 @@ export function handlePlayerMovement(
     } else if (skillIcons?.skillR) {
         skillIcons.skillR.clearTint(); // Clear tint when key is released
     }
+
+    return { isRunning, isCrouching, justDoubleJumped, isDodging };
 }

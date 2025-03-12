@@ -171,6 +171,8 @@ export class PlayerManager {
             right: Phaser.Input.Keyboard.KeyCodes.D,
             shift: Phaser.Input.Keyboard.KeyCodes.SHIFT,
             down: Phaser.Input.Keyboard.KeyCodes.S,
+            // Add dodge key
+            ctrl: Phaser.Input.Keyboard.KeyCodes.CTRL,
             // Add skill keys
             skillE: Phaser.Input.Keyboard.KeyCodes.E,
             skillQ: Phaser.Input.Keyboard.KeyCodes.Q,
@@ -264,15 +266,16 @@ export class PlayerManager {
         this.positionHPTextAbovePlayer();
         
         // Send position updates to server
-        this.updateServerPosition(time);
+        this.updateServerPosition(time, movement);
     }
     
     /**
      * Send position updates to server at regular intervals
      * 
      * @param time - Current game time
+     * @param movement - Player movement data
      */
-    private updateServerPosition(time: number): void {
+    private updateServerPosition(time: number, movement: any): void {
         // Calculate if position has changed significantly
         const positionChanged = 
             Math.abs(this.player.x - this.lastSentPosition.x) > 0.5 || 
@@ -282,7 +285,9 @@ export class PlayerManager {
         const currentAnim = this.player.anims.currentAnim?.key || '_Idle_Idle';
         
         // Only send updates at the configured interval or when animation changes
-        const animChanged = this.player.getData('lastSentAnim') !== currentAnim;
+        const animChanged = this.player.getData('lastSentAnim') !== currentAnim ||
+                            movement?.justDoubleJumped ||
+                            movement?.isDodging;
         
         if ((positionChanged || animChanged) && 
             (time - this.lastPositionUpdate > this.positionUpdateInterval)) {
@@ -296,6 +301,7 @@ export class PlayerManager {
             const onGround = this.player.body?.touching.down;
             const isCrouching = currentAnim.includes('Crouch');
             const isAttacking = this.player.getData('isAttacking') === true;
+            const isDodging = movement?.isDodging || false;
             
             // Send detailed state to server
             this.socket.emit("playerMoved", {
@@ -309,8 +315,13 @@ export class PlayerManager {
                 animState: {
                     onGround: onGround,
                     isCrouching: isCrouching,
-                    isAttacking: isAttacking
-                }
+                    isAttacking: isAttacking,
+                    doubleJumping: (movement as any)?.justDoubleJumped,
+                    isDodging: isDodging
+                },
+                isDodging: isDodging,
+                // Add sound event if present
+                soundEvent: movement?.playSound || null
             });
         }
     }
@@ -321,6 +332,9 @@ export class PlayerManager {
      * @param attackType - Type of attack ('left' for normal, 'right' for heavy)
      */
     handleAttack(attackType: 'left' | 'right'): void {
+        // Play attack sound
+        this.scene.sound.play('Attack', { volume: 0.5 });
+        
         // Use animation manager to handle attack
         if (this.animationManager) {
             this.animationManager.playAttack(attackType === 'right');

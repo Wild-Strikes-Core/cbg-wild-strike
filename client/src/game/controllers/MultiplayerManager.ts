@@ -155,6 +155,9 @@ export class MultiplayerManager {
                 return;
             }
             
+            // Play attack sound
+            this.scene.sound.play('Attack', { volume: 0.4 }); // Slightly lower volume for remote players
+            
             const otherPlayer = this.otherPlayers[data.id];
             
             // Get attack type
@@ -350,6 +353,13 @@ export class MultiplayerManager {
             otherPlayer.setFlipX(playerInfo.velocityX < 0);
         }
         
+        // Handle dodge state
+        if (playerInfo.isDodging) {
+            otherPlayer.setTint(0xffffff);
+        } else if (!otherPlayer.getData('doubleJumpUsed')) {
+            otherPlayer.clearTint();
+        }
+        
         // Handle attack state
         const wasAttacking = otherPlayer.getData('isAttacking') === true;
         
@@ -409,6 +419,11 @@ export class MultiplayerManager {
                     }
                 }
             }
+        }
+        
+        // Play sound effects if received
+        if (playerInfo.soundEvent) {
+            this.scene.sound.play(playerInfo.soundEvent, { volume: 0.3 }); // Slightly lower volume for remote players
         }
         
         // Update the name tag position

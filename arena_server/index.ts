@@ -27,6 +27,7 @@ interface PlayerState {
   velocityX?: number;
   velocityY?: number;
   isAttacking?: boolean;
+  isDodging?: boolean; // Add the dodge state flag
   animState?: {
     idle?: boolean;
     running?: boolean;
@@ -36,6 +37,8 @@ interface PlayerState {
     crouching?: boolean;
     isMoving?: boolean;
     onGround?: boolean;
+    doubleJumping?: boolean;
+    isDodging?: boolean; // Also add to animState for consistency
   };
   lastUpdate?: number; // Timestamp of last update
 }
@@ -250,6 +253,7 @@ function processPlayerMovement(playerId: string, data: any): void {
   if (data.flipX !== undefined) playerState.flipX = data.flipX;
   if (data.velocityX !== undefined) playerState.velocityX = data.velocityX;
   if (data.velocityY !== undefined) playerState.velocityY = data.velocityY;
+  if (data.isDodging !== undefined) playerState.isDodging = data.isDodging; // Add dodge state handling
   
   // Handle animation and attack state carefully
   if (data.animation) {
@@ -272,6 +276,7 @@ function processPlayerMovement(playerId: string, data: any): void {
   // Update animation state if provided
   if (data.animState && typeof data.animState === 'object') {
     playerState.animState = {
+      ...playerState.animState,
       idle: !!data.animState.idle,
       running: !!data.animState.running,
       jumping: !!data.animState.jumping,
@@ -279,7 +284,9 @@ function processPlayerMovement(playerId: string, data: any): void {
       attacking: !!data.animState.attacking,
       crouching: !!data.animState.crouching,
       isMoving: !!data.animState.isMoving,
-      onGround: data.animState.onGround !== false // Default to true
+      onGround: data.animState.onGround !== false, // Default to true
+      doubleJumping: !!data.animState.doubleJumping,
+      isDodging: !!data.animState.isDodging, // Add dodge state to animState
     };
   }
   
@@ -295,7 +302,9 @@ function processPlayerMovement(playerId: string, data: any): void {
     flipX: data.flipX,
     velocityX: data.velocityX,
     velocityY: data.velocityY,
-    animState: data.animState ? { ...data.animState } : undefined
+    isDodging: data.isDodging, // Include dodge state in the broadcast
+    animState: data.animState ? { ...data.animState } : undefined,
+    soundEvent: data.soundEvent || null
   };
   
   // Send to all other clients in the room
