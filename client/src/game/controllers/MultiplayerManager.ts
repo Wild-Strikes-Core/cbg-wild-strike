@@ -64,7 +64,7 @@ export class MultiplayerManager {
         this.socket.emit("playerJoined", {
             x: localPlayer.x,
             y: localPlayer.y,
-            animation: "_Idle_Idle"
+            animation: "_Idle_Idle" // Make sure to use the correct animation key
         });
     }
     
@@ -164,7 +164,7 @@ export class MultiplayerManager {
                     console.log("Attack animation complete, going to idle");
                     if (otherPlayer) {
                         otherPlayer.setData('isAttacking', false);
-                        otherPlayer.anims.play('_Idle_Idle', true);
+                        otherPlayer.anims.play('_Idle_Idle', true); // Use the correct idle animation
                     }
                 });
                 
@@ -175,12 +175,19 @@ export class MultiplayerManager {
                         otherPlayer.setData('isAttacking', false);
                         // Only reset if still in attack animation
                         if (otherPlayer.anims.currentAnim?.key.includes('_Attack')) {
-                            otherPlayer.anims.play('_Idle_Idle', true);
+                            otherPlayer.anims.play('_Idle_Idle', true); // Use the correct idle animation
                         }
                     }
                 });
             } catch (error) {
                 console.error("Error playing attack animation:", error);
+                // Error recovery: try to reset to idle state
+                try {
+                    otherPlayer.setData('isAttacking', false);
+                    otherPlayer.anims.play('_Idle_Idle', true);
+                } catch (innerError) {
+                    console.error("Failed to recover from animation error:", innerError);
+                }
             }
         });
     }
@@ -189,60 +196,85 @@ export class MultiplayerManager {
      * Create a new player sprite for other connected players
      */
     private addOtherPlayer(id: string, playerInfo: any): void {
-        // Create a new sprite for the other player
-        const otherPlayer = this.scene.physics.add.sprite(
-            playerInfo.x,
-            playerInfo.y,
-            "_Idle",
-            0
-        );
+        console.log(`Creating other player sprite for ID: ${id} with texture key: "_Idle_Idle"`);
+        
+        // List available textures for debugging
+        console.log("Available textures:", Object.keys(this.scene.textures.list));
+        
+        try {
+            // Create a new sprite for the other player using the correct texture key
+            const otherPlayer = this.scene.physics.add.sprite(
+                playerInfo.x,
+                playerInfo.y,
+                "_Idle_Idle", // Use the correct texture key - same as the animation key
+                0
+            );
 
-        // Configure other player sprite
-        otherPlayer.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
-        otherPlayer.scaleX = 3;
-        otherPlayer.scaleY = 3;
-        otherPlayer.setOrigin(0, 0);
-        otherPlayer.body.gravity.y = 10000;
-        otherPlayer.body.setOffset(45, 40);
-        otherPlayer.body.setSize(30, 40, false);
-        
-        // Set player color tint to differentiate from local player
-        otherPlayer.setTint(0xAAAAAA); // Light grey tint
-        
-        // Store the player in our registry
-        this.otherPlayers[id] = otherPlayer;
-        
-        // Create floating name tag above other player
-        const nameTag = this.scene.add.text(
-            otherPlayer.x,
-            otherPlayer.y - 60,
-            `Player ${id.substring(0, 4)}`, // Show part of the ID as name
-            { fontSize: '16px', color: '#FFFFFF', stroke: '#000000', strokeThickness: 3 }
-        );
-        nameTag.setOrigin(0.5, 1);
-        nameTag.setDepth(100);
-        
-        // Store the name tag as a property of the player
-        otherPlayer.setData('nameTag', nameTag);
-        
-        // Make UI camera ignore other players' elements if SceneManager is available
-        if (this.sceneManager) {
-            this.sceneManager.setUIIgnoreGameplay([otherPlayer, nameTag]);
-        }
-        
-        // Add colliders with ground tiles if SceneManager is available
-        if (this.sceneManager) {
-            const groundTiles = this.sceneManager.getGroundTiles();
-            groundTiles.forEach(tile => {
-                this.scene.physics.add.collider(otherPlayer, tile);
-            });
-        }
-        
-        // Set initial animation if provided
-        if (playerInfo.animation) {
-            otherPlayer.play(playerInfo.animation);
-        } else {
-            otherPlayer.play('_Idle_Idle');
+            // Configure other player sprite
+            otherPlayer.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
+            otherPlayer.scaleX = 3;
+            otherPlayer.scaleY = 3;
+            otherPlayer.setOrigin(0, 0);
+            otherPlayer.body.gravity.y = 10000;
+            otherPlayer.body.setOffset(45, 40);
+            otherPlayer.body.setSize(30, 40, false);
+            
+            // Debug logging for animation keyframes
+            console.log("Animation frames for _Idle_Idle:", 
+                this.scene.anims.get('_Idle_Idle')?.frames.length || "Animation not found");
+            
+            // Set player color tint to differentiate from local player
+            otherPlayer.setTint(0xAAAAAA); // Light grey tint
+            
+            // Store the player in our registry
+            this.otherPlayers[id] = otherPlayer;
+            
+            // Create floating name tag above other player
+            const nameTag = this.scene.add.text(
+                otherPlayer.x,
+                otherPlayer.y - 60,
+                `Player ${id.substring(0, 4)}`, // Show part of the ID as name
+                { fontSize: '16px', color: '#FFFFFF', stroke: '#000000', strokeThickness: 3 }
+            );
+            nameTag.setOrigin(0.5, 1);
+            nameTag.setDepth(100);
+            
+            // Store the name tag as a property of the player
+            otherPlayer.setData('nameTag', nameTag);
+            
+            // Make UI camera ignore other players' elements if SceneManager is available
+            if (this.sceneManager) {
+                this.sceneManager.setUIIgnoreGameplay([otherPlayer, nameTag]);
+            }
+            
+            // Add colliders with ground tiles if SceneManager is available
+            if (this.sceneManager) {
+                const groundTiles = this.sceneManager.getGroundTiles();
+                groundTiles.forEach(tile => {
+                    this.scene.physics.add.collider(otherPlayer, tile);
+                });
+            }
+            
+            // Set initial animation - always use the animation key specified in the atlas
+            try {
+                // Try to play the animation provided in playerInfo or default to idle
+                const animKey = playerInfo.animation || '_Idle_Idle';
+                console.log(`Setting initial animation for player ${id}: ${animKey}`);
+                otherPlayer.anims.play(animKey, true);
+            } catch (error) {
+                console.error("Failed to play initial animation:", error);
+                // Fallback to directly playing the idle animation
+                try {
+                    otherPlayer.anims.play('_Idle_Idle', true);
+                } catch (fallbackError) {
+                    console.error("Fallback animation also failed:", fallbackError);
+                }
+            }
+            
+            console.log(`Other player sprite created for ID: ${id}`, 
+                "Current animation:", otherPlayer.anims.currentAnim?.key || "none");
+        } catch (error) {
+            console.error("Error creating other player sprite:", error);
         }
     }
     
@@ -292,26 +324,44 @@ export class MultiplayerManager {
             // Special case: Always force exit from attack to idle
             if (wasAttacking && playerInfo.isAttacking === false) {
                 // If we were attacking but now we're not, immediately go to idle
-                otherPlayer.play('_Idle_Idle');
-                console.log(`Player ${id} forced to idle after attack ended`);
+                try {
+                    otherPlayer.play('_Idle_Idle', true);
+                    console.log(`Player ${id} forced to idle after attack ended`);
+                } catch (error) {
+                    console.error(`Error playing idle animation for player ${id}:`, error);
+                }
             }
             // Case 1: Starting a new attack - always allow this
             else if (isNewAttack && !isCurrentAttack) {
-                otherPlayer.play(newAnim);
-                
-                // Set up auto-transition to idle when attack animation completes
-                otherPlayer.once('animationcomplete', () => {
-                    // Only transition to idle if we're still in the same attack animation
-                    if (otherPlayer.anims.currentAnim?.key === newAnim) {
-                        otherPlayer.play('_Idle_Idle');
-                        console.log(`Attack animation completed for player ${id}, auto-transitioning to idle`);
-                    }
-                });
+                try {
+                    otherPlayer.play(newAnim, true);
+                    
+                    // Set up auto-transition to idle when attack animation completes
+                    otherPlayer.once('animationcomplete', () => {
+                        // Only transition to idle if we're still in the same attack animation
+                        if (otherPlayer.anims.currentAnim?.key === newAnim) {
+                            otherPlayer.play('_Idle_Idle', true);
+                            console.log(`Attack animation completed for player ${id}, auto-transitioning to idle`);
+                        }
+                    });
+                } catch (error) {
+                    console.error(`Error playing attack animation ${newAnim} for player ${id}:`, error);
+                }
             }
             // Case 2: Regular animation transitions (not attacks)
             else if (!isCurrentAttack && currentAnim !== newAnim) {
                 // Only change non-attack animations if we're not in the middle of an attack
-                otherPlayer.play(newAnim);
+                try {
+                    otherPlayer.play(newAnim, true);
+                } catch (error) {
+                    console.error(`Error playing animation ${newAnim} for player ${id}:`, error);
+                    // Try to recover by playing idle animation
+                    try {
+                        otherPlayer.play('_Idle_Idle', true);
+                    } catch (fallbackError) {
+                        console.error(`Fallback animation also failed for player ${id}:`, fallbackError);
+                    }
+                }
             }
         }
         
@@ -347,7 +397,7 @@ export class MultiplayerManager {
             this.socket.emit("playerMovement", {
                 x: this.localPlayer.x,
                 y: this.localPlayer.y,
-                animation: this.localPlayer.anims.currentAnim?.key || '_Idle_Idle',
+                animation: this.localPlayer.anims.currentAnim?.key || '_Idle_Idle', // Use correct idle animation key
                 flipX: this.localPlayer.flipX,
                 velocityX: this.localPlayer.body.velocity.x,
                 velocityY: this.localPlayer.body.velocity.y

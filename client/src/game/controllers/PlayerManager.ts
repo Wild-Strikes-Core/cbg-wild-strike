@@ -95,7 +95,7 @@ export class PlayerManager {
      */
     initialize(x: number, y: number, hpText: Phaser.GameObjects.Text, staminaText: Phaser.GameObjects.Text): void {
         // Create player sprite
-        this.player = this.scene.physics.add.sprite(x, y, "_Idle", 0);
+        this.player = this.scene.physics.add.sprite(x, y, "_Idle_Idle", 0);
         this.player.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
         this.player.scaleX = 3;
         this.player.scaleY = 3;

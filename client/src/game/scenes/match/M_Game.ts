@@ -372,20 +372,37 @@ export default class M_Game extends Phaser.Scene {
         this.sceneManager.setMainIgnoreUI(uiElements);
         
         // Create array of gameplay elements to be ignored by UI camera
+        // Filter out any undefined elements to prevent errors
         const gameplayElements = [
             this.bgIMAGE,
             this.myPlayer.sprite,
-            this.otherPlayer.sprite,
             ...groundTiles,
             this.player1HP,
             this.player1STA
-        ];
+        ].filter(element => element !== undefined);
+
+        // Only add otherPlayer.sprite if it exists
+        if (this.otherPlayer.sprite) {
+            gameplayElements.push(this.otherPlayer.sprite);
+        }
+        
         this.sceneManager.setUIIgnoreGameplay(gameplayElements);
         
-        // Add colliders between both players and ground
+        // Add colliders between local player and ground
         this.playerManager.addColliders(groundTiles);
-        groundTiles.forEach(tile => {
-            this.physics.add.collider(this.otherPlayer.sprite!, tile);
+        
+        // Add colliders between other player and ground only if it exists
+        if (this.otherPlayer.sprite) {
+            groundTiles.forEach(tile => {
+                this.physics.add.collider(this.otherPlayer.sprite!, tile);
+            });
+        }
+        
+        // Also add colliders for all otherPlayers
+        Object.values(this.otherPlayers).forEach(otherPlayerSprite => {
+            groundTiles.forEach(tile => {
+                this.physics.add.collider(otherPlayerSprite, tile);
+            });
         });
         
         // Start the match timer
@@ -404,6 +421,18 @@ export default class M_Game extends Phaser.Scene {
         // Explicitly unsubscribe from events to prevent duplicate handlers
         this.socket.off("arenaStateChanged");
         this.socket.off("playerAttack");
+        this.socket.off("playerMoved");
+        
+        // Listen for player movement updates
+        this.socket.on("playerMoved", (playerInfo) => {
+            // Skip our own movement updates
+            if (playerInfo.id === this.socket.id) return;
+            
+            // Update the player if we have their sprite
+            if (this.otherPlayers[playerInfo.id]) {
+                this.updateOtherPlayerMovement(playerInfo.id, playerInfo);
+            }
+        });
         
         // Track the last received animation to prevent flickering
         let lastReceivedAnimation = '_Idle_Idle';
@@ -505,7 +534,14 @@ export default class M_Game extends Phaser.Scene {
             console.log("Attack event received:", data);
             
             // Skip our own attacks
-            if (data.id === this.socket.id || !this.otherPlayer.sprite) {
+            if (data.id === this.socket.id) {
+                return;
+            }
+            
+            // Get the player sprite
+            const targetSprite = this.otherPlayers[data.id];
+            if (!targetSprite) {
+                console.error("No sprite found for attacking player:", data.id);
                 return;
             }
             
@@ -513,42 +549,40 @@ export default class M_Game extends Phaser.Scene {
             const attackType = data.attackType || 'left';
             const animKey = attackType === 'left' ? '_Attack' : '_Attack2';
             
-            console.log(`Playing attack animation: ${animKey}`);
+            console.log(`Playing attack animation: ${animKey} for player ${data.id}`);
             
             // Set up attack state
-            this.otherPlayer.sprite.setData('isAttacking', true);
+            targetSprite.setData('isAttacking', true);
             
             // Stop any current animation properly
-            this.otherPlayer.sprite.anims.stop();
+            targetSprite.anims.stop();
             
             try {
                 // Play attack animation
-                this.otherPlayer.sprite.anims.play({
+                targetSprite.anims.play({
                     key: animKey,
                     frameRate: attackType === 'left' ? 10 : 8,
                     repeat: 0
                 });
                 
                 // Remove any existing animation complete listeners first
-                this.otherPlayer.sprite.off('animationcomplete');
+                targetSprite.off('animationcomplete');
                 
                 // Add animation complete handler
-                this.otherPlayer.sprite.once('animationcomplete', () => {
+                targetSprite.once('animationcomplete', () => {
                     console.log("Attack animation complete, going to idle");
-                    if (this.otherPlayer.sprite) {
-                        this.otherPlayer.sprite.setData('isAttacking', false);
-                        this.otherPlayer.sprite.anims.play('_Idle_Idle', true);
-                    }
+                    targetSprite.setData('isAttacking', false);
+                    targetSprite.anims.play('_Idle_Idle', true);
                 });
                 
                 // Safety timer: if animation complete doesn't fire, reset after a delay
                 this.time.delayedCall(1200, () => {
-                    if (this.otherPlayer.sprite && this.otherPlayer.sprite.getData('isAttacking')) {
+                    if (targetSprite.getData('isAttacking')) {
                         console.log("Safety timer: resetting attack state");
-                        this.otherPlayer.sprite.setData('isAttacking', false);
+                        targetSprite.setData('isAttacking', false);
                         // Only reset if still in attack animation
-                        if (this.otherPlayer.sprite.anims.currentAnim?.key.includes('_Attack')) {
-                            this.otherPlayer.sprite.anims.play('_Idle_Idle', true);
+                        if (targetSprite.anims.currentAnim?.key.includes('_Attack')) {
+                            targetSprite.anims.play('_Idle_Idle', true);
                         }
                     }
                 });
@@ -559,6 +593,102 @@ export default class M_Game extends Phaser.Scene {
     }
     
     /**
+     * Update other player's movement and animation
+     */
+    private updateOtherPlayerMovement(id: string, playerInfo: any): void {
+        const otherPlayer = this.otherPlayers[id];
+        if (!otherPlayer) return;
+        
+        // Track animation state per player to prevent flickering
+        if (!otherPlayer.getData('lastAnimation')) {
+            otherPlayer.setData('lastAnimation', '_Idle_Idle');
+        }
+        
+        // Store current and previous positions
+        const prevX = otherPlayer.x;
+        const prevY = otherPlayer.y;
+        
+        // Update position
+        otherPlayer.x = playerInfo.x;
+        otherPlayer.y = playerInfo.y;
+        
+        // Calculate movement deltas
+        const deltaX = playerInfo.x - prevX;
+        const deltaY = playerInfo.y - prevY;
+        
+        // Don't change animation if attacking
+        if (otherPlayer.getData('isAttacking')) {
+            console.log(`Player ${id} is attacking, skipping animation update`);
+            return;
+        }
+        
+        // Update flip direction based on movement or provided flipX
+        if (playerInfo.flipX !== undefined) {
+            otherPlayer.setFlipX(playerInfo.flipX);
+        } else if (Math.abs(deltaX) > 2) {
+            otherPlayer.setFlipX(deltaX < 0);
+        }
+        
+        // Update name tag position if it exists
+        const nameTag = otherPlayer.getData('nameTag');
+        if (nameTag) {
+            nameTag.setPosition(
+                otherPlayer.x + otherPlayer.displayWidth / 2,
+                otherPlayer.y - 20
+            );
+        }
+        
+        // Use provided animation if available
+        let newAnimation = '_Idle_Idle';
+        
+        // If the server provides an explicit animation, use it
+        if (playerInfo.animation) {
+            newAnimation = playerInfo.animation;
+        } 
+        // Otherwise, determine animation based on movement
+        else {
+            if (Math.abs(deltaX) > 3) {
+                newAnimation = '_Run';
+            } else if (deltaY < -3) {
+                newAnimation = '_Jump';
+            } else if (deltaY > 3) {
+                newAnimation = '_Fall';
+            } else if (playerInfo.animState?.crouching) {
+                newAnimation = playerInfo.animState.isMoving ? '_CrouchWalk' : '_CrouchFull';
+            }
+        }
+        
+        const lastAnimation = otherPlayer.getData('lastAnimation');
+        
+        // Prevent animation flickering
+        const shouldUpdateAnimation = 
+            (newAnimation !== lastAnimation) && 
+            (newAnimation !== '_Idle_Idle' || !otherPlayer.anims.isPlaying);
+            
+        if (shouldUpdateAnimation) {
+            // Store the new animation
+            otherPlayer.setData('lastAnimation', newAnimation);
+            
+            console.log(`Playing animation for player ${id}: ${newAnimation}`);
+            try {
+                // Use stop() before play() to reset animation and prevent issues
+                otherPlayer.anims.stop();
+                
+                // Force the animation to play from the start
+                otherPlayer.anims.play(newAnimation, true);
+                
+                // Don't let animation complete handlers interrupt
+                if (newAnimation !== '_Idle_Idle' && !newAnimation.includes('_Attack')) {
+                    // Remove any existing complete listeners to prevent interruptions
+                    otherPlayer.off('animationcomplete');
+                }
+            } catch (error) {
+                console.error(`Failed to play animation ${newAnimation}:`, error);
+            }
+        }
+    }
+    
+    /**
      * Create initial player sprites (will be managed by controllers)
      * This ensures compatibility with existing code
      */
@@ -566,21 +696,115 @@ export default class M_Game extends Phaser.Scene {
         console.log("Creating player sprites");
         
         // Create the player sprites
-        this.myPlayer.sprite = this.physics.add.sprite(608, 752, "_Idle", 0);
+        this.myPlayer.sprite = this.physics.add.sprite(608, 752, "_Idle_Idle", 0);
         this.configurePlayerSprite(this.myPlayer.sprite);
         
-        // Create opponent sprite at different position
-        this.otherPlayer.sprite = this.physics.add.sprite(900, 752, "_Idle", 0);
-        this.configurePlayerSprite(this.otherPlayer.sprite);
-        this.otherPlayer.sprite.setTint(0xAAAAAA); // Light gray tint
+        // Setup socket handlers for other players
+        this.setupPlayerSpawning();
         
         console.log("Player sprites created");
+    }
+    
+    /**
+     * Setup socket handlers to handle player spawning from server
+     */
+    private setupPlayerSpawning(): void {
+        // Remove any previous listeners to prevent duplicates
+        this.socket.off("currentPlayers");
+        this.socket.off("newPlayer");
+        this.socket.off("playerDisconnected");
+        
+        // Handle current players already in the game
+        this.socket.on("currentPlayers", (players) => {
+            console.log("Received current players:", players);
+            
+            // Create sprites for existing players, excluding this client
+            Object.keys(players).forEach(id => {
+                if (id !== this.socket.id) {
+                    this.createOtherPlayerSprite(id, players[id]);
+                }
+            });
+        });
+        
+        // Handle new player connections
+        this.socket.on("newPlayer", (playerInfo) => {
+            console.log("New player joined:", playerInfo);
+            // Only add if this isn't our player
+            if (playerInfo.id !== this.socket.id) {
+                this.createOtherPlayerSprite(playerInfo.id, playerInfo);
+            }
+        });
+        
+        // Handle player disconnection
+        this.socket.on("playerDisconnected", (id) => {
+            console.log("Player disconnected:", id);
+            if (this.otherPlayers[id]) {
+                // Destroy player sprite
+                this.otherPlayers[id].destroy();
+                delete this.otherPlayers[id];
+            }
+        });
+        
+        // Debug: List loaded textures to confirm which ones are available
+        console.log("=== LOADED TEXTURE KEYS ===");
+        this.textures.list && Object.keys(this.textures.list).forEach(key => {
+            console.log(`Texture: ${key}`);
+        });
         
         // List available animations for debugging
         this.listAnimations();
         
         // Debug animation durations
         this.debugAnimationDurations();
+    }
+    
+    /**
+     * Create a sprite for another player
+     */
+    private createOtherPlayerSprite(id: string, playerInfo: any): void {
+        console.log(`Creating other player sprite for ID: ${id}`, playerInfo);
+        
+        try {
+            // Create a new sprite for the other player
+            const otherPlayerSprite = this.physics.add.sprite(
+                playerInfo.x || 900,
+                playerInfo.y || 752,
+                "_Idle_Idle",
+                0
+            );
+            
+            // Configure the sprite with physics settings
+            this.configurePlayerSprite(otherPlayerSprite);
+            
+            // Set player color tint to differentiate from local player
+            otherPlayerSprite.setTint(0xAAAAAA); // Light gray tint
+            
+            // Store the player in our registry with socket ID as key
+            this.otherPlayers[id] = otherPlayerSprite;
+            
+            // If this is the first other player, also store in the otherPlayer reference 
+            // for compatibility with existing code
+            if (!this.otherPlayer.sprite) {
+                this.otherPlayer.sprite = otherPlayerSprite;
+            }
+            
+            // Create floating name tag above player
+            const nameTag = this.add.text(
+                otherPlayerSprite.x,
+                otherPlayerSprite.y - 60,
+                `Player ${id.substring(0, 4)}`, // Show part of the ID as name
+                { fontSize: '16px', color: '#FFFFFF', stroke: '#000000', strokeThickness: 3 }
+            );
+            nameTag.setOrigin(0.5, 1);
+            nameTag.setDepth(100);
+            
+            // Store the name tag with the player sprite
+            otherPlayerSprite.setData('nameTag', nameTag);
+            
+            console.log(`Other player sprite created for ID: ${id}`);
+        } catch (error) {
+            console.error("Error creating other player sprite:", error);
+        }
     }
 
     /**

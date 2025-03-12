@@ -20,7 +20,7 @@ interface Match {
     velocityX?: number;
     velocityY?: number;
     isAttacking?: boolean;
-    animState?: string;
+    animState?: any;
   };
   player2: {
     id: string;
@@ -31,7 +31,7 @@ interface Match {
     velocityX?: number;
     velocityY?: number;
     isAttacking?: boolean;
-    animState?: string;
+    animState?: any;
   };
   roomId: string;
   timer: NodeJS.Timeout | null;
@@ -101,9 +101,18 @@ io.on("connection", (socket) => {
         }
       }
       
-      // Update animState if provided
-      if (data.animState) {
-        currentMatch.player1.animState = data.animState;
+      // Update animState if provided - but prevent storing circular references
+      if (data.animState && typeof data.animState === 'object') {
+        // Create a shallow copy of the animation state to prevent circular references
+        currentMatch.player1.animState = {
+          idle: data.animState.idle || false,
+          running: data.animState.running || false,
+          jumping: data.animState.jumping || false,
+          falling: data.animState.falling || false,
+          attacking: data.animState.attacking || false,
+          crouching: data.animState.crouching || false,
+          isMoving: data.animState.isMoving || false
+        };
       }
     }
 
@@ -131,14 +140,66 @@ io.on("connection", (socket) => {
         }
       }
       
-      if (data.animState) {
-        currentMatch.player2.animState = data.animState;
+      // Update animState if provided - but prevent storing circular references
+      if (data.animState && typeof data.animState === 'object') {
+        // Create a shallow copy of the animation state to prevent circular references
+        currentMatch.player2.animState = {
+          idle: data.animState.idle || false,
+          running: data.animState.running || false,
+          jumping: data.animState.jumping || false,
+          falling: data.animState.falling || false,
+          attacking: data.animState.attacking || false,
+          crouching: data.animState.crouching || false,
+          isMoving: data.animState.isMoving || false
+        };
       }
     }
 
+    // Create a sanitized version of the match state to send to clients
+    // This prevents circular references that can cause stack overflows
+    const safeMatchData = {
+      player1: {
+        id: currentMatch.player1.id,
+        x: currentMatch.player1.x,
+        y: currentMatch.player1.y,
+        animation: currentMatch.player1.animation,
+        flipX: currentMatch.player1.flipX,
+        velocityX: currentMatch.player1.velocityX,
+        velocityY: currentMatch.player1.velocityY,
+        isAttacking: currentMatch.player1.isAttacking,
+        animState: currentMatch.player1.animState
+      },
+      player2: {
+        id: currentMatch.player2.id,
+        x: currentMatch.player2.x,
+        y: currentMatch.player2.y,
+        animation: currentMatch.player2.animation,
+        flipX: currentMatch.player2.flipX,
+        velocityX: currentMatch.player2.velocityX,
+        velocityY: currentMatch.player2.velocityY,
+        isAttacking: currentMatch.player2.isAttacking,
+        animState: currentMatch.player2.animState
+      },
+      roomId: currentMatch.roomId
+    };
+
     // Broadcast updated match state to both players
-    // Include full animation state in updates
-    io.to(currentRoomId).emit("arenaStateChanged", { ...currentMatch });
+    io.to(currentRoomId).emit("arenaStateChanged", safeMatchData);
+    
+    // Also emit a specific movement update for this player that other clients can use
+    const playerData = {
+      id: socket.id,
+      x: data.x,
+      y: data.y,
+      animation: data.animation,
+      flipX: data.flipX,
+      velocityX: data.velocityX,
+      velocityY: data.velocityY,
+      animState: data.animState && typeof data.animState === 'object' ? { ...data.animState } : undefined
+    };
+    
+    // Send to all other clients in the room
+    socket.to(currentRoomId).emit("playerMoved", playerData);
   });
 
   // Handle direct attack notifications
@@ -170,6 +231,48 @@ io.on("connection", (socket) => {
     console.log(`Player ${socket.id} attacked with type: ${data.attackType || 'unknown'}`);
   });
 
+  socket.on("playerJoined", (data) => {
+    console.log(`Player ${socket.id} joined at position:`, data.x, data.y);
+    
+    // Let the client know about other players
+    socket.emit("currentPlayers", {
+      [socket.id]: {
+        id: socket.id,
+        x: data.x,
+        y: data.y,
+        animation: data.animation || '_Idle_Idle'
+      }
+    });
+    
+    // Notify all other clients about the new player
+    socket.broadcast.emit("newPlayer", {
+      id: socket.id,
+      x: data.x,
+      y: data.y,
+      animation: data.animation || '_Idle_Idle'
+    });
+  });
+
+  // Add this helper function to safely serialize objects that may contain circular references
+  function safeStringify(obj: any): string {
+    const seen = new WeakSet();
+    return JSON.stringify(obj, (key, value) => {
+      // Skip timer objects entirely
+      if (key === 'timer' && value && typeof value.refresh === 'function') {
+        return '[Timeout]';
+      }
+      
+      // Handle circular references
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) {
+          return '[Circular]';
+        }
+        seen.add(value);
+      }
+      return value;
+    }, 2);
+  }
+
   socket.on("findMatch", (data) => {
     console.log("Finding match");
 
@@ -192,7 +295,7 @@ io.on("connection", (socket) => {
           id: player1,
         },
         player2: {
-          x: 608,
+          x: 900,  // Position player 2 a bit to the right
           y: 752,
           id: player2,
         },
@@ -227,10 +330,18 @@ io.on("connection", (socket) => {
 
       numberOfMatches++;
 
-      console.log(matches);
+      // Use our safe stringify function instead of JSON.stringify directly
+      console.log(safeStringify(matches));
       console.log(numberOfMatches);
 
-      io.to(room).emit("matchFound", { room, player1, player2 });
+      // Send only the necessary data to clients
+      const matchData = {
+        room,
+        player1: player1,
+        player2: player2
+      };
+      
+      io.to(room).emit("matchFound", matchData);
     }
   });
 
@@ -245,21 +356,27 @@ io.on("connection", (socket) => {
       return waitingUser != socket.id;
     });
 
-    // Remove from waiting list if user disconnects~
-
     // When user is in match then disconnects
     const tempMatches = Object.entries(matches);
 
     for (let i: number = 0; i < tempMatches.length; i++) {
       const currentMatchState: any = tempMatches[i][1];
       const currentMatchId: any = tempMatches[i][0];
-      console.log(currentMatchState.player1);
-      console.log(currentMatchState.player2);
-
-      if (socket.id == currentMatchState.player1 || socket.id == currentMatchState.player2) {
-        clearInterval(currentMatchState.timer);
+      
+      // Check if this socket was in the match
+      if (
+        currentMatchState.player1?.id === socket.id || 
+        currentMatchState.player2?.id === socket.id
+      ) {
+        // Notify the other player about the disconnection
+        io.to(currentMatchState.roomId).emit("playerDisconnected", socket.id);
+        
+        // Clean up the match
+        if (currentMatchState.timer) {
+          clearInterval(currentMatchState.timer);
+        }
         delete matches[currentMatchId];
-        console.log(`Match #${currentMatchId} has ended`);
+        console.log(`Match #${currentMatchId} has ended due to player disconnection`);
       }
     }
   });
