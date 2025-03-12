@@ -25,9 +25,21 @@ export default class M_Game extends Phaser.Scene {
 
 	editorCreate(): void {
 
+		// background
+		const background = this.add.sprite(960, 544, "newMap", 0);
+
+		// background_2
+		const background_2 = this.add.sprite(960, 560, "newMap", 1);
+
+		// background_3
+		const background_3 = this.add.sprite(960, 656, "newMap", 2);
+
+		// grass
+		const grass = this.add.sprite(960, 656, "newMap", 3);
+
 		// platform
-		const platform = this.physics.add.staticImage(960, 1088, "M_playerCard");
-		platform.scaleX = 10; // Increase scale to cover more width
+		const platform = this.physics.add.staticImage(48, 1088, "M_playerCard");
+		platform.scaleX = 5;
 		platform.alpha = 0.1;
 		platform.alphaTopLeft = 0.1;
 		platform.alphaTopRight = 0.1;
@@ -35,27 +47,7 @@ export default class M_Game extends Phaser.Scene {
 		platform.alphaBottomRight = 0.1;
 		platform.body.pushable = false;
 		platform.body.immovable = true;
-		platform.body.setSize(1920, 171, false); // Set size to match camera width
-
-		// bgIMAGE
-		const bgIMAGE = this.add.image(960, 528, "2M_mapBG");
-		bgIMAGE.scaleX = 1.0264943761149121;
-		bgIMAGE.scaleY = 1.0264943761149121;
-		bgIMAGE.alpha = 0.3;
-		bgIMAGE.alphaTopLeft = 0.3;
-		bgIMAGE.alphaTopRight = 0.3;
-		bgIMAGE.alphaBottomLeft = 0.3;
-		bgIMAGE.alphaBottomRight = 0.3;
-
-		// player
-		const player = this.physics.add.sprite(608, 752, "_Idle", 0);
-		player.setInteractive(new Phaser.Geom.Rectangle(0, 0, 120, 80), Phaser.Geom.Rectangle.Contains);
-		player.scaleX = 3;
-		player.scaleY = 3;
-		player.setOrigin(0, 0);
-		player.body.gravity.y = 10000;
-		player.body.setOffset(45, 40);
-		player.body.setSize(30, 40, false);
+		platform.body.setSize(830, 171, false);
 
 		// player1HP
 		const player1HP = this.add.text(678, 708, "", {});
@@ -130,22 +122,24 @@ export default class M_Game extends Phaser.Scene {
 		matchTimerText.setStyle({ "align": "center", "fontFamily": "Sans-serif", "fontSize": "42px", "fontStyle": "bold italic", "shadow.stroke": true });
 
 		// player1Name
-		const player1Name = this.add.text(256, 80, "", {});
-		player1Name.scaleX = 0.8749634497392944;
-		player1Name.scaleY = 0.8749634497392944;
+		const player1Name = this.add.text(200, 123, "", {});
+		player1Name.scaleX = 0.7156265225589847;
+		player1Name.scaleY = 0.7156265225589847;
 		player1Name.text = "Player 1 Name";
-		player1Name.setStyle({ "align": "center", "fontFamily": "Sans-serif", "fontSize": "42px", "fontStyle": "bold italic", "shadow.stroke": true });
+		player1Name.setStyle({ "align": "center", "color": "#580000ff", "fontFamily": "Sans-serif", "fontSize": "42px", "fontStyle": "bold italic", "shadow.stroke": true });
 
 		// player2Name
-		const player2Name = this.add.text(1408, 80, "", {});
-		player2Name.scaleX = 0.8749634497392944;
-		player2Name.scaleY = 0.8749634497392944;
+		const player2Name = this.add.text(1513, 123, "", {});
+		player2Name.scaleX = 0.7156265225589847;
+		player2Name.scaleY = 0.7156265225589847;
 		player2Name.text = "Player 2 Name";
-		player2Name.setStyle({ "align": "center", "fontFamily": "Sans-serif", "fontSize": "42px", "fontStyle": "bold italic", "shadow.stroke": true });
+		player2Name.setStyle({ "align": "center", "color": "#580000ff", "fontFamily": "Sans-serif", "fontSize": "42px", "fontStyle": "bold italic", "shadow.stroke": true });
 
+		this.background = background;
+		this.background_2 = background_2;
+		this.background_3 = background_3;
+		this.grass = grass;
 		this.platform = platform;
-		this.bgIMAGE = bgIMAGE;
-		this.player = player;
 		this.player1HP = player1HP;
 		this.player1STA = player1STA;
 		this.p1infoContainer = p1infoContainer;
@@ -162,13 +156,13 @@ export default class M_Game extends Phaser.Scene {
 		this.events.emit("scene-awake");
 	}
 
+	private background!: Phaser.GameObjects.Sprite;
+	private background_2!: Phaser.GameObjects.Sprite;
+	private background_3!: Phaser.GameObjects.Sprite;
+	private grass!: Phaser.GameObjects.Sprite;
 	private platform!: Phaser.Physics.Arcade.Image;
-	private bgIMAGE!: Phaser.GameObjects.Image;
-	private player!: Phaser.Physics.Arcade.Sprite;
-    private player1HP!: Phaser.GameObjects.Text;
-    private player1STA!: Phaser.GameObjects.Text;
-    private playerHPText!: Phaser.GameObjects.Text;
-    private playerStaminaText!: Phaser.GameObjects.Text;
+	private player1HP!: Phaser.GameObjects.Text;
+	private player1STA!: Phaser.GameObjects.Text;
 	private p1infoContainer!: Phaser.GameObjects.Image;
 	private p2infoContainer!: Phaser.GameObjects.Image;
 	private uiSkillContainer!: Phaser.GameObjects.Image;
@@ -179,10 +173,6 @@ export default class M_Game extends Phaser.Scene {
 	private matchTimerText!: Phaser.GameObjects.Text;
 	private player1Name!: Phaser.GameObjects.Text;
 	private player2Name!: Phaser.GameObjects.Text;
-    private sceneManager!: SceneManager;
-    private playerManager!: PlayerManager;
-    private uiManager!: UIManager;
-    private multiplayerManager!: MultiplayerManager;
 
 	/* START-USER-CODE */
 
@@ -225,16 +215,16 @@ export default class M_Game extends Phaser.Scene {
     create() {
         // Initialize the scene content from the scene editor
         this.editorCreate();
-        
+
         // Get match data from scene parameters
         this.matchData = (this.scene.settings.data as any)?.matchData || {};
-        
+
         // Set player names if we have match data
         if (this.matchData && this.matchData.players) {
             const isPlayer1 = this.socket.id === this.matchData.players.player1.id;
             const localPlayerData = isPlayer1 ? this.matchData.players.player1 : this.matchData.players.player2;
             const opponentData = isPlayer1 ? this.matchData.players.player2 : this.matchData.players.player1;
-            
+
             // Update UI with player names
             this.player1Name.setText(localPlayerData.name);
             this.player2Name.setText(opponentData.name);
@@ -254,26 +244,31 @@ export default class M_Game extends Phaser.Scene {
         // Initialize the managers
         this.initializeManagers();
 
-        // Position update tracking for the server
+        // The following socket event emits should be handled by MultiplayerManager, not directly here
+        // Remove or comment out socket emit calls that MultiplayerManager would handle
+
+        // Position update tracking for the server - let MultiplayerManager handle this
         this.lastPositionUpdate = 0;
         this.positionUpdateInterval = 50; // ms between updates
 
-        // Emit 'playerJoined' event to the server with initial player position
+        // This is now handled by MultiplayerManager
+        /*
         this.socket.emit("playerJoined", {
             x: this.myPlayer.sprite!.x,
             y: this.myPlayer.sprite!.y,
             animation: "_Idle_Idle"
         });
+        */
 
-        // console.log("Player joined event emitted");
-
-        // Make sure we constantly emit our position for multiplayer
+        // Use MultiplayerManager for position updates instead 
+        /*
         this.time.addEvent({
-            delay: 50, // Send position updates every 50ms
+            delay: 50,
             callback: this.sendPositionUpdate,
             callbackScope: this,
             loop: true
         });
+        */
 
         // Listen for timer updates from the server
         this.socket.on("timerUpdate", (data) => {
@@ -284,7 +279,7 @@ export default class M_Game extends Phaser.Scene {
         this.socket.on("matchEnded", () => {
             this.handleMatchEnd();
         });
-        
+
         // Play entrance animation
         this.createEntranceAnimation();
     }
@@ -296,30 +291,30 @@ export default class M_Game extends Phaser.Scene {
         // Store original positions of players for reference
         const myPlayerOriginalX = this.myPlayer.sprite!.x;
         const myPlayerOriginalY = this.myPlayer.sprite!.y;
-        
+
         // Set initial game state
         // Pause physics to prevent early movement
         this.physics.pause();
-        
+
         // Hide UI elements initially
         this.p1infoContainer.setAlpha(0);
         this.p2infoContainer.setAlpha(0);
         this.player1Name.setAlpha(0);
         this.player2Name.setAlpha(0);
-        
+
         // Hide skill container
         const skillContainer = this.children.getByName('skillContainerCTR') as Phaser.GameObjects.Container;
         if (skillContainer) {
             skillContainer.setAlpha(0);
         }
-        
+
         // Hide timer
         this.uiTimer.setAlpha(0);
         this.matchTimerText.setAlpha(0);
-        
+
         // Start with a camera flash
         this.cameras.main.flash(500, 0, 0, 0);
-        
+
         // Create a "FIGHT!" text that starts big and animates down
         const fightText = this.add.text(
             this.cameras.main.width / 2,
@@ -344,13 +339,19 @@ export default class M_Game extends Phaser.Scene {
         fightText.setOrigin(0.5);
         fightText.setAlpha(0);
         fightText.setScale(2);
-        
-        // Make sure the FIGHT text appears in both cameras
-        // (We want it to be seen regardless of camera setup)
+
+        // Make fight text only appear in the UI camera, not the main camera
         fightText.setScrollFactor(0);
         
+        // If we have a scene manager with cameras set up, make sure the fight text
+        // is only rendered by one camera to prevent duplication
+        if (this.sceneManager) {
+            // Add to UI elements (will be seen in UI camera only)
+            this.sceneManager.addToUIElements(fightText);
+        }
+
         // Create a sequence of animations
-        
+
         // 1. Fade in player info containers
         this.time.delayedCall(300, () => {
             this.tweens.add({
@@ -359,7 +360,7 @@ export default class M_Game extends Phaser.Scene {
                 duration: 400,
                 ease: 'Power2'
             });
-            
+
             // Fade in player names with a slight delay
             this.time.delayedCall(200, () => {
                 this.tweens.add({
@@ -370,12 +371,12 @@ export default class M_Game extends Phaser.Scene {
                 });
             });
         });
-        
+
         // 2. Animate in the FIGHT! text
         this.time.delayedCall(800, () => {
             // Play a whoosh sound
             // this.sound.play('whoosh');
-            
+
             // Zoom in and fade in the fight text
             this.tweens.add({
                 targets: fightText,
@@ -386,7 +387,7 @@ export default class M_Game extends Phaser.Scene {
                 onComplete: () => {
                     // Shake the camera for emphasis
                     this.cameras.main.shake(200, 0.02);
-                    
+
                     // Add a pulsing effect
                     this.tweens.add({
                         targets: fightText,
@@ -396,7 +397,7 @@ export default class M_Game extends Phaser.Scene {
                         duration: 150,
                         ease: 'Sine.easeInOut'
                     });
-                    
+
                     // After a short delay, fade out the fight text
                     this.time.delayedCall(800, () => {
                         this.tweens.add({
@@ -413,7 +414,7 @@ export default class M_Game extends Phaser.Scene {
                 }
             });
         });
-        
+
         // 3. Fade in the UI elements
         this.time.delayedCall(1500, () => {
             // Skill icons
@@ -425,7 +426,7 @@ export default class M_Game extends Phaser.Scene {
                     ease: 'Power2'
                 });
             }
-            
+
             // Timer
             this.tweens.add({
                 targets: [this.uiTimer, this.matchTimerText],
@@ -434,12 +435,12 @@ export default class M_Game extends Phaser.Scene {
                 ease: 'Power2'
             });
         });
-        
+
         // 4. Resume game after all animations
         this.time.delayedCall(2000, () => {
             // Resume physics
             this.physics.resume();
-            
+
             // Make sure players are in their starting positions
             if (this.myPlayer.sprite) {
                 this.myPlayer.sprite.x = myPlayerOriginalX;
@@ -532,7 +533,7 @@ export default class M_Game extends Phaser.Scene {
                 this.addPlatformCollider(otherPlayerSprite);
                 console.log(`Platform collider added to player ${id} with delay`);
             });
-            
+
             console.log(`Other player sprite created for ID: ${id} with platform collider`);
         } catch (error) {
             console.error("Error creating other player sprite:", error);
@@ -547,7 +548,7 @@ export default class M_Game extends Phaser.Scene {
         sprite.scaleX = 3;
         sprite.scaleY = 3;
         sprite.setOrigin(0, 0);
-        
+
         if (sprite.body) {
             sprite.body.gravity.y = 10000;
             sprite.body.setOffset(45, 40);
@@ -574,8 +575,8 @@ export default class M_Game extends Phaser.Scene {
         // Create the scene manager
         this.sceneManager = new SceneManager(
             this,
-            this.bgIMAGE,
-            [],
+            this.background,
+            [this.background_2], // Add background_2 to parallax elements
             {
                 bestZoom: 1.5,
                 parallaxFactor: 0.4
@@ -619,10 +620,11 @@ export default class M_Game extends Phaser.Scene {
             this.myPlayer.sprite!.x, 
             this.myPlayer.sprite!.y, 
             this.player1HP, 
-            this.player1STA
+            this.player1STA,
+            this.myPlayer.sprite // Pass the existing sprite to the manager
         );
 
-        // Update myPlayer reference to the managed sprite
+        // Update myPlayer reference to the managed sprite (should be the same object)
         this.myPlayer.sprite = this.playerManager.getPlayer();
 
         // Initialize multiplayer manager
@@ -639,6 +641,11 @@ export default class M_Game extends Phaser.Scene {
         // Connect the multiplayer manager with scene manager
         this.multiplayerManager.setSceneManager(this.sceneManager);
 
+        // IMPORTANT: Clear our otherPlayers registry since MultiplayerManager 
+        // will now be the single source of truth for other players
+        this.otherPlayers = {};
+        this.otherPlayer = {};
+
         // Set cameras to follow player
         this.sceneManager.setupCameraFollow(this.myPlayer.sprite);
 
@@ -652,7 +659,7 @@ export default class M_Game extends Phaser.Scene {
             this.matchTimerText,
             ...this.uiManager.getUIElements() // Get any additional UI elements from the manager
         ];
-        
+
         // Add the entire skill container to UI elements
         const skillContainer = this.children.getByName('skillContainerCTR');
         if (skillContainer) {
@@ -664,21 +671,24 @@ export default class M_Game extends Phaser.Scene {
 
         // Create array of gameplay elements to be ignored by UI camera
         const gameplayElements = [
-            this.bgIMAGE,
+            this.background,
             this.myPlayer.sprite,
             this.platform,
-            ...Object.values(this.otherPlayers) // Add all other player sprites
-        ];
+            this.background_2,
+            this.background_3,
+            this.grass
+        ].filter(elem => elem !== undefined);
         
-        // Add other player's name tags
-        Object.values(this.otherPlayers).forEach(player => {
-            const nameTag = player.getData('nameTag');
-            if (nameTag) {
-                // Name tags should be seen by the UI camera, not ignored
-                uiElements.push(nameTag);
-            }
+        // Add other player sprite if it exists
+        if (this.otherPlayer.sprite) {
+            gameplayElements.push(this.otherPlayer.sprite);
+        }
+        
+        // Add all other player sprites that exist
+        Object.values(this.otherPlayers).forEach(sprite => {
+            if (sprite) gameplayElements.push(sprite);
         });
-        
+
         // Make UI camera ignore ALL gameplay elements
         this.sceneManager.setUIIgnoreGameplay(gameplayElements);
 
@@ -708,6 +718,29 @@ export default class M_Game extends Phaser.Scene {
     }
 
     /**
+     * Create initial player sprites (will be managed by controllers)
+     * This ensures compatibility with existing code
+     */
+    private createPlayerSprites(): void {
+        console.log("Creating player sprites");
+
+        // Create the local player sprite
+        this.myPlayer.sprite = createPlayerSprite(this, 608, 752);
+        this.configurePlayerSprite(this.myPlayer.sprite);
+
+        // Add platform collider to local player
+        if (this.platform) {
+            this.addPlatformCollider(this.myPlayer.sprite);
+        }
+
+        // We no longer need to set up socket handlers here since MultiplayerManager handles it
+        // Just set up debugging info
+        this.debugGameAssets();
+
+        console.log("Player sprites created");
+    }
+
+    /**
      * Setup socket handlers to handle player spawning from server
      * Keep only the handlers that don't overlap with MultiplayerManager
      */
@@ -717,42 +750,8 @@ export default class M_Game extends Phaser.Scene {
         this.socket.off("newPlayer");
         this.socket.off("playerDisconnected");
 
-        // Handle current players already in the game
-        // this.socket.on("currentPlayers", (players) => {
-        //     console.log("Received current players:", players);
-
-        //     // Create sprites for existing players, excluding this client
-        //     Object.keys(players).forEach(id => {
-        //         if (id !== this.socket.id) {
-        //             this.createOtherPlayerSprite(id, players[id]);
-        //         }
-        //     });
-        // });
-
-        // Handle new player connections
-        this.socket.on("newPlayer", (playerInfo) => {
-            console.log("New player joined:", playerInfo);
-            // Only add if this isn't our player
-            if (playerInfo.id !== this.socket.id) {
-                this.createOtherPlayerSprite(playerInfo.id, playerInfo);
-                
-                // If this happens to be assigned to otherPlayer, ensure platform collider
-                if (this.otherPlayer.sprite && this.platform) {
-                    this.physics.add.collider(this.otherPlayer.sprite, this.platform);
-                }
-            }
-            console.log(`Number of player sprites: ${Object.keys(this.otherPlayers).length + 1}`); // +1 for the local player
-        });
-
-        // Handle player disconnection
-        this.socket.on("playerDisconnected", (id) => {
-            console.log("Player disconnected:", id);
-            if (this.otherPlayers[id]) {
-                // Destroy player sprite
-                this.otherPlayers[id].destroy();
-                delete this.otherPlayers[id];
-            }
-        });
+        // Note: These event handlers are now handled by MultiplayerManager
+        // Only keep this method for debugging purposes and texture listing
 
         // Debug: List loaded textures to confirm which ones are available
         console.log("=== LOADED TEXTURE KEYS ===");
@@ -783,7 +782,6 @@ export default class M_Game extends Phaser.Scene {
     private debugAnimationDurations(): void {
         console.log("=== ANIMATION DURATIONS ===");
         const animKeys = Object.keys(this.anims.anims.entries);
-
         animKeys.forEach(key => {
             const anim = this.anims.get(key);
             if (anim) {
@@ -861,15 +859,15 @@ export default class M_Game extends Phaser.Scene {
         if (time % 2000 < 20) {
             // Check if any player is missing a platform collider
             let needsColliderRefresh = false;
-            
+
             if (this.myPlayer.sprite && !this.myPlayer.sprite.getData('platformCollider')) {
                 needsColliderRefresh = true;
             }
-            
+
             if (this.otherPlayer.sprite && !this.otherPlayer.sprite.getData('platformCollider')) {
                 needsColliderRefresh = true;
             }
-            
+
             // Refresh colliders if needed
             if (needsColliderRefresh) {
                 console.log("Missing platform colliders detected, refreshing...");
@@ -936,7 +934,6 @@ export default class M_Game extends Phaser.Scene {
             if (nameTag) nameTag.destroy();
             player.destroy();
         });
-
         this.otherPlayers = {};
     }
 
@@ -1002,34 +999,34 @@ export default class M_Game extends Phaser.Scene {
         if (this.platform) {
             this.platform.setOrigin(0.5, 0); // Center origin horizontally
             this.platform.setImmovable(true);
-            
+
             // Adjust platform to match camera width with extra safety margin
             const cameraWidth = this.cameras.main.width;
             const safetyMargin = 400; // Extra width on each side
             const totalWidth = cameraWidth + (safetyMargin * 2);
-            
+
             // Update both display width and physics body size
             this.platform.displayWidth = totalWidth;
             if (this.platform.body) {
                 (this.platform.body as Phaser.Physics.Arcade.StaticBody).width = totalWidth;
                 this.platform.body.setSize(totalWidth, this.platform.body.height, false);
             }
-            
+
             // Position platform in the center of the camera view
             this.platform.x = cameraWidth / 2;
-            
+
             // Ensure platform is enabled for physics
             if (this.platform.body) {
                 this.platform.body.enable = true;
             }
-            
+
             console.log(`Platform configured: width=${totalWidth}, position=(${this.platform.x}, ${this.platform.y})`);
-            
+
             // Add collider to the player managed by PlayerManager
             if (this.playerManager && this.playerManager.getPlayer()) {
                 this.physics.add.collider(this.playerManager.getPlayer(), this.platform);
             }
-            
+
             // Update platform reference in the multiplayer manager
             if (this.multiplayerManager) {
                 this.multiplayerManager.setPlatform(this.platform);
@@ -1049,13 +1046,13 @@ export default class M_Game extends Phaser.Scene {
                     (collider.object1 === sprite && collider.object2 === this.platform) || 
                     (collider.object1 === this.platform && collider.object2 === sprite))
                 .forEach(collider => collider.destroy());
-            
+
             // Add a fresh collider
             const collider = this.physics.add.collider(sprite, this.platform);
-            
+
             // Store reference to help with debugging
             sprite.setData('platformCollider', collider);
-            
+
             console.log(`Platform collider added to player at (${sprite.x}, ${sprite.y})`);
         } else {
             console.warn("Could not add platform collider - sprite, platform, or body is missing");
@@ -1070,40 +1067,33 @@ export default class M_Game extends Phaser.Scene {
         if (this.myPlayer.sprite) {
             this.addPlatformCollider(this.myPlayer.sprite);
         }
-        
-        // Check main opponent
+
+        // Check other player
         if (this.otherPlayer.sprite) {
             this.addPlatformCollider(this.otherPlayer.sprite);
         }
-        
+
         // Check all other players
         Object.values(this.otherPlayers).forEach(player => {
             this.addPlatformCollider(player);
         });
-        
-        console.log("All platform colliders refreshed");
     }
 
     /**
-     * Create initial player sprites (will be managed by controllers)
-     * This ensures compatibility with existing code
+     * Debug game assets (textures, animations)
      */
-    private createPlayerSprites(): void {
-        console.log("Creating player sprites");
+    private debugGameAssets(): void {
+        // Debug: List loaded textures to confirm which ones are available
+        console.log("=== LOADED TEXTURE KEYS ===");
+        this.textures.list && Object.keys(this.textures.list).forEach(key => {
+            console.log(`Texture: ${key}`);
+        });
 
-        // Create the local player sprite
-        this.myPlayer.sprite = createPlayerSprite(this, 608, 752);
-        this.configurePlayerSprite(this.myPlayer.sprite);
-        
-        // Add platform collider to local player
-        if (this.platform) {
-            this.addPlatformCollider(this.myPlayer.sprite);
-        }
+        // List available animations for debugging
+        this.listAnimations();
 
-        // Setup socket handlers for other players
-        this.setupPlayerSpawning();
-
-        console.log("Player sprites created");
+        // Debug animation durations
+        this.debugAnimationDurations();
     }
 
 	/* END-USER-CODE */

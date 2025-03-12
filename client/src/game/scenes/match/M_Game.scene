@@ -2,7 +2,6 @@
     "id": "5119327f-b7d2-466e-9fb2-3c85a77a2a6c",
     "sceneType": "SCENE",
     "settings": {
-        "snapEnabled": true,
         "exportClass": true,
         "autoImport": true,
         "preloadPackFiles": [],
@@ -14,6 +13,54 @@
     },
     "displayList": [
         {
+            "type": "Sprite",
+            "id": "7ae57a37-22ce-4be4-952c-f6b71967d708",
+            "label": "background",
+            "scope": "CLASS",
+            "texture": {
+                "key": "newMap",
+                "frame": 0
+            },
+            "x": 960,
+            "y": 544
+        },
+        {
+            "type": "Sprite",
+            "id": "6d6b5922-6829-44c7-8cea-de021586a99c",
+            "label": "background_2",
+            "scope": "CLASS",
+            "texture": {
+                "key": "newMap",
+                "frame": 1
+            },
+            "x": 960,
+            "y": 560
+        },
+        {
+            "type": "Sprite",
+            "id": "e7e5c346-d6f3-4410-860a-8984ab31e409",
+            "label": "background_3",
+            "scope": "CLASS",
+            "texture": {
+                "key": "newMap",
+                "frame": 2
+            },
+            "x": 960,
+            "y": 656
+        },
+        {
+            "type": "Sprite",
+            "id": "530428d4-587a-4f6f-89d5-9d410127fd8f",
+            "label": "grass",
+            "scope": "CLASS",
+            "texture": {
+                "key": "newMap",
+                "frame": 3
+            },
+            "x": 960,
+            "y": 656
+        },
+        {
             "type": "ArcadeImage",
             "id": "d9363be0-8fba-4340-84dc-dced8575a118",
             "label": "platform",
@@ -21,7 +68,7 @@
             "texture": {
                 "key": "M_playerCard"
             },
-            "x": 960,
+            "x": 48,
             "y": 1088,
             "scaleX": 5,
             "alpha": 0.1,
@@ -34,48 +81,6 @@
             "immovable": true,
             "body.width": 830,
             "body.height": 171
-        },
-        {
-            "type": "Image",
-            "id": "719a2368-50ce-4a77-85eb-634fc6f4510c",
-            "label": "bgIMAGE",
-            "scope": "CLASS",
-            "texture": {
-                "key": "2M_mapBG"
-            },
-            "x": 960,
-            "y": 528,
-            "scaleX": 1.0264943761149121,
-            "scaleY": 1.0264943761149121,
-            "alpha": 0.3,
-            "alphaTopLeft": 0.3,
-            "alphaTopRight": 0.3,
-            "alphaBottomLeft": 0.3,
-            "alphaBottomRight": 0.3
-        },
-        {
-            "type": "ArcadeSprite",
-            "id": "e09f4c9c-6356-4e45-bfa8-f70b70a7502e",
-            "label": "player",
-            "scope": "CLASS",
-            "hitArea.shape": "RECTANGLE",
-            "hitArea.width": 120,
-            "hitArea.height": 80,
-            "texture": {
-                "key": "_Idle",
-                "frame": 0
-            },
-            "x": 608,
-            "y": 752,
-            "scaleX": 3,
-            "scaleY": 3,
-            "originX": 0,
-            "originY": 0,
-            "body.gravity.y": 10000,
-            "body.width": 30,
-            "body.height": 40,
-            "body.offset.x": 45,
-            "body.offset.y": 40
         },
         {
             "type": "Text",
@@ -235,31 +240,33 @@
             "id": "6513d886-47e8-4f27-8e3a-2f3b856286ba",
             "label": "player1Name",
             "scope": "CLASS",
-            "x": 256,
-            "y": 80,
-            "scaleX": 0.8749634497392944,
-            "scaleY": 0.8749634497392944,
+            "x": 200,
+            "y": 123,
+            "scaleX": 0.7156265225589847,
+            "scaleY": 0.7156265225589847,
             "text": "Player 1 Name",
             "align": "center",
             "fontFamily": "Sans-serif",
             "fontSize": "42px",
             "fontStyle": "bold italic",
+            "color": "#580000ff",
             "shadow.stroke": true
         },
         {
             "type": "Text",
-            "id": "4a5d6dee-d04a-4ab6-89a8-91c59a67b1ea",
+            "id": "2dc41805-ac2c-4694-adfc-5df6429bcfbf",
             "label": "player2Name",
             "scope": "CLASS",
-            "x": 1408,
-            "y": 80,
-            "scaleX": 0.8749634497392944,
-            "scaleY": 0.8749634497392944,
+            "x": 1513,
+            "y": 123,
+            "scaleX": 0.7156265225589847,
+            "scaleY": 0.7156265225589847,
             "text": "Player 2 Name",
             "align": "center",
             "fontFamily": "Sans-serif",
             "fontSize": "42px",
             "fontStyle": "bold italic",
+            "color": "#580000ff",
             "shadow.stroke": true
         }
     ],

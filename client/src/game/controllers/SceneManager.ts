@@ -25,6 +25,10 @@ export class SceneManager {
     // Event handler for preventing default browser actions
     private preventDefaultHandler: ((e: KeyboardEvent) => void) | null = null;
     
+    // Track what elements are being ignored by each camera
+    private mainCameraIgnores: Set<Phaser.GameObjects.GameObject> = new Set();
+    private uiCameraIgnores: Set<Phaser.GameObjects.GameObject> = new Set();
+    
     /**
      * Create a scene manager
      * 
@@ -159,7 +163,21 @@ export class SceneManager {
      * @param gameplayElements - Array of gameplay elements to ignore
      */
     setUIIgnoreGameplay(gameplayElements: Phaser.GameObjects.GameObject[]): void {
-        this.uiCamera.ignore(gameplayElements);
+        if (!this.uiCamera) {
+            console.warn("UI camera not initialized, cannot ignore gameplay elements");
+            return;
+        }
+        
+        // Filter out any undefined elements
+        const validElements = gameplayElements.filter(elem => elem !== undefined);
+        
+        // Only call ignore if we have valid elements
+        if (validElements.length > 0) {
+            this.uiCamera.ignore(validElements);
+            
+            // Track what we've ignored
+            validElements.forEach(element => this.uiCameraIgnores.add(element));
+        }
         
         // Make sure physics debug graphics are ignored
         this.scene.events.once('postupdate', () => {
@@ -168,6 +186,7 @@ export class SceneManager {
                 if (child instanceof Phaser.GameObjects.Graphics && 
                     (child.name === '__debugGraphics' || child.getData('isPhysicsDebug'))) {
                     this.uiCamera.ignore(child);
+                    this.uiCameraIgnores.add(child);
                 }
             });
         });
@@ -175,6 +194,7 @@ export class SceneManager {
         // If debug is enabled, make sure UI camera ignores it
         if (this.scene.physics.world.debugGraphic) {
             this.uiCamera.ignore(this.scene.physics.world.debugGraphic);
+            this.uiCameraIgnores.add(this.scene.physics.world.debugGraphic);
         }
     }
     
@@ -184,7 +204,16 @@ export class SceneManager {
      * @param uiElements - Array of UI elements to ignore
      */
     setMainIgnoreUI(uiElements: Phaser.GameObjects.GameObject[]): void {
-        this.mainCamera.ignore(uiElements);
+        // Filter out any undefined elements
+        const validElements = uiElements.filter(elem => elem !== undefined);
+        
+        // Only call ignore if we have valid elements
+        if (validElements.length > 0) {
+            this.mainCamera.ignore(validElements);
+            
+            // Track what we've ignored
+            validElements.forEach(element => this.mainCameraIgnores.add(element));
+        }
     }
     
     /**
@@ -236,17 +265,13 @@ export class SceneManager {
      * @param elements - Elements to add to the UI elements list
      */
     addToUIElements(elements: Phaser.GameObjects.GameObject | Phaser.GameObjects.GameObject[]): void {
-        const mainCamera = this.scene.cameras.main;
         const elementsArray = Array.isArray(elements) ? elements : [elements];
+        const validElements = elementsArray.filter(elem => elem !== undefined && !this.mainCameraIgnores.has(elem));
         
-        elementsArray.forEach(element => {
-            if (element) {
-                // Only add if not already ignored
-                if (!mainCamera.ignore.includes(element)) {
-                    mainCamera.ignore.push(element);
-                }
-            }
-        });
+        if (validElements.length > 0) {
+            this.mainCamera.ignore(validElements);
+            validElements.forEach(element => this.mainCameraIgnores.add(element));
+        }
     }
 
     /**
@@ -257,15 +282,12 @@ export class SceneManager {
         if (!this.uiCamera) return;
         
         const elementsArray = Array.isArray(elements) ? elements : [elements];
+        const validElements = elementsArray.filter(elem => elem !== undefined && !this.uiCameraIgnores.has(elem));
         
-        elementsArray.forEach(element => {
-            if (element) {
-                // Only add if not already ignored
-                if (!this.uiCamera.ignore.includes(element)) {
-                    this.uiCamera.ignore.push(element);
-                }
-            }
-        });
+        if (validElements.length > 0) {
+            this.uiCamera.ignore(validElements);
+            validElements.forEach(element => this.uiCameraIgnores.add(element));
+        }
     }
 
     /**

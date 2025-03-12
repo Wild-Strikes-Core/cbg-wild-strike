@@ -29,8 +29,8 @@
             {
                 "url": "assets/Match/02 - Map/newMap.png",
                 "frameConfig": {
-                    "frameWidth": 32,
-                    "frameHeight": 32,
+                    "frameWidth": 1920,
+                    "frameHeight": 1080,
                     "startFrame": 0,
                     "endFrame": -1,
                     "spacing": 0,

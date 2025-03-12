@@ -91,17 +91,32 @@ export class PlayerManager {
     }
     
     /**
-     * Initialize the player
+     * Initialize the player character and UI elements
      * 
-     * @param x - Initial X position
-     * @param y - Initial Y position
-     * @param hpText - Text for displaying health
-     * @param staminaText - Text for displaying stamina
+     * @param x - Starting X position
+     * @param y - Starting Y position
+     * @param hpText - Text object for displaying health
+     * @param staminaText - Text object for displaying stamina
+     * @param existingSprite - Optional existing sprite to use instead of creating a new one
      */
-    initialize(x: number, y: number, hpText: Phaser.GameObjects.Text, staminaText: Phaser.GameObjects.Text): void {
-        // Create player sprite
-        this.player = createPlayerSprite(this.scene, x, y);
-        
+    initialize(
+        x: number, 
+        y: number, 
+        hpText: Phaser.GameObjects.Text, 
+        staminaText: Phaser.GameObjects.Text,
+        existingSprite?: Phaser.Physics.Arcade.Sprite
+    ): void {
+        // Use existing sprite if provided, otherwise create a new one
+        if (existingSprite) {
+            this.player = existingSprite;
+            // Make sure it's at the right position
+            this.player.x = x;
+            this.player.y = y;
+        } else {
+            // Create a new player sprite since none was provided
+            this.player = createPlayerSprite(this.scene, x, y);
+        }
+
         // Store text elements
         this.hpText = hpText;
         this.staminaText = staminaText;
