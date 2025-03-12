@@ -14,6 +14,28 @@
     },
     "displayList": [
         {
+            "type": "ArcadeImage",
+            "id": "d9363be0-8fba-4340-84dc-dced8575a118",
+            "label": "platform",
+            "scope": "CLASS",
+            "texture": {
+                "key": "M_playerCard"
+            },
+            "x": 960,
+            "y": 1088,
+            "scaleX": 5,
+            "alpha": 0.1,
+            "alphaTopLeft": 0.1,
+            "alphaTopRight": 0.1,
+            "alphaBottomLeft": 0.1,
+            "alphaBottomRight": 0.1,
+            "physicsType": 1,
+            "pushable": false,
+            "immovable": true,
+            "body.width": 830,
+            "body.height": 171
+        },
+        {
             "type": "Image",
             "id": "719a2368-50ce-4a77-85eb-634fc6f4510c",
             "label": "bgIMAGE",
@@ -30,58 +52,6 @@
             "alphaTopRight": 0.3,
             "alphaBottomLeft": 0.3,
             "alphaBottomRight": 0.3
-        },
-        {
-            "type": "TileSprite",
-            "id": "f38612bd-ba77-494d-b05e-a97b1ef56703",
-            "label": "tilesprite_1",
-            "scope": "CLASS",
-            "texture": {
-                "key": "world_tileset",
-                "frame": 1
-            },
-            "x": 752,
-            "y": 1040,
-            "scaleX": 1.3,
-            "scaleY": 1.3,
-            "ArcadeComponent.active": true,
-            "physicsType": 1,
-            "moves": false,
-            "allowGravity": false,
-            "allowDrag": false,
-            "allowRotation": false,
-            "pushable": false,
-            "immovable": true,
-            "body.width": 84,
-            "body.height": 84,
-            "width": 64,
-            "height": 64
-        },
-        {
-            "type": "TileSprite",
-            "id": "f6cd3ec7-e7da-43ed-a661-7e6db9a7c15b",
-            "label": "tilesprite",
-            "scope": "CLASS",
-            "texture": {
-                "key": "world_tileset",
-                "frame": 1
-            },
-            "x": 832,
-            "y": 1040,
-            "scaleX": 1.3,
-            "scaleY": 1.3,
-            "ArcadeComponent.active": true,
-            "physicsType": 1,
-            "moves": false,
-            "allowGravity": false,
-            "allowDrag": false,
-            "allowRotation": false,
-            "pushable": false,
-            "immovable": true,
-            "body.width": 84,
-            "body.height": 84,
-            "width": 64,
-            "height": 64
         },
         {
             "type": "ArcadeSprite",
@@ -293,16 +263,7 @@
             "shadow.stroke": true
         }
     ],
-    "plainObjects": [
-        {
-            "id": "bf7430d3-8859-46c5-a75d-285cfc688b08",
-            "type": "Collider",
-            "label": "collider",
-            "scope": "LOCAL",
-            "object1": "player",
-            "object2": "tilesprite_1"
-        }
-    ],
+    "plainObjects": [],
     "meta": {
         "app": "Phaser Editor - Scene Editor",
         "url": "https://phaser.io/editor",
