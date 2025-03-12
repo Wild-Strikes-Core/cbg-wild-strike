@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   // Process player movement updates
-  socket.on("playerMoved", (data) => {
+  socket.on("playerMovement", (data) => {
     const currentRoomId = [...socket.rooms][1];
     if (!currentRoomId) {
       return;
