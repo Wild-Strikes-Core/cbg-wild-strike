@@ -1,6 +1,7 @@
 import { StaminaManager } from "../utils/staminaManager";
 import { handlePlayerMovement } from "../utils/playerMovement";
 import { Socket } from "socket.io-client";
+import { AnimationManager } from "./AnimationManager";
 
 /**
  * PlayerManager - Manages player-specific functionality, including:
@@ -29,6 +30,9 @@ export class PlayerManager {
     
     // Stamina management
     private staminaManager: StaminaManager;
+    
+    // Animation management
+    private animationManager?: AnimationManager;
     
     // Movement config
     private walkSpeed: number = 200;
@@ -118,6 +122,28 @@ export class PlayerManager {
             updateFrequency: 100
         });
         
+        // Initialize animation manager
+        this.animationManager = new AnimationManager(
+            this.scene,
+            this.player,
+            {
+                idle: '_Idle_Idle',
+                walk: '_Run',
+                run: '_Run',
+                jump: '_Jump',
+                fall: '_Fall',
+                crouch: '_CrouchFull',
+                crouchWalk: '_CrouchWalk',
+                attack: '_Attack',
+                attack2: '_Attack2'
+            },
+            {
+                socket: this.socket,
+                entityId: this.socket.id,
+                debug: false
+            }
+        );
+        
         // Set up input controls
         this.setupControls();
         
@@ -126,9 +152,6 @@ export class PlayerManager {
         
         // Set initial position for network updates
         this.lastSentPosition = { x: this.player.x, y: this.player.y };
-        
-        // Set initial animation
-        this.player.play('_Idle_Idle');
     }
     
     /**
@@ -184,15 +207,15 @@ export class PlayerManager {
      * @param delta - Time since last frame
      */
     update(time: number, delta: number): void {
-        // Check if player is currently attacking
-        if (this.player.getData('isAttacking')) {
-            // Only handle gravity and position HP text while attacking
+        // Skip movement handling if player is attacking
+        if (this.animationManager?.isAttacking()) {
+            // Only handle positioning HP text while attacking
             this.positionHPTextAbovePlayer();
-            return; // Skip normal movement handling during attack animation
+            return;
         }
         
         // Handle player movement
-        handlePlayerMovement(
+        const movement = handlePlayerMovement(
             this.player,
             this.cursors,
             {
@@ -213,6 +236,18 @@ export class PlayerManager {
             this.staminaManager,
             this.skillIcons
         );
+        
+        // Update animation based on movement result
+        if (this.animationManager) {
+            this.animationManager.update(
+                this.player.body?.velocity.x || 0,
+                this.player.body?.velocity.y || 0,
+                this.player.body?.touching.down || false,
+                movement?.isRunning || false,
+                movement?.isCrouching || false,
+                time
+            );
+        }
         
         // Update HP text position to follow the player
         this.positionHPTextAbovePlayer();
@@ -275,64 +310,10 @@ export class PlayerManager {
      * @param attackType - Type of attack ('left' for normal, 'right' for heavy)
      */
     handleAttack(attackType: 'left' | 'right'): void {
-        // Don't allow attacks if already attacking
-        if (this.player.anims.currentAnim?.key.includes('_Attack') || this.player.getData('isAttacking')) {
-            console.log("Attack canceled - already attacking");
-            return;
+        // Use animation manager to handle attack
+        if (this.animationManager) {
+            this.animationManager.playAttack(attackType === 'right');
         }
-        
-        // Play appropriate animation based on attack type
-        const animationKey = attackType === 'left' ? '_Attack' : '_Attack2';
-        
-        this.player.setData('isAttacking', true);
-        
-        if (attackType === 'right') {
-            this.player.setVelocityY(0);
-        }
-
-        this.player.play({
-            key: animationKey,
-            frameRate: attackType === 'left' ? 10 : 8, // Slower for heavy attack
-            repeat: 0
-        });
-        
-        if (attackType === 'right') {
-            this.player.setVelocityX(0);
-        }
-        
-        // Send attack to server for multiplayer - MOVEMENT DATA
-        this.socket.emit("playerMovement", {
-            x: this.player.x,
-            y: this.player.y,
-            animation: animationKey,
-            flipX: this.player.flipX,
-            isAttacking: true
-        });
-        
-        // Also emit a dedicated attack event with more details
-        this.socket.emit("playerAttack", {
-            x: this.player.x,
-            y: this.player.y,
-            attackType: attackType, 
-            direction: this.player.flipX ? 'left' : 'right'
-        });
-        
-        // Return to idle state when animation is fully complete
-        this.player.once('animationcomplete', () => {
-            console.log("Attack animation complete, returning to idle");
-            this.player.setData('isAttacking', false);
-            // Use the correct idle animation
-            this.player.play('_Idle_Idle');
-            
-            // IMPORTANT: Tell other players that we're done attacking
-            this.socket.emit("playerMovement", {
-                x: this.player.x,
-                y: this.player.y,
-                animation: "_Idle_Idle",
-                flipX: this.player.flipX,
-                isAttacking: false
-            });
-        });
     }
     
     /**
@@ -380,6 +361,11 @@ export class PlayerManager {
      * Clean up resources when this manager is no longer needed
      */
     destroy(): void {
+        // Clean up animation manager
+        if (this.animationManager) {
+            this.animationManager.destroy();
+        }
+        
         // Clean up stamina manager if it exists
         if (this.staminaManager) {
             this.staminaManager.destroy();

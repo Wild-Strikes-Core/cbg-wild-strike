@@ -9,6 +9,7 @@ import { PlayerManager } from "../../controllers/PlayerManager";
 import { SceneManager } from "../../controllers/SceneManager";
 import { UIManager } from "../../controllers/UIManager";
 import { MultiplayerManager } from "../../controllers/MultiplayerManager";
+import { AnimationManager } from "../../controllers/AnimationManager";
 /* END-USER-IMPORTS */
 
 export default class M_Game extends Phaser.Scene {
@@ -206,16 +207,12 @@ export default class M_Game extends Phaser.Scene {
         flipX?: boolean;
         velocityX?: number;
         velocityY?: number;
+        animationManager?: AnimationManager;
     } = {};
 
     // Other players registry
     private otherPlayers: { [id: string]: Phaser.Physics.Arcade.Sprite } = {};
-
-    // Manager instances
-    private playerManager?: PlayerManager;
-    private sceneManager?: SceneManager;
-    private uiManager?: UIManager;
-    private multiplayerManager?: MultiplayerManager;
+    private otherPlayerAnims: { [id: string]: AnimationManager } = {};
 
     create() {
         // Initialize the scene content from the scene editor
@@ -522,7 +519,6 @@ export default class M_Game extends Phaser.Scene {
                     // Don't let animation complete handlers interrupt
                     if (newAnimation !== '_Idle_Idle' && !newAnimation.includes('_Attack')) {
                         // Remove any existing complete listeners to prevent interruptions
-                        this.otherPlayer.sprite.off('animationcomplete');
                     }
                 } catch (error) {
                     console.error(`Failed to play animation ${newAnimation}:`, error);
@@ -604,12 +600,9 @@ export default class M_Game extends Phaser.Scene {
      */
     private updateOtherPlayerMovement(id: string, playerInfo: any): void {
         const otherPlayer = this.otherPlayers[id];
-        if (!otherPlayer) return;
-
-        // Track animation state per player to prevent flickering
-        if (!otherPlayer.getData('lastAnimation')) {
-            otherPlayer.setData('lastAnimation', '_Idle_Idle');
-        }
+        const animManager = this.otherPlayerAnims[id];
+        
+        if (!otherPlayer || !animManager) return;
 
         // Store current and previous positions
         const prevX = otherPlayer.x;
@@ -623,19 +616,6 @@ export default class M_Game extends Phaser.Scene {
         const deltaX = playerInfo.x - prevX;
         const deltaY = playerInfo.y - prevY;
 
-        // Don't change animation if attacking
-        if (otherPlayer.getData('isAttacking')) {
-            console.log(`Player ${id} is attacking, skipping animation update`);
-            return;
-        }
-
-        // Update flip direction based on movement or provided flipX
-        if (playerInfo.flipX !== undefined) {
-            otherPlayer.setFlipX(playerInfo.flipX);
-        } else if (Math.abs(deltaX) > 2) {
-            otherPlayer.setFlipX(deltaX < 0);
-        }
-
         // Update name tag position if it exists
         const nameTag = otherPlayer.getData('nameTag');
         if (nameTag) {
@@ -645,54 +625,29 @@ export default class M_Game extends Phaser.Scene {
             );
         }
 
-        // Use provided animation if available
-        let newAnimation = '_Idle_Idle';
+        // If the player is attacking, let the animation manager handle it
+        if (playerInfo.isAttacking) {
+            if (!animManager.isAttacking()) {
+                const attackType = playerInfo.animation?.includes('Attack2') ? 'right' : 'left';
+                animManager.playAttack(attackType === 'right');
+            }
+            return;
+        }
 
-        // If the server provides an explicit animation, use it
+        // If we have a specific animation provided, use that
         if (playerInfo.animation) {
-            newAnimation = playerInfo.animation;
-        } 
-        // Otherwise, determine animation based on movement
-        else {
-            if (Math.abs(deltaX) > 3) {
-                newAnimation = '_Run';
-            } else if (deltaY < -3) {
-                newAnimation = '_Jump';
-            } else if (deltaY > 3) {
-                newAnimation = '_Fall';
-            } else if (playerInfo.animState?.crouching) {
-                newAnimation = playerInfo.animState.isMoving ? '_CrouchWalk' : '_CrouchFull';
-            }
+            animManager.forceAnimation(playerInfo.animation);
+            return;
         }
 
-        const lastAnimation = otherPlayer.getData('lastAnimation');
-
-        // Prevent animation flickering
-        const shouldUpdateAnimation = 
-            (newAnimation !== lastAnimation) && 
-            (newAnimation !== '_Idle_Idle' || !otherPlayer.anims.isPlaying);
-
-        if (shouldUpdateAnimation) {
-            // Store the new animation
-            otherPlayer.setData('lastAnimation', newAnimation);
-
-            console.log(`Playing animation for player ${id}: ${newAnimation}`);
-            try {
-                // Use stop() before play() to reset animation and prevent issues
-                otherPlayer.anims.stop();
-
-                // Force the animation to play from the start
-                otherPlayer.anims.play(newAnimation, true);
-
-                // Don't let animation complete handlers interrupt
-                if (newAnimation !== '_Idle_Idle' && !newAnimation.includes('_Attack')) {
-                    // Remove any existing complete listeners to prevent interruptions
-                    otherPlayer.off('animationcomplete');
-                }
-            } catch (error) {
-                console.error(`Failed to play animation ${newAnimation}:`, error);
-            }
-        }
+        // Otherwise update based on movement physics
+        animManager.update(
+            playerInfo.velocityX || deltaX,
+            playerInfo.velocityY || deltaY,
+            playerInfo.animState?.onGround !== false, // Default to true if not specified
+            Math.abs(playerInfo.velocityX || 0) > 300, // Running if velocity high
+            playerInfo.animState?.isCrouching || false
+        );
     }
 
     /**
@@ -791,13 +746,33 @@ export default class M_Game extends Phaser.Scene {
             // Set player color tint to differentiate from local player
             otherPlayerSprite.setTint(0xAAAAAA); // Light gray tint
 
+            // Create animation manager for this player
+            const animManager = new AnimationManager(
+                this,
+                otherPlayerSprite,
+                {
+                    idle: '_Idle_Idle',
+                    walk: '_Run',
+                    run: '_Run',
+                    jump: '_Jump',
+                    fall: '_Fall',
+                    crouch: '_CrouchFull',
+                    crouchWalk: '_CrouchWalk',
+                    attack: '_Attack',
+                    attack2: '_Attack2'
+                },
+                { debug: false }
+            );
+
             // Store the player in our registry with socket ID as key
             this.otherPlayers[id] = otherPlayerSprite;
+            this.otherPlayerAnims[id] = animManager;
 
             // If this is the first other player, also store in the otherPlayer reference 
             // for compatibility with existing code
             if (!this.otherPlayer.sprite) {
                 this.otherPlayer.sprite = otherPlayerSprite;
+                this.otherPlayer.animationManager = animManager;
             }
 
             // Create floating name tag above player
@@ -946,6 +921,12 @@ export default class M_Game extends Phaser.Scene {
             this.multiplayerManager.cleanup();
         }
 
+        // Clean up animation managers
+        Object.values(this.otherPlayerAnims).forEach(animManager => {
+            animManager.destroy();
+        });
+        this.otherPlayerAnims = {};
+
         // Disconnect from socket server
         if (this.socket && this.socket.connected) {
             this.socket.disconnect();
@@ -967,6 +948,24 @@ export default class M_Game extends Phaser.Scene {
             if (nameTag) nameTag.destroy();
             player.destroy();
         });
+
+        this.otherPlayers = {};
+    }
+
+    /**
+     * Update the match timer display
+     */
+    private updateTimer(remainingTime: number): void {
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        this.matchTimerText.setText(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
+    }
+
+    /**
+     * Updates the match timer display
+     * @param remainingTime The remaining time in seconds
+     */
+    updateMatchTimer(remainingTime: number): void {
 
         this.otherPlayers = {};
     }
