@@ -88,7 +88,7 @@ export default class M_Matchmaking extends Phaser.Scene {
         this.setupEntranceTransition();
 
         this.btnCancel.setInteractive();
-        this.fakeLoad(10);
+        // this.fakeLoad(10);
         this.btnCancel.on("pointerdown", () => {
             this.cameras.main.fadeOut(180, 0, 0, 0);
 
@@ -145,8 +145,8 @@ export default class M_Matchmaking extends Phaser.Scene {
             targets: this.playerCharSprite,
             angle: 360,
             duration: 1000,
-            ease: 'Sine.easeInOut',
-            repeat: 0
+            ease: "Sine.easeInOut",
+            repeat: 0,
         });
     }
 

@@ -2,7 +2,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 // Constants for configuration
-const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const MATCH_DURATION = 120; // 2 minutes in seconds
 const UPDATE_THROTTLE = 50; // milliseconds between position updates
 const MAX_PLAYERS_PER_MATCH = 2;
@@ -67,8 +67,8 @@ const lastPlayerUpdate: Map<string, number> = new Map();
  */
 function getMatchIdFromRoomId(roomId: string): number | null {
   if (!roomId) return null;
-  const parts = roomId.split('_');
-  if (parts.length !== 2 || parts[0] !== 'match') return null;
+  const parts = roomId.split("_");
+  if (parts.length !== 2 || parts[0] !== "match") return null;
   return Number(parts[1]);
 }
 
@@ -89,9 +89,9 @@ function broadcastMatchState(match: Match): void {
   const safeMatchData = {
     player1: { ...match.player1 },
     player2: { ...match.player2 },
-    roomId: match.roomId
+    roomId: match.roomId,
   };
-  
+
   // Broadcast to all players in the match
   io.to(match.roomId).emit("arenaStateChanged", safeMatchData);
 }
@@ -102,14 +102,14 @@ function broadcastMatchState(match: Match): void {
 function createMatch(player1Id: string, player2Id: string): Match | null {
   const player1Socket = io.sockets.sockets.get(player1Id);
   const player2Socket = io.sockets.sockets.get(player2Id);
-  
+
   if (!player1Socket || !player2Socket) {
     return null;
   }
-  
+
   const matchId = matchCount++;
   const roomId = `match_${matchId}`;
-  
+
   // Create match data
   const match: Match = {
     player1: {
@@ -124,27 +124,27 @@ function createMatch(player1Id: string, player2Id: string): Match | null {
     },
     roomId,
     timer: null,
-    remainingTime: MATCH_DURATION
+    remainingTime: MATCH_DURATION,
   };
-  
+
   // Store the match
   matches[matchId] = match;
-  
+
   // Add players to the match room
   player1Socket.join(roomId);
   player2Socket.join(roomId);
-  
+
   // Set up quick lookup from player ID to match ID
   playerToMatch.set(player1Id, matchId);
   playerToMatch.set(player2Id, matchId);
-  
+
   // Start match timer
   startMatchTimer(match);
-  
+
   // Generate more friendly player names
   const player1Name = `Player ${player1Id.substring(0, 4)}`;
   const player2Name = `Player ${player2Id.substring(0, 4)}`;
-  
+
   // Notify players with enhanced player information
   io.to(roomId).emit("matchFound", {
     room: roomId,
@@ -152,22 +152,24 @@ function createMatch(player1Id: string, player2Id: string): Match | null {
       player1: {
         id: player1Id,
         name: player1Name,
-        position: 'left'
+        position: "left",
       },
       player2: {
         id: player2Id,
         name: player2Name,
-        position: 'right'
-      }
-    }
+        position: "right",
+      },
+    },
   });
-  
-  console.log(`Match #${matchId} started between ${player1Name} (${player1Id}) and ${player2Name} (${player2Id})`);
-  
+
+  console.log(
+    `Match #${matchId} started between ${player1Name} (${player1Id}) and ${player2Name} (${player2Id})`
+  );
+
   // Also send individualized messages to each player with their socket ID identified
   player1Socket.emit("yourPlayerId", player1Id);
   player2Socket.emit("yourPlayerId", player2Id);
-  
+
   return match;
 }
 
@@ -179,12 +181,14 @@ function startMatchTimer(match: Match): void {
   if (match.timer) {
     clearInterval(match.timer);
   }
-  
+
   // Set up interval for timer updates
   match.timer = setInterval(() => {
     if (match.remainingTime > 0) {
       match.remainingTime--;
-      io.to(match.roomId).emit("timerUpdate", { remainingTime: match.remainingTime });
+      io.to(match.roomId).emit("timerUpdate", {
+        remainingTime: match.remainingTime,
+      });
     } else {
       endMatch(match);
     }
@@ -200,20 +204,20 @@ function endMatch(match: Match): void {
     clearInterval(match.timer);
     match.timer = null;
   }
-  
+
   // Notify clients
   io.to(match.roomId).emit("matchEnded");
-  
+
   // Clean up player to match mappings
   playerToMatch.delete(match.player1.id);
   playerToMatch.delete(match.player2.id);
-  
+
   // Find and remove the match from the matches object
   const matchId = getMatchIdFromRoomId(match.roomId);
   if (matchId !== null) {
     delete matches[matchId];
   }
-  
+
   console.log(`Match in room ${match.roomId} has ended`);
 }
 
@@ -227,41 +231,45 @@ function processPlayerMovement(playerId: string, data: any): void {
   if (now - lastUpdate < UPDATE_THROTTLE) {
     return;
   }
-  
+
   // Update the timestamp
   lastPlayerUpdate.set(playerId, now);
-  
+
   // Get the match for this player
   const match = getMatchForPlayer(playerId);
   if (!match) return;
-  
+
   // Validate data
-  if (typeof data !== 'object' || typeof data.x !== 'number' || typeof data.y !== 'number') {
+  if (
+    typeof data !== "object" ||
+    typeof data.x !== "number" ||
+    typeof data.y !== "number"
+  ) {
     console.log("Invalid movement data from player", playerId);
     return;
   }
-  
+
   // Update player state based on which player in the match they are
   const isPlayer1 = match.player1.id === playerId;
   const playerState = isPlayer1 ? match.player1 : match.player2;
-  
+
   // Update position
   playerState.x = data.x;
   playerState.y = data.y;
-  
+
   // Update optional properties
   if (data.flipX !== undefined) playerState.flipX = data.flipX;
   if (data.velocityX !== undefined) playerState.velocityX = data.velocityX;
   if (data.velocityY !== undefined) playerState.velocityY = data.velocityY;
   if (data.isDodging !== undefined) playerState.isDodging = data.isDodging; // Add dodge state handling
-  
+
   // Handle animation and attack state carefully
   if (data.animation) {
     // Handle attack animations
-    if (data.animation.includes('_Attack')) {
+    if (data.animation.includes("_Attack")) {
       playerState.isAttacking = true;
       playerState.animation = data.animation;
-    } 
+    }
     // Handle transition out of attacking state
     else if (playerState.isAttacking && data.isAttacking === false) {
       playerState.isAttacking = false;
@@ -272,9 +280,9 @@ function processPlayerMovement(playerId: string, data: any): void {
       playerState.animation = data.animation;
     }
   }
-  
+
   // Update animation state if provided
-  if (data.animState && typeof data.animState === 'object') {
+  if (data.animState && typeof data.animState === "object") {
     playerState.animState = {
       ...playerState.animState,
       idle: !!data.animState.idle,
@@ -289,10 +297,10 @@ function processPlayerMovement(playerId: string, data: any): void {
       isDodging: !!data.animState.isDodging, // Add dodge state to animState
     };
   }
-  
+
   // Broadcast updated state to all players in the match
   broadcastMatchState(match);
-  
+
   // Also emit a direct movement update that other clients can use
   const playerData = {
     id: playerId,
@@ -304,9 +312,9 @@ function processPlayerMovement(playerId: string, data: any): void {
     velocityY: data.velocityY,
     isDodging: data.isDodging, // Include dodge state in the broadcast
     animState: data.animState ? { ...data.animState } : undefined,
-    soundEvent: data.soundEvent || null
+    soundEvent: data.soundEvent || null,
   };
-  
+
   // Send to all other clients in the room
   io.to(match.roomId).emit("playerMoved", playerData);
 }
@@ -316,22 +324,22 @@ function processPlayerMovement(playerId: string, data: any): void {
  */
 function handlePlayerDisconnect(playerId: string): void {
   console.log(`Player disconnected: ${playerId}`);
-  
+
   // Remove from waiting list
-  waitingUsers = waitingUsers.filter(id => id !== playerId);
-  
+  waitingUsers = waitingUsers.filter((id) => id !== playerId);
+
   // Check if player was in a match
   const matchId = playerToMatch.get(playerId);
   if (matchId !== undefined && matches[matchId]) {
     const match = matches[matchId];
-    
+
     // Notify remaining players
     io.to(match.roomId).emit("playerDisconnected", playerId);
-    
+
     // End the match
     endMatch(match);
   }
-  
+
   // Clean up tracking data
   playerToMatch.delete(playerId);
   lastPlayerUpdate.delete(playerId);
@@ -350,14 +358,14 @@ io.on("connection", (socket) => {
   socket.on("playerAttack", (data) => {
     const match = getMatchForPlayer(socket.id);
     if (!match) return;
-    
+
     // Add the socket ID and match info to the data
     const attackData = {
       ...data,
       id: socket.id,
-      matchId: getMatchIdFromRoomId(match.roomId)
+      matchId: getMatchIdFromRoomId(match.roomId),
     };
-    
+
     // Broadcast the attack to other players in the match
     socket.to(match.roomId).emit("playerAttack", attackData);
   });
@@ -365,23 +373,23 @@ io.on("connection", (socket) => {
   // Handle player joining the game
   socket.on("playerJoined", (data) => {
     console.log(`Player ${socket.id} joined at position:`, data.x, data.y);
-    
+
     // Let the client know about other players
     socket.emit("currentPlayers", {
       [socket.id]: {
         id: socket.id,
         x: data.x,
         y: data.y,
-        animation: data.animation || '_Idle_Idle'
-      }
+        animation: data.animation || "_Idle_Idle",
+      },
     });
-    
+
     // Notify all other clients about the new player
     socket.broadcast.emit("newPlayer", {
       id: socket.id,
       x: data.x,
       y: data.y,
-      animation: data.animation || '_Idle_Idle'
+      animation: data.animation || "_Idle_Idle",
     });
   });
 
@@ -411,4 +419,6 @@ io.on("connection", (socket) => {
 });
 
 // Start the server
-server.listen(PORT, () => console.log(`Socket.IO Server running on port ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`Socket.IO Server running on port ${PORT}`)
+);

@@ -7,48 +7,51 @@
 export class UIManager {
     // Scene reference
     private scene: Phaser.Scene;
-    
+
     // UI container elements
     private p1infoContainer: Phaser.GameObjects.Image;
     private p2infoContainer: Phaser.GameObjects.Image;
-    
+
     // Player info texts
     private player1Name: Phaser.GameObjects.Text;
     private player2Name: Phaser.GameObjects.Text;
-    
+
     // Match timer elements
     private uiTimer: Phaser.GameObjects.Sprite;
     private matchTimerText: Phaser.GameObjects.Text;
     private matchTime: number = 90; // 1 minute and 30 seconds
     private matchTimerEvent: Phaser.Time.TimerEvent | null = null;
-    
+
     // Skill UI elements
     private skillContainer: Phaser.GameObjects.Container;
     private uiSkillContainer: Phaser.GameObjects.Image;
     private uiSkillONE: Phaser.GameObjects.Image;
-    private uiSkillTWO: Phaser.GameObjects.Image; 
+    private uiSkillTWO: Phaser.GameObjects.Image;
     private uiSkillTHREE: Phaser.GameObjects.Image;
-    
+
     /**
      * Create a UI manager
      * @param scene - The scene this UI belongs to
      * @param ui - UI element references from the scene
      */
-    constructor(scene: Phaser.Scene, ui: {
-        p1infoContainer: Phaser.GameObjects.Image,
-        p2infoContainer: Phaser.GameObjects.Image,
-        player1Name: Phaser.GameObjects.Text,
-        player2Name: Phaser.GameObjects.Text,
-        uiTimer: Phaser.GameObjects.Sprite,
-        matchTimerText: Phaser.GameObjects.Text,
-        skillContainer?: Phaser.GameObjects.Container,
-        uiSkillContainer?: Phaser.GameObjects.Image,
-        uiSkillONE?: Phaser.GameObjects.Image,
-        uiSkillTWO?: Phaser.GameObjects.Image,
-        uiSkillTHREE?: Phaser.GameObjects.Image,
-    }) {
+    constructor(
+        scene: Phaser.Scene,
+        ui: {
+            p1infoContainer: Phaser.GameObjects.Image;
+            p2infoContainer: Phaser.GameObjects.Image;
+            player1Name: Phaser.GameObjects.Text;
+            player2Name: Phaser.GameObjects.Text;
+            uiTimer: Phaser.GameObjects.Sprite;
+            matchTimerText: Phaser.GameObjects.Text;
+            skillContainer?: Phaser.GameObjects.Container;
+            uiSkillContainer?: Phaser.GameObjects.Image;
+            uiSkillONE?: Phaser.GameObjects.Image;
+            uiSkillTWO?: Phaser.GameObjects.Image;
+            uiSkillTHREE?: Phaser.GameObjects.Image;
+        }
+    ) {
         this.scene = scene;
-        
+
         // Store UI element references
         this.p1infoContainer = ui.p1infoContainer;
         this.p2infoContainer = ui.p2infoContainer;
@@ -56,18 +59,18 @@ export class UIManager {
         this.player2Name = ui.player2Name;
         this.uiTimer = ui.uiTimer;
         this.matchTimerText = ui.matchTimerText;
-        
+
         // Set up skill UI if provided
         this.skillContainer = ui.skillContainer!;
         this.uiSkillContainer = ui.uiSkillContainer!;
         this.uiSkillONE = ui.uiSkillONE!;
         this.uiSkillTWO = ui.uiSkillTWO!;
         this.uiSkillTHREE = ui.uiSkillTHREE!;
-        
+
         // Set UI elements to high depth
         this.setUIDepth();
     }
-    
+
     /**
      * Set depth values for UI elements to ensure they appear on top
      */
@@ -78,12 +81,12 @@ export class UIManager {
         this.player2Name.setDepth(101);
         this.uiTimer.setDepth(100);
         this.matchTimerText.setDepth(101);
-        
+
         if (this.skillContainer) {
             this.skillContainer.setDepth(100);
         }
     }
-    
+
     /**
      * Get all UI elements that should be handled by the UI camera
      */
@@ -94,13 +97,17 @@ export class UIManager {
             this.player1Name,
             this.player2Name,
             this.uiTimer,
-            this.matchTimerText
+            this.matchTimerText,
         ];
-        
+
         // Add skill UI elements if they exist
         if (this.skillContainer) {
-            this.skillContainer.list.forEach(child => {
-                if (child instanceof Phaser.GameObjects.Sprite || child instanceof Phaser.GameObjects.Text || child instanceof Phaser.GameObjects.Image) {
+            this.skillContainer.list.forEach((child) => {
+                if (
+                    child instanceof Phaser.GameObjects.Sprite ||
+                    child instanceof Phaser.GameObjects.Text ||
+                    child instanceof Phaser.GameObjects.Image
+                ) {
                     elements.push(child);
                 }
             });
@@ -109,21 +116,25 @@ export class UIManager {
         if (this.uiSkillONE) elements.push(this.uiSkillONE);
         if (this.uiSkillTWO) elements.push(this.uiSkillTWO);
         if (this.uiSkillTHREE) elements.push(this.uiSkillTHREE);
-        
+
         return elements;
     }
-    
+
     /**
      * Get skill icon elements for player input integration
      */
-    getSkillIcons(): { skillE?: Phaser.GameObjects.Image, skillQ?: Phaser.GameObjects.Image, skillR?: Phaser.GameObjects.Image } {
+    getSkillIcons(): {
+        skillE?: Phaser.GameObjects.Image;
+        skillQ?: Phaser.GameObjects.Image;
+        skillR?: Phaser.GameObjects.Image;
+    } {
         return {
             skillE: this.uiSkillONE,
             skillQ: this.uiSkillTWO,
-            skillR: this.uiSkillTHREE
+            skillR: this.uiSkillTHREE,
         };
     }
-    
+
     /**
      * Initialize and start the match timer
      */
@@ -139,7 +150,7 @@ export class UIManager {
             delay: 1000,
             callback: this.updateMatchTimer,
             callbackScope: this,
-            loop: true
+            loop: true,
         });
     }
 
@@ -175,10 +186,12 @@ export class UIManager {
         const seconds = this.matchTime % 60;
 
         // Format as XX:XX
-        const formattedTime = 
-            (minutes < 10 ? '0' : '') + minutes + 
-            ':' + 
-            (seconds < 10 ? '0' : '') + seconds;
+        const formattedTime =
+            (minutes < 10 ? "0" : "") +
+            minutes +
+            ":" +
+            (seconds < 10 ? "0" : "") +
+            seconds;
 
         // Update the text
         this.matchTimerText.setText(formattedTime);
@@ -190,10 +203,10 @@ export class UIManager {
     private handleMatchEnd(): void {
         // Logic for when the match timer hits zero
         this.matchTimerText.setText("00:00");
-        
+
         // Emit an event that the game scene can listen to
-        this.scene.events.emit('matchEnded');
-        
+        this.scene.events.emit("matchEnded");
+
         console.log("Match time has ended!");
     }
 
@@ -204,7 +217,7 @@ export class UIManager {
         this.player1Name.setText(player1Name);
         this.player2Name.setText(player2Name);
     }
-    
+
     /**
      * Clean up resources when this manager is no longer needed
      */
@@ -216,3 +229,4 @@ export class UIManager {
         }
     }
 }
+
