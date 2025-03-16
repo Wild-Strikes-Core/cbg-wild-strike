@@ -81,7 +81,7 @@ export default class Start extends Phaser.Scene {
                 // Fade out camera
                 this.cameras.main.fadeOut(180, 0, 0, 0);
                 this.cameras.main.once("camerafadeoutcomplete", () => {
-                    this.scene.start("HOME");
+                    this.scene.start("Home");
                 });
             });
         });
