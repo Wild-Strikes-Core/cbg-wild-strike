@@ -14,12 +14,69 @@ import { createPlayerSprite } from "../../utils/spriteUtils";
 /* END-USER-IMPORTS */
 
 export default class M_Game extends Phaser.Scene {
+    private background!: Phaser.GameObjects.Sprite;
+    private background_2!: Phaser.GameObjects.Sprite;
+    private background_3!: Phaser.GameObjects.Sprite;
+    private grass!: Phaser.GameObjects.Sprite;
+    private platform!: Phaser.Physics.Arcade.Image;
+    private player1HP!: Phaser.GameObjects.Text;
+    private player1STA!: Phaser.GameObjects.Text;
+    private p1infoContainer!: Phaser.GameObjects.Image;
+    private p2infoContainer!: Phaser.GameObjects.Image;
+    private uiSkillContainer!: Phaser.GameObjects.Image;
+    private uiSkillONE!: Phaser.GameObjects.Image;
+    private uiSkillTWO!: Phaser.GameObjects.Image;
+    private uiSkillTHREE!: Phaser.GameObjects.Image;
+    private uiTimer!: Phaser.GameObjects.Sprite;
+    private matchTimerText!: Phaser.GameObjects.Text;
+    private player1Name!: Phaser.GameObjects.Text;
+    private player2Name!: Phaser.GameObjects.Text;
+
+    /* START-USER-CODE */
+
+    // Socket connection
+    private socket: Socket = SOCKET;
+
+    // Position update tracking for the server
+    private lastPositionUpdate: number = 0;
+    private positionUpdateInterval: number = 50; // ms between updates
+
+    // Player state interfaces to match original implementation
+    private myPlayer: {
+        sprite?: Phaser.Physics.Arcade.Sprite;
+        x?: number;
+        y?: number;
+        health?: number;
+        flipX?: boolean;
+        velocityX?: number;
+        velocityY?: number;
+    } = {};
+
+    private otherPlayer: {
+        sprite?: Phaser.Physics.Arcade.Sprite;
+        x?: number;
+        y?: number;
+        health?: number;
+        flipX?: boolean;
+        velocityX?: number;
+        velocityY?: number;
+        animationManager?: AnimationManager;
+    } = {};
+
+    // Other players registry
+    private otherPlayers: { [id: string]: Phaser.Physics.Arcade.Sprite } = {};
+    private otherPlayerAnims: { [id: string]: AnimationManager } = {};
+
+    // Match data from previous scene
+    private matchData: {
+        players?: {
+            player1: { id: string; name: string };
+            player2: { id: string; name: string };
+        };
+    } = {};
+
     constructor() {
         super("M_Game");
-
-        /* START-USER-CTR-CODE */
-        // Write your code here.
-        /* END-USER-CTR-CODE */
     }
 
     editorCreate(): void {
@@ -183,70 +240,7 @@ export default class M_Game extends Phaser.Scene {
         this.matchTimerText = matchTimerText;
         this.player1Name = player1Name;
         this.player2Name = player2Name;
-
-        this.events.emit("scene-awake");
     }
-
-    private background!: Phaser.GameObjects.Sprite;
-    private background_2!: Phaser.GameObjects.Sprite;
-    private background_3!: Phaser.GameObjects.Sprite;
-    private grass!: Phaser.GameObjects.Sprite;
-    private platform!: Phaser.Physics.Arcade.Image;
-    private player1HP!: Phaser.GameObjects.Text;
-    private player1STA!: Phaser.GameObjects.Text;
-    private p1infoContainer!: Phaser.GameObjects.Image;
-    private p2infoContainer!: Phaser.GameObjects.Image;
-    private uiSkillContainer!: Phaser.GameObjects.Image;
-    private uiSkillONE!: Phaser.GameObjects.Image;
-    private uiSkillTWO!: Phaser.GameObjects.Image;
-    private uiSkillTHREE!: Phaser.GameObjects.Image;
-    private uiTimer!: Phaser.GameObjects.Sprite;
-    private matchTimerText!: Phaser.GameObjects.Text;
-    private player1Name!: Phaser.GameObjects.Text;
-    private player2Name!: Phaser.GameObjects.Text;
-
-    /* START-USER-CODE */
-
-    // Socket connection
-    private socket: Socket = SOCKET;
-
-    // Position update tracking for the server
-    private lastPositionUpdate: number = 0;
-    private positionUpdateInterval: number = 50; // ms between updates
-
-    // Player state interfaces to match original implementation
-    private myPlayer: {
-        sprite?: Phaser.Physics.Arcade.Sprite;
-        x?: number;
-        y?: number;
-        health?: number;
-        flipX?: boolean;
-        velocityX?: number;
-        velocityY?: number;
-    } = {};
-
-    private otherPlayer: {
-        sprite?: Phaser.Physics.Arcade.Sprite;
-        x?: number;
-        y?: number;
-        health?: number;
-        flipX?: boolean;
-        velocityX?: number;
-        velocityY?: number;
-        animationManager?: AnimationManager;
-    } = {};
-
-    // Other players registry
-    private otherPlayers: { [id: string]: Phaser.Physics.Arcade.Sprite } = {};
-    private otherPlayerAnims: { [id: string]: AnimationManager } = {};
-
-    // Match data from previous scene
-    private matchData: {
-        players?: {
-            player1: { id: string; name: string };
-            player2: { id: string; name: string };
-        };
-    } = {};
 
     create() {
         // Initialize the scene content from the scene editor
@@ -273,8 +267,6 @@ export default class M_Game extends Phaser.Scene {
 
         // Adjust platform to fit camera width
         this.createPlatforms();
-
-        // console.log("Scene created, connecting to server");
 
         // Connect to the server
         this.socket.connect();

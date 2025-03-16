@@ -354,6 +354,12 @@ io.on("connection", (socket) => {
     processPlayerMovement(socket.id, data);
   });
 
+  socket.on("playerReady", (data) => {
+
+   
+    console.log("Player Ready",  socket.id);
+  });
+
   // Handle attack notifications
   socket.on("playerAttack", (data) => {
     const match = getMatchForPlayer(socket.id);
