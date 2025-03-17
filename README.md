@@ -1,3 +1,26 @@
+# How to play
+
+## `Press Arena`
+![image](https://github.com/user-attachments/assets/041e30b4-a308-4f06-9bfb-85588d96be79)
+
+
+## `Wait for opponent`
+![image](https://github.com/user-attachments/assets/a07afc83-a08c-44df-bf35-873969755d3e)
+
+
+## `Fight each other`
+
+First player to lose 100 health points loses
+
+```
+Right Click: Attack
+W: Jump
+A: Left
+D: Right 
+```
+![image](https://github.com/user-attachments/assets/27f4aadd-2a8b-4737-b306-c0ab8fe3d144)
+
+
 # Game Architecture Documentation
 
 This document explains the architecture of the multiplayer fighting game, focusing on both server and client components.
