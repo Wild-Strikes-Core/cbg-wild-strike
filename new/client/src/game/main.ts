@@ -8,6 +8,8 @@ import Start from "./scenes/Start";
 import Matchmaking from "./scenes/Matchmaking";
 import MatchFound from "./scenes/MatchFound";
 import Arena from "./scenes/Arena";
+import Defeat from "./scenes/Defeat";
+import Victory from "./scenes/Victory";
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
@@ -41,6 +43,8 @@ const config: Phaser.Types.Core.GameConfig = {
         Home,
         MainGame,
         GameOver,
+        Victory,
+        Defeat,
         Matchmaking,
         MatchFound,
         Arena,

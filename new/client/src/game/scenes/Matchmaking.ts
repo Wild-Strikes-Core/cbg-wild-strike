@@ -94,6 +94,7 @@ export default class Matchmaking extends Phaser.Scene {
                     duration: 100,
                     yoyo: true,
                     onComplete: () => {
+                        this.scene.stop("Matchmaking");
                         this.scene.start("Home");
                     },
                 });
@@ -115,6 +116,7 @@ export default class Matchmaking extends Phaser.Scene {
         this.socket.on("matchFound", (data) => {
             this.cameras.main!.fadeOut(400, 0, 0, 0);
             this.cameras.main.once("camerafadeoutcomplete", () => {
+                this.scene.stop("Matchmaking");
                 this.scene.start("MatchFound");
             });
         });

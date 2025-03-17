@@ -180,6 +180,24 @@ io.on("connection", (socket) => {
       match.player1.velocityX = data.velocityX;
       match.player1.velocityY = data.velocityY;
       match.player1.flipX = data.flipX;
+
+      console.log({
+        id: currentPlayerId,
+        x: data.x,
+        y: data.y,
+        velocityX: data.velocityX,
+        velocityY: data.velocityY,
+        flipX: data.flipX,
+      });
+      io.to(match.roomId).emit("playerMoved", {
+        id: currentPlayerId,
+        x: data.x,
+        y: data.y,
+        velocityX: data.velocityX,
+        velocityY: data.velocityY,
+        flipX: data.flipX,
+      });
+      return;
     }
 
     if (match.player2.id == currentPlayerId) {
@@ -189,6 +207,24 @@ io.on("connection", (socket) => {
       match.player2.velocityX = data.velocityX;
       match.player2.velocityY = data.velocityY;
       match.player2.flipX = data.flipX;
+
+      console.log({
+        id: currentPlayerId,
+        x: data.x,
+        y: data.y,
+        velocityX: data.velocityX,
+        velocityY: data.velocityY,
+        flipX: data.flipX,
+      });
+      io.to(match.roomId).emit("playerMoved", {
+        id: currentPlayerId,
+        x: data.x,
+        y: data.y,
+        velocityX: data.velocityX,
+        velocityY: data.velocityY,
+        flipX: data.flipX,
+      });
+      return;
     }
 
     console.log({
@@ -200,7 +236,84 @@ io.on("connection", (socket) => {
       flipX: data.flipX,
     });
 
-    io.to(match.roomId).emit("playerMoved", {
+    console.log(match.roomId);
+  });
+
+  socket.on("playerAttacked", (data) => {
+    const matchId = PLAYER_MATCH.get(socket.id);
+
+    if (!matchId) {
+      return;
+    }
+
+    const match = MATCHES[matchId];
+
+    if (!match) {
+      return;
+    }
+    const { x, y, attackWidth, attackHeight } = data;
+    const currentPlayerId = socket.id;
+
+    const SPRITE_WIDTH = 45;
+    const SPRITE_HEIGHT = 40;
+    if (match.player1.id == currentPlayerId) {
+      if (
+        match.player1.x! < match.player2.x! + SPRITE_WIDTH &&
+        match.player1.x! + attackWidth > match.player2.x! &&
+        match.player1.y! < match.player2.y! + SPRITE_HEIGHT &&
+        match.player1.y! + attackHeight > match.player2.y!
+      ) {
+        match.player2.health! -= 10;
+        io.to(match.roomId).emit("playerHit", {
+          id: match.player2.id,
+          health: match.player2.health,
+        });
+
+        if (match.player2.health! <= 0) {
+          io.to(match.roomId).emit("matchEnded", {
+            winner: match.player1.id,
+            loser: match.player2.id,
+          });
+          PLAYER_MATCH.delete(match.player1.id);
+          PLAYER_MATCH.delete(match.player2.id);
+          delete MATCHES[matchId];
+          return;
+        }
+      }
+
+      return;
+    }
+
+    if (match.player2.id == currentPlayerId) {
+      if (
+        match.player2.x! < match.player1.x! + SPRITE_WIDTH &&
+        match.player2.x! + attackWidth > match.player1.x! &&
+        match.player2.y! < match.player1.y! + SPRITE_HEIGHT &&
+        match.player2.y! + attackHeight > match.player1.y!
+      ) {
+        match.player1.health! -= 10;
+        io.to(match.roomId).emit("playerHit", {
+          id: match.player1.id,
+          health: match.player1.health,
+        });
+
+        if (match.player1.health! <= 0) {
+          io.to(match.roomId).emit("matchEnded", {
+            winner: match.player2.id,
+            loser: match.player1.id,
+          });
+          PLAYER_MATCH.delete(match.player1.id);
+          PLAYER_MATCH.delete(match.player2.id);
+          delete MATCHES[matchId];
+
+          return;
+        }
+      }
+
+      return;
+    }
+
+    console.log({
       id: currentPlayerId,
       x: data.x,
       y: data.y,
@@ -231,12 +344,14 @@ io.on("connection", (socket) => {
       match.player1.connected = true;
       match.player1.x = data.player1.x;
       match.player1.y = data.player1.y;
+      match.player1.health = 100;
     }
 
     if (match.player2.id == currentPlayerId) {
       match.player2.connected = true;
       match.player2.x = data.player2.x;
       match.player2.y = data.player2.y;
+      match.player2.health = 100;
     }
 
     if (match.player2.connected && match.player1.connected) {
@@ -245,12 +360,13 @@ io.on("connection", (socket) => {
         player1: {
           position: "left",
           flipX: false,
+          health: 100,
           ...match.player1,
         },
         player2: {
           position: "right",
           flipX: true,
-
+          health: 100,
           ...match.player2,
         },
       });
@@ -279,6 +395,7 @@ io.on("connection", (socket) => {
 
   // Handle disconnections
   socket.on("disconnect", () => {
+    waitingUsers = waitingUsers.filter((user) => user != socket.id);
     // handlePlayerDisconnect(socket.id);
   });
 });

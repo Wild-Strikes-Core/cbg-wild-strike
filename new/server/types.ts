@@ -1,5 +1,6 @@
 export interface PlayerState {
   id: string;
+  health?: number;
   x?: number;
   y?: number;
   connected: boolean;

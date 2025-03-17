@@ -15,6 +15,17 @@ import { Socket } from "socket.io-client";
 // import { createPlayerSprite } from "../../utils/spriteUtils";
 /* END-USER-IMPORTS */
 
+interface IPlayerState {
+    id?: string;
+    x?: number;
+    y?: number;
+    velocityX?: number;
+    velocityY?: number;
+    health: number;
+    flipX?: boolean;
+    anim?: string;
+    pastAnim?: string;
+}
 export default class Arena extends Phaser.Scene {
     private background!: Phaser.GameObjects.Sprite;
     private background_2!: Phaser.GameObjects.Sprite;
@@ -53,14 +64,20 @@ export default class Arena extends Phaser.Scene {
         sprite?: Phaser.Physics.Arcade.Sprite;
     } = {};
 
-    private GAME_STATE = {
+    private GAME_STATE: {
+        player1: IPlayerState;
+        player2: IPlayerState;
+    } = {
         player1: {
             id: undefined,
             x: undefined,
             y: undefined,
             velocityX: 0,
             velocityY: 0,
+            health: 100,
             flipX: false,
+            anim: "_Idle_Idle",
+            pastAnim: undefined,
         },
         player2: {
             id: undefined,
@@ -69,6 +86,9 @@ export default class Arena extends Phaser.Scene {
             velocityX: 0,
             velocityY: 0,
             flipX: true,
+            health: 100,
+            anim: "_Idle_Idle",
+            pastAnim: undefined,
         },
     };
     // private otherPlayer: {
@@ -304,20 +324,86 @@ export default class Arena extends Phaser.Scene {
         })!;
 
         this.socket.on("playerMoved", (data) => {
-            this.GAME_STATE.player1.x = data.x;
-            this.GAME_STATE.player1.y = data.y;
-
-            this.GAME_STATE.player2.x = data.x;
-            this.GAME_STATE.player2.y = data.y;
-
-            if (this.socket.id != data.id) {
-                this.OTHER_PLAYER.sprite?.setX(data.x);
-                this.OTHER_PLAYER.sprite?.setY(data.y);
-
-                this.OTHER_PLAYER.sprite?.setVelocityX(data.velocityX);
-                this.OTHER_PLAYER.sprite?.setVelocityY(data.velocityY);
-                this.OTHER_PLAYER.sprite?.setFlipX(data.flipX);
+            if (data.id == this.GAME_STATE.player1.id) {
+                this.GAME_STATE.player1.x = data.x;
+                this.GAME_STATE.player1.y = data.y;
+                this.GAME_STATE.player1.velocityY = data.velocityY;
+                this.GAME_STATE.player1.velocityX = data.velocityX;
+                this.GAME_STATE.player1.flipX = data.flipX;
             }
+
+            if (data.id == this.GAME_STATE.player2.id) {
+                this.GAME_STATE.player2.x = data.x;
+                this.GAME_STATE.player2.y = data.y;
+                this.GAME_STATE.player2.velocityY = data.velocityY;
+                this.GAME_STATE.player2.velocityX = data.velocityX;
+                this.GAME_STATE.player2.flipX = data.flipX;
+            }
+        });
+
+        this.socket.on("matchEnded", (data) => {
+            if (this.socket.id == data.winner) {
+                this.time.delayedCall(4 * 1000, () => {
+                    this.cameras.main.fadeOut(400, 0, 0, 0);
+                    this.cameras.main.once("camerafadeoutcomplete", () => {
+                        this.scene.stop("Arena");
+                        this.scene.start("Victory");
+                    });
+                });
+            }
+
+            if (this.socket.id == data.loser) {
+                this.time.delayedCall(4 * 1000, () => {
+                    this.cameras.main.fadeOut(400, 0, 0, 0);
+                    this.cameras.main.once("camerafadeoutcomplete", () => {
+                        this.scene.stop("Arena");
+                        this.scene.start("Defeat");
+                    });
+                });
+            }
+        });
+
+        this.socket.on("playerHit", (data) => {
+            if (data.id == this.GAME_STATE.player1.id) {
+                this.GAME_STATE.player1.health = data.health;
+                // alert(`Hit ${data.health}`);
+            }
+            if (data.id == this.GAME_STATE.player2.id) {
+                this.GAME_STATE.player2.health = data.health;
+                // alert(`Hit ${data.health}`);
+            }
+        });
+
+        this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+            if (this.socket.id == this.GAME_STATE.player1.id) {
+                this.socket.emit("playerAttacked", {
+                    x: this.GAME_STATE.player1.x,
+                    y: this.GAME_STATE.player1.y,
+                    attackWidth: 45,
+                    attackHeight: 40,
+                });
+                this.MY_PLAYER.sprite?.play({
+                    key: "_Attack2",
+                    frameRate: 10,
+                    repeat: 0,
+                });
+            }
+
+            if (this.socket.id == this.GAME_STATE.player2.id) {
+                this.socket.emit("playerAttacked", {
+                    x: this.GAME_STATE.player2.x,
+                    y: this.GAME_STATE.player2.y,
+                    attackWidth: 45,
+                    attackHeight: 40,
+                });
+
+                this.MY_PLAYER.sprite?.play({
+                    key: "_Attack2",
+                    frameRate: 10,
+                    repeat: 0,
+                });
+            }
+            // alert("attack");
         });
 
         this.socket.on("playersConnected", (data) => {
@@ -327,7 +413,11 @@ export default class Arena extends Phaser.Scene {
                 y: data.player1.y,
                 velocityX: 0,
                 velocityY: 0,
+                health: 100,
+
                 flipX: false,
+                anim: "_Idle_Idle",
+                pastAnim: undefined,
             };
 
             this.GAME_STATE.player2 = {
@@ -336,7 +426,11 @@ export default class Arena extends Phaser.Scene {
                 y: data.player2.y,
                 velocityX: 0,
                 velocityY: 0,
+                health: 100,
+
                 flipX: true,
+                anim: "_Idle_Idle",
+                pastAnim: undefined,
             };
 
             if (this.socket.id == data.player1.id) {
@@ -354,9 +448,7 @@ export default class Arena extends Phaser.Scene {
 
                 this.OTHER_PLAYER.sprite.setFlipX(true);
                 this.MY_PLAYER.sprite.setFlipX(false);
-            }
-
-            if (this.socket.id == data.player2.id) {
+            } else if (this.socket.id == data.player2.id) {
                 this.MY_PLAYER.sprite = this.createPlayerSprite(
                     this,
                     data.player2.x,
@@ -383,7 +475,7 @@ export default class Arena extends Phaser.Scene {
             this.debugGameAssets();
         });
 
-        this.sound.play("in-match", { loop: true, volume: 0.2 });
+        // this.sound.play("in-match", { loop: true, volume: 0.2 });
     }
 
     /**
@@ -460,25 +552,23 @@ export default class Arena extends Phaser.Scene {
             return;
         }
 
-        if (this.KEYS.left!.isDown) {
-            this.MY_PLAYER.sprite!.setVelocityX(-200);
-            this.MY_PLAYER.sprite.setFlipX(true);
-        } else if (this.KEYS.right.isDown) {
-            this.MY_PLAYER.sprite!.setVelocityX(200);
-            this.MY_PLAYER.sprite.setFlipX(false);
-        } else {
-            this.MY_PLAYER.sprite!.setVelocityX(0);
-        }
-
         if (this.GAME_STATE.player1.id == this.socket.id) {
+            // if (this.GAME_STATE.player1.anim == "_Attack2") {
+            //     this.MY_PLAYER.sprite?.play({
+            //         key: "_Attack2",
+            //         frameRate: 10,
+            //         repeat: 0,
+            //     });
+            //     this.MY_PLAYER.sprite?.off("animationcomplete");
+            //     this.MY_PLAYER.sprite?.once("animationcomplete", () => {
+            //         this.GAME_STATE.player1.anim = "_Idle_Idle";
+            //     });
+            // }
+
             if (
-                this.GAME_STATE.player1.x !== this.MY_PLAYER.sprite.x ||
-                this.GAME_STATE.player1.y !== this.MY_PLAYER.sprite.y ||
-                this.GAME_STATE.player1.velocityX !==
-                    this.MY_PLAYER.sprite.body?.velocity.x ||
-                this.GAME_STATE.player1.velocityY !==
-                    this.MY_PLAYER.sprite.body?.velocity.y ||
-                this.GAME_STATE.player1.flipX !== this.MY_PLAYER.sprite.flipX
+                this.GAME_STATE.player1.x != this.MY_PLAYER.sprite.body?.x ||
+                this.GAME_STATE.player1.y != this.MY_PLAYER.sprite.body?.y ||
+                this.GAME_STATE.player1.flipX != this.MY_PLAYER.sprite.flipX
             ) {
                 this.socket.emit("playerMoved", {
                     x: this.MY_PLAYER.sprite.x,
@@ -491,14 +581,22 @@ export default class Arena extends Phaser.Scene {
         }
 
         if (this.GAME_STATE.player2.id == this.socket.id) {
+            // if (this.GAME_STATE.player2.anim == "_Attack2") {
+            //     this.MY_PLAYER.sprite?.play({
+            //         key: "_Attack2",
+            //         frameRate: 10,
+            //         repeat: 0,
+            //     });
+
+            //     this.MY_PLAYER.sprite?.off("animationcomplete");
+            //     this.MY_PLAYER.sprite?.once("animationcomplete", () => {
+            //         this.GAME_STATE.player2.anim = "_Idle_Idle";
+            //     });
+            // }
             if (
-                this.GAME_STATE.player2.x !== this.MY_PLAYER.sprite.x ||
-                this.GAME_STATE.player2.y !== this.MY_PLAYER.sprite.y ||
-                this.GAME_STATE.player2.velocityX !==
-                    this.MY_PLAYER.sprite.body?.velocity.x ||
-                this.GAME_STATE.player2.velocityY !==
-                    this.MY_PLAYER.sprite.body?.velocity.y ||
-                this.GAME_STATE.player2.flipX !== this.MY_PLAYER.sprite.flipX
+                this.GAME_STATE.player2.x != this.MY_PLAYER.sprite.x ||
+                this.GAME_STATE.player2.y != this.MY_PLAYER.sprite.y ||
+                this.GAME_STATE.player2.flipX != this.MY_PLAYER.sprite.flipX
             ) {
                 this.socket.emit("playerMoved", {
                     x: this.MY_PLAYER.sprite.x,
@@ -509,6 +607,121 @@ export default class Arena extends Phaser.Scene {
                 });
             }
         }
+
+        const onGround =
+            this.MY_PLAYER.sprite?.body?.touching!.down! ||
+            this.MY_PLAYER.sprite?.body?.blocked!.down!;
+
+        if (this.KEYS.up!.isDown && onGround) {
+            this.MY_PLAYER.sprite?.setVelocityY(-2000)!;
+        }
+
+        if (this.KEYS.left!.isDown) {
+            this.MY_PLAYER.sprite?.setVelocityX(-200)!;
+            this.MY_PLAYER.sprite.setFlipX(true);
+        } else if (this.KEYS.right.isDown) {
+            this.MY_PLAYER.sprite?.setVelocityX(200)!;
+            this.MY_PLAYER.sprite.setFlipX(false);
+        } else {
+            this.MY_PLAYER.sprite?.setVelocityX(0)!;
+        }
+
+        // this.MY_PLAYER.sprite?.play({
+        //     key: "_Attack2",
+        //     frameRate: 10,
+        //     repeat: 0,
+        // });
+
+        if (this.MY_PLAYER.sprite!.body?.velocity?.x! == 0) {
+            this.MY_PLAYER.sprite.anims.play("_Idle_Idle", true);
+        }
+
+        if (this.MY_PLAYER.sprite!.body?.velocity?.x! != 0) {
+            this.MY_PLAYER.sprite.anims.play("_Run", true);
+        }
+
+        if (this.OTHER_PLAYER.sprite!.body?.velocity?.x! == 0) {
+            this.OTHER_PLAYER.sprite!.anims.play!("_Idle_Idle", true)!;
+        }
+
+        if (this.OTHER_PLAYER.sprite!.body?.velocity?.x! != 0) {
+            this.OTHER_PLAYER.sprite!.anims.play("_Run", true)!;
+        }
+
+        if (this.GAME_STATE.player1.id != this.socket.id) {
+            this.OTHER_PLAYER.sprite?.setX(this.GAME_STATE.player1.x);
+
+            if (752 > this.GAME_STATE.player1.y!) {
+                this.OTHER_PLAYER.sprite?.setY(this.GAME_STATE.player1.y);
+            }
+            this.OTHER_PLAYER.sprite?.setFlipX(this.GAME_STATE.player1.flipX!);
+
+            if (this.GAME_STATE.player1.velocityX! != 0) {
+                this.OTHER_PLAYER.sprite!.anims.play("_Run", true)!;
+            }
+        }
+
+        if (this.GAME_STATE.player2.id != this.socket.id) {
+            this.OTHER_PLAYER.sprite?.setX(this.GAME_STATE.player2.x);
+            if (752 > this.GAME_STATE.player2.y!) {
+                this.OTHER_PLAYER.sprite?.setY(this.GAME_STATE.player2.y);
+            }
+            this.OTHER_PLAYER.sprite?.setFlipX(this.GAME_STATE.player2.flipX!);
+
+            if (this.GAME_STATE.player2.velocityX! != 0) {
+                this.OTHER_PLAYER.sprite!.anims.play("_Run", true)!;
+            }
+        }
+
+        // if (this.GAME_STATE.player1.id == this.socket.id) {
+        //     this.MY_PLAYER.sprite?.setX(this.GAME_STATE.player1.x);
+        //     this.MY_PLAYER.sprite?.setFlipX(this.GAME_STATE.player1.flipX);
+        // }
+
+        // if (this.GAME_STATE.player2.id == this.socket.id) {
+        //     this.MY_PLAYER.sprite?.setX(this.GAME_STATE.player2.x);
+        //     this.MY_PLAYER.sprite?.setFlipX(this.GAME_STATE.player2.flipX);
+        // }
+
+        // if (this.GAME_STATE.player1.id == this.socket.id) {
+        //     if (
+        //         this.GAME_STATE.player1.x != this.MY_PLAYER.sprite.x ||
+        //         this.GAME_STATE.player1.y != this.MY_PLAYER.sprite.y ||
+        //         this.GAME_STATE.player1.velocityX !=
+        //             this.MY_PLAYER.sprite.body?.velocity.x ||
+        //         this.GAME_STATE.player1.velocityY !=
+        //             this.MY_PLAYER.sprite.body?.velocity.y ||
+        //         this.GAME_STATE.player1.flipX != this.MY_PLAYER.sprite.flipX
+        //     ) {
+        //         this.socket.emit("playerMoved", {
+        //             x: this.MY_PLAYER.sprite.x,
+        //             y: this.MY_PLAYER.sprite.y,
+        //             velocityX: this.MY_PLAYER.sprite.body?.velocity.x,
+        //             velocityY: this.MY_PLAYER.sprite.body?.velocity.y,
+        //             flipX: this.MY_PLAYER.sprite.flipX,
+        //         });
+        //     }
+        // }
+
+        // if (this.GAME_STATE.player2.id == this.socket.id) {
+        //     if (
+        //         this.GAME_STATE.player2.x != this.MY_PLAYER.sprite.x ||
+        //         this.GAME_STATE.player2.y !== this.MY_PLAYER.sprite.y ||
+        //         this.GAME_STATE.player2.velocityX !=
+        //             this.MY_PLAYER.sprite.body?.velocity.x ||
+        //         this.GAME_STATE.player2.velocityY !=
+        //             this.MY_PLAYER.sprite.body?.velocity.y ||
+        //         this.GAME_STATE.player2.flipX != this.MY_PLAYER.sprite.flipX
+        //     ) {
+        //         this.socket.emit("playerMoved", {
+        //             x: this.MY_PLAYER.sprite.x,
+        //             y: this.MY_PLAYER.sprite.y,
+        //             velocityX: this.MY_PLAYER.sprite.body?.velocity.x,
+        //             velocityY: this.MY_PLAYER.sprite.body?.velocity.y,
+        //             flipX: this.MY_PLAYER.sprite.flipX,
+        //         });
+        //     }
+        // }
 
         // ✅ Jump only if touching the ground
         // if (this.CURSORS.up.isDown && this.player.body.touching.down) {
